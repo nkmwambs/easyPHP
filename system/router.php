@@ -63,13 +63,14 @@ if(filter_has_var(INPUT_GET, "url")){
     }   
    
 
-function __autoload($class_name){
+function loader($class_name){
     $Con = explode("_",$class_name);
     $app = $GLOBALS['app'];
     if(file_exists(BASE_PATH.DS.'application'.DS.$app.DS.'model'.DS.$Con[0].'.php')){require_once BASE_PATH.DS.'application'.DS.$app.DS.'model'.DS.$Con[0].'.php';}  else {print "Sorry! Application model class missing!<br>";}
     if(file_exists(BASE_PATH.DS.'application'.DS.$app.DS.'controller'.DS.$Con[0].'.php')){require_once BASE_PATH.DS.'application'.DS.$app.DS.'controller'.DS.$Con[0].'.php';}else{print "Sorry! Application controller class missing!<br>";}
 
 }
+spl_autoload_register("loader");
  
-$controller = new $rawController();
-$controller->$Method();
+$ctl = new $rawController();
+$ctl->$Method();
