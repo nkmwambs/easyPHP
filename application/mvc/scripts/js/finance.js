@@ -1205,3 +1205,21 @@ function selectCJ(tym){
       xmlhttp.open("GET",path+"mvc/Finance/ecj/tym/"+tym+"/public/0",true);      
       xmlhttp.send();
 }
+function selectSlip(tym){
+	//alert(tym);
+		    xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('content').innerHTML=xmlhttp.responseText;
+                //sumEcj();
+                //document.write(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/viewSlip/tym/"+tym+"/public/0",true);      
+      xmlhttp.send();
+}

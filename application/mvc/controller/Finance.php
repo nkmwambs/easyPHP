@@ -542,24 +542,26 @@ class Finance_Controller extends E_Controller
     }
 
     public function mfr($render=1,$path="",$tags=array("1")){
-            $acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",$_SESSION['fname'],"="),array("AND","Year(voucher_body.TDate)",date('Y'),"="),array("AND","Month(voucher_body.TDate)",date('m'),"=")));
+            $acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",date('Y'),"="),array("AND","Month(voucher_body.TDate)",date('m'),"=")));
             $acc = $this->_model->accountsForMfr($acc_cond);
             
-            if(date('m')-1===0){
-                $year = date('Y')-1;
-                $month=12;
-            }else{
-                $year = date('Y');
-                $month=date('m')-1;
-            }
+            //if(date('m')-1===0){
+              //  $year = date('Y')-1;
+                //$month=12;
+            //}else{
+              //  $year = date('Y');
+                //$month=date('m')-1;
+            //}
             
-            $balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",$_SESSION['fname'],"="),array("AND","Year(opfundsbalheader.closureDate)",$year,"="),array("AND","Month(opfundsbalheader.closureDate)",$month,"="),array("AND","totalBal","0","<>")));
+            $balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('-1 month')),"="),array("AND","totalBal","0","<>")));
             $balBf = $this->_model->balFundsBf($balBf_cond);
             
+			$cr_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","VType","CR","="),array("AND","TDate","date('Y-d-01') AND date ('Y-m-t')","BETWEEN")));
             
             //$balBf=0;
             $data[]=$balBf;
             $data[]=$acc;
+            $data[]=$cr_cond;
             return $data;
     }
     
@@ -595,9 +597,22 @@ class Finance_Controller extends E_Controller
            
     }
 
-    public function viewSlip($render=1,$path="",$tags=array("1")){
+    public function viewSlip(){
+    	if(isset($this->choice[1])){
+    		//echo date('Y-m-d',$this->choice[1]);
+    		$funds_cond = $this->_model->where(array(array("where","KENumber",Resources::session()->fname,"="),array("AND","Month",date('Y-m-d',$this->choice[1]),"=")));
+            //$funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
+            
+            $data[] = $this->_model->getAllRecords($funds_cond,"fundsschedule");
+			$data[]=$this->choice[1];		
+			$this->dispatch($render=2,"",$data,array("1"));
+		}else{
             $funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
-            return $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule");
+            $data[] = $this->_model->getAllRecords($funds_cond,"fundsschedule");
+			//$data[]=0;
+			$this->dispatch($render=1,"",$data,array("1"));
+		}	
+            //return $data; 
 
     }
 

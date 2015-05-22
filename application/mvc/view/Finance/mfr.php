@@ -1,10 +1,17 @@
 <?php
-//print_r($data[0]);
-
-    $curSelect=date('F-Y');
-    echo "<button onclick='selectCJ(\"".strtotime('-1 month')."\");'>".date('F-Y',  strtotime('-1 month'))."</button><button style='background-color:lightgreen;'  onclick='selectCJ(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectCJ(\"".strtotime('+1 month')."\");'>".  date('F-Y',  strtotime('+1 month'))."</button>";
+//print_r($data);
+print($data[2]);
+if(isset($data[4])){
+	$curSelect=date('F-Y',$data[4]);
+	$cur = $data[4];
+}else{
+	$curSelect=date('F-Y',strtotime("now"));
+	$cur = strtotime("now");
+}
     
-;echo "<table id='tblMfr' style='text-align:right;'>";
+	echo "<button onclick='selectMFR(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectMFR(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectMFR(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
+       
+echo "<table id='tblMfr' style='text-align:right;'>";
 echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>MONTHLY FINANCIAL REPORT</caption>";
 echo "<tr><th colspan='6'>1. PROJECT NAME: {$_SESSION['username']} - {$_SESSION['lname']}</th><th>Date</th><th colspan='2'>".date("d-m-Y")."</th></tr>";
 echo "<tr><th colspan='6'>CDC FINANCE REPORT FOR THE MONTH OF: </th><th>".date("F")."</th><th>YEAR</th><th>".date("Y")."</th></tr>";
@@ -87,7 +94,7 @@ echo "<tr><td colspan='2'><b>Total</b></td><td colspan='2'>&nbsp;</td><td colspa
 
 echo "<tr><th colspan='5' rowspan='7'>";
     echo "<table>";
-    echo "<tr><th>1.2. DETAILS OF NON-COMPASSION INCOME ".img_tag("unreject.png",array("title"=>'Add Details'))."</th><th>AMOUNT</th></tr>";
+    echo "<tr><th>1.2. DETAILS OF NON-COMPASSION INCOME ".Resources::img("unreject.png",array("title"=>'Add Details'))."</th><th>AMOUNT</th></tr>";
     echo "<tr><td>1.2. TOTAL NON COMPASSION FUNDS INCOME: </td><td>&nbsp;</td></tr>";
     echo "</table>";
 echo "</th><th colspan='4'>1.3. PROOF OF CASH BALANCE</th></tr>";
@@ -109,13 +116,13 @@ echo "<tr><td colspan='3'><b>VALIDATION</b></td><td colspan='2'>&nbsp;</td><td c
 
 echo "<tr><td colspan='4'>";
     echo "<table>";
-        echo "<tr><th colspan='3'>C: DEPOSIT IN TRANSIT ".img_tag("plus.png")."</th></tr>";
+        echo "<tr><th colspan='3'>C: DEPOSIT IN TRANSIT ".Resources::img("plus.png")."</th></tr>";
         echo "<tr><td>DATE</td><td>DETAILS</td><td>AMOUNT</td></tr>";
         echo "<tr><td colspan='2'><b>TOTAL DEPOSIT IN TRANSIT</b></td><td>&nbsp;</td></tr>";
     echo "</table>";
 echo "</td><td colspan='5'>";
     echo "<table>";
-        echo "<tr><th colspan='3'>D: OUSTANDING (UNPRESENTED) CHEQUES ".img_tag("unreject.png")."</th></tr>";
+        echo "<tr><th colspan='3'>D: OUSTANDING (UNPRESENTED) CHEQUES ".Resources::img("unreject.png")."</th></tr>";
         echo "<tr><td>DATE</td><td>CHEQUE No.</td><td>AMOUNT</td></tr>";
         echo "<tr><td colspan='2'><b>TOTAL OUTSTANDING CHEQUES</b></td><td>&nbsp;</td></tr>";
     echo "</table>";
@@ -123,7 +130,7 @@ echo "</td></tr>";
 
 echo "<tr><td colspan='9'>";
     echo "<table>";
-        echo "<tr><th colspan='5'>4: CIV FUND BALANCE BREAKDOWN  ".img_tag("unreject.png")."</th></tr>";
+        echo "<tr><th colspan='5'>4: CIV FUND BALANCE BREAKDOWN  ".Resources::img("unreject.png")."</th></tr>";
         echo "<tr><th>Month</th><th colspan='2'>Expense Details</th><th colspan='2'>Beneficiaries</th><th colspan='2'>Amount</th><th colspan='2'>Comment</th></tr>";
     echo "</table>";
 echo "</td></tr>";
