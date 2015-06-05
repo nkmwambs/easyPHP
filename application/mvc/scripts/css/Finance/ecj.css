@@ -1,0 +1,16 @@
+#ecj,#tblFinanceView{
+   background-color: lightsteelblue;
+   border: 5px black solid;
+   border-collapse: collapse;
+   white-space: nowrap;
+   margin-top: 30px;
+   //padding-right: 20px;
+}
+#ecj th,td{
+    border-bottom: 1px white solid;   
+    border-top: 1px white solid;
+    border-right: 1px white solid;
+    padding: 0px 15px 0px 10px;
+}
+
+

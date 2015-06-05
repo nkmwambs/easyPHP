@@ -1,0 +1,36 @@
+input::-webkit-input-placeholder {
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+input::-moz-placeholder {
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+input:-moz-placeholder {   /* Older versions of Firefox */
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+input:-ms-input-placeholder { 
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+
+input::-webkit-textarea-placeholder {
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+textarea::-moz-placeholder {
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+textarea:-moz-placeholder {   /* Older versions of Firefox */
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+textarea:-ms-input-placeholder { 
+	color: rgba(0,5,143,.5);
+	text-transform: uppercase;
+}
+#newuser{
+    max-width:390px;
+}

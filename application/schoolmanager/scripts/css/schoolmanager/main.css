@@ -1,0 +1,264 @@
+body{
+	background-color:lightgray;
+        font-family: "Avant Garde",Avantgarde,Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+        font-size: 90%;
+}
+
+#overlay
+{
+	position:fixed; /*implements no scrollbars*/
+	top:0px;
+	left:0px;
+	bottom: 0px;
+	right: 0px;
+	background:#808080;
+	opacity: 0.9; /* the lower the opacity the more the opaque*/
+	z-index: 20;
+	display: none;
+}
+
+#header{
+	position:absolute;
+	top:0px;
+	left:0px;
+	right:0px;
+	max-height: 150px;
+	min-height: 150px;
+	background: linear-gradient(to bottom, #f0ffff , lightgray ); /* Standard syntax */
+        //border: 1px white solid;
+	
+}
+#logo{
+
+	//background-image: url('/../easyPHP/application/schoolmanager/images/logo.png');
+	//background-size: 100px 120px;
+    //background-repeat: no-repeat;
+	
+}
+#logo_img{
+  	max-width:  8%;
+	min-width: 8%;
+	margin:10px 0px 10px 120px;  
+}
+#main_menu{
+	width: 1122px;
+	border-radius:10px;
+	//background-color:wheat;//darkblue;
+        z-index: 5;
+	height:20px;
+	color:blue;
+	position:absolute;
+        left: 108px;
+	top:142px;
+	padding:10px;
+      //  border: 1px white solid;
+        background: linear-gradient(to bottom,white,wheat);
+        //opacity: 0.9;
+}
+#main_menu_links{
+	
+	list-style: none;
+	position: relative;
+	top:-15px;
+
+}
+#main_menu_links li{
+	float:left;
+	margin: 0px 10px 0px 0px;
+	
+}
+#main_menu_links a{
+		text-decoration:none;
+}
+#container{
+	min-width: 74%;
+        max-width: 74%;
+	position: relative; /*position works with left, right, top and bottom*/
+	left: 100px; /* left, bottom always works with position*/
+	top:157px;
+	min-height:350px;
+	border:1px white solid;
+        border-top:0px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background: linear-gradient(to right, lightgray , white, lightgray ); /* Standard syntax */
+	padding: 50px 10px 10px 130px;
+	z-index: 2;
+ 
+}
+#login_link>a:link
+{
+	text-decoration:none;
+}
+.side_bar_list a:link
+{
+	text-decoration:none;
+}
+#login 
+{
+	z-index:25;
+	display: inline-block; /*fills up the div width with content*/
+	//background:skyblue;	
+	text-align:center;
+	position:relative;
+	left:275px;
+	top:30px;
+	width: 230px;
+	border-radius:6px;
+	color: orange;
+	font-weight:bolder;
+        margin-top: 20px;
+}
+#extra_access{
+    z-index: 30;
+}
+#extra_access>li{
+    position: absolute;
+    background: white;
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+    top:10px;
+    right:120px;
+    color: orange;
+    min-width: 220px;
+    max-width: 220px;
+    cursor: pointer;
+}
+
+#extra_access ul{
+position:absolute;
+top:30px;
+right:0px;
+background-color:white;
+border-bottom-left-radius: 5px;
+border-bottom-right-radius: 5px;
+padding: 5px; /*puts the space margin all round*/
+font-size: 10pt;
+min-width: 230px;
+max-width: 230px;
+display: none;
+}
+#extra_access>li a{
+    text-decoration: none;
+}
+
+#extra_access,#extra_access ul{
+    list-style: none;
+}
+
+#extra_access li:hover>ul{
+    display: block;
+}
+.bars{
+    width: 15%; 
+    border-radius: 5px;  
+    padding: 30px 10px 10px 20px;
+    background: linear-gradient(to right,lightgray,wheat,lightgray);  
+    color: blue;
+}
+#left_bar{
+    float: left;
+    margin: 10px 20px 10px -110px;
+    height: 45%;
+    position: absolute;
+    top: 40px;
+    left: 0px;
+    height: 270px;
+    //border:1px white solid;
+     
+}
+#right_bar{
+    //float: right;
+    //margin: 10px -110px 10px 20px;
+    //border:1px white solid;
+    position: absolute;
+    top: 40px;
+    right: -100px;
+    height: 270px;
+}
+.side_bar_list li{
+	 //list-style-image: url('/../easyPHP/application/schoolmanager/images/write_bullet.png');
+         list-style: none;
+     color: white;
+}
+.log_txt{
+    border: 2px green solid;
+}
+.se{
+	margin-bottom: 10px;
+	margin-top:10px;
+}
+input[type="text"],input[type="password"], input[type="submit"]{
+	border-radius:6px;
+	width: 13em;
+	height: 1.5em;
+}
+select{
+	border-radius:6px;
+	width: 14em;
+	height: 2em;    
+}
+input[type="text"],input[type="password"],select
+{
+	font-family:"Courier New", Courier, monospace;
+	color: #000;
+	padding-left:10px;
+	font-weight:bolder;
+}
+
+input[type="submit"]
+{
+	text-transform:uppercase;
+	background: green;
+	color:white;
+	font-weight:bolder;
+}
+h2{
+	position:absolute;
+	top: 30px;
+	left: 250px;
+	font-family:'lucida calligraphy';
+	
+}
+.logo_color{
+	color:orange;
+}
+#welcome_logo
+{
+	margin-left:270px; position:absolute; top:100px; left: 120px;
+       
+}
+button{
+    background-color: wheat;
+    border-radius: 5px;
+    padding: 5px;
+    font-weight: bold;
+}
+#footer{
+    position: absolute;
+    top:480px;
+    bottom: 0px;
+    padding: 90px 10px 0px 30px;
+    width: 82%;
+    height: 35px;
+    border:1px white solid;
+    left:96px;
+    margin: 10px 0px 18px 0px;
+    background-color: wheat;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+#loading{
+    margin-top:200px;
+    margin-left:570px;
+}
+input[readonly]{
+    background-color: lightgray;
+}
+#innerdiv{
+    background-color:white;margin-bottom:3px;cursor:pointer;
+}
+table {
+    //margin-left: auto;
+    //margin-right: auto;
+}

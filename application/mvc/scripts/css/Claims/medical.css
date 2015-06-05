@@ -1,0 +1,9 @@
+#viewClaims col:nth-child(n+5) {
+    visibility: collapse;
+}
+#viewClaims col:last-child {
+    visibility: visible;
+}
+#viewClaims col:nth-child(17) {
+    visibility: visible;
+}

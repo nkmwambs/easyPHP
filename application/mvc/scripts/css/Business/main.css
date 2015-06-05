@@ -1,0 +1,35 @@
+dt{
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom:10px; 
+}
+dd{
+    border: 3px black solid;
+    border-radius: 5px;
+    padding: 0px 5px 0px 5px;
+    min-height: 60px;
+    display: none;
+}
+#helpTable{
+    white-space: nowrap;
+}
+a{
+    cursor: pointer;
+}
+#helpTable th{
+    background-color:lightskyblue;
+}
+#helpTable th,td{
+    padding:0px 15px 0px 15px;
+}
+#helpTable tr:nth-child(even){
+   background-color: azure; 
+}
+#helpTable tr:nth-child(odd){
+   background-color: beige; 
+}
+.span{
+    min-width:140px;
+    float: left;
+
+}

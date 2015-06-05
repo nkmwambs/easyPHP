@@ -1,0 +1,6 @@
+#tblMfr tr,#tblCiva tr{
+    background-color:aliceblue;
+}
+#tblCiva{
+    white-space: nowrap;
+}

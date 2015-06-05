@@ -1,0 +1,16 @@
+#viewEvents,#viewMoreEvent{
+  min-width:90%;border:1px orange solid; 
+  background-color: wheat;
+}
+#viewEvents td{
+    padding: 0px 10px 0px 2px;
+}
+#viewEvents tr:nth-child(even){
+    background-color:aliceblue;
+}
+#viewMoreEvent td{
+    border-bottom: 2px burlywood solid;
+}
+#viewMoreEvent td:nth-child(even),tr:nth-child(3){
+   // background-color: white;
+}

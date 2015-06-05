@@ -1,0 +1,17 @@
+#tblNewPlan tr,#tblPlan tr,#ppbfPfView tr,#tblSchedule tr,#tblAllSchedules tr,#tblBudgetSummary tr,#tblListOfUnapprovedItems tr,#tblListOfAllItems tr{
+    background-color:aliceblue;
+}
+#tblNewPlan{
+    white-space: nowrap;
+    display: none;
+}
+#btnPostPlan{
+    display: none;
+}
+
+#planTypeSel,#fySel,.selLbl{
+    float: left;
+}
+#tblPlan{
+    white-space: nowrap;   
+}

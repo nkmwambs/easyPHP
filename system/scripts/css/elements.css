@@ -1,0 +1,36 @@
+input[type=submit],button,#home,.btn{
+    border-radius:5px;
+    padding: 5px;
+    background-color: green;
+    font-weight: bold;
+    color: white;
+    min-width: 80px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    float: left;
+    margin-right: 8px;
+}
+input[type=text],input[type=password]{
+        border-radius: 3px;
+}
+.btn{
+    -ms-transform: skewX(-20deg); /* IE 9 */
+    -webkit-transform: skewX(-20deg); /* Safari */
+    transform: skewX(-20deg); /* Standard syntax */
+}
+input[type=password]{
+width:153px;
+}
+input[type=submit]:hover{
+    background-color: brown; 
+}
+input[type=text]:hover,input[type=password]:hover{
+    border:thin greenyellow solid;
+    //height: 25px;
+}
+input[readonly]{
+    background-color: lightgrey;
+}
+textArea[readonly]{
+    background-color: lightgrey;
+}
