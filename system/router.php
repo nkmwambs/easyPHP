@@ -1,5 +1,5 @@
 <?php
-
+//Main router
 if(filter_has_var(INPUT_GET, "url")){
     $app_folder_arr = explode("/",filter_input(INPUT_GET,"url"));
     $app_folder = $app_folder_arr[0];
