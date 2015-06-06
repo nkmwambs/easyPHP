@@ -55,7 +55,7 @@ if(filter_has_var(INPUT_GET, "url")){
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                require_once BASE_PATH.DS.'system'.DS.'classes'.DS.$file;
+                require_once (BASE_PATH.DS.'system'.DS.'classes'.DS.$file);
             }
         }
         closedir($dh);
