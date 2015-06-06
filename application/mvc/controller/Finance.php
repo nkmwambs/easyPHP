@@ -912,7 +912,5 @@ public function opRecon(){
         $this->template->view("welcome/footer",$recent);   
 }
 
-public function balStateChange(){
-    
-}
+
 }
