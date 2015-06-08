@@ -1,5 +1,5 @@
 <?php
-//Main router
+//if(isset($_GET['url])){}
 if(filter_has_var(INPUT_GET, "url")){
     $app_folder_arr = explode("/",filter_input(INPUT_GET,"url"));
     $app_folder = $app_folder_arr[0];
@@ -18,7 +18,6 @@ if(filter_has_var(INPUT_GET, "url")){
 }else{
     print 'Application is not set in the URL';
 }
-
 
 //Set Url 
 
