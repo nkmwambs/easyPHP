@@ -181,3 +181,7 @@ function delRec(){
     }
 }
 
+Function login(){
+	alert("Hello");
+}
+
