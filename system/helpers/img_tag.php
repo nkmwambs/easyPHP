@@ -1,4 +1,5 @@
 <?php
+//Improved Urls
 function img_tag($path,$properties=""){
     
     if(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."images".DS.$path)){
