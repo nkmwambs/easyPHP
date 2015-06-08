@@ -13,9 +13,9 @@ class Template{
     public function view($path="",$results=""){
         $data = $results;
         if($path===""){
-            require_once BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$this->folder.DS.$this->view.".php";
+            include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$this->folder.DS.$this->view.".php";
         }else{
-            require_once BASE_PATH.DS."application".DS.$GLOBALS['app'].DS.'tpl'.DS.$path.".php";
+            include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS.'tpl'.DS.$path.".php";
         }
         
     }
