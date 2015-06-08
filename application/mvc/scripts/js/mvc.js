@@ -189,8 +189,8 @@ function login(){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-                //alert(xmlhttp.responseText);
-                document.getElementById('content').innerHTML=xmlhttp.responseText;
+                alert(xmlhttp.responseText);
+                //document.getElementById('content').innerHTML=xmlhttp.responseText;
           }
         };
         //alert(val);
