@@ -1,6 +1,6 @@
 <?php
 
-class E_model {
+class SQL {
         
     protected $mysql_hostname;
     protected $mysql_user;
