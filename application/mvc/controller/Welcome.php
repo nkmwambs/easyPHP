@@ -35,7 +35,10 @@ public $_model;
          
     }
     public function login() {
-	/**
+	$rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
+            $menu = $this->model->getAllRecords();
+            $this->load_menu->menu($menu);
         if(isset($_POST)){
         $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"="),
             "AND"=>  array("password",filter_input(INPUT_POST,"password"),"=")));
@@ -66,8 +69,9 @@ public $_model;
     }else{
         $this->template->view("",$data);
     }
-    **/
-    echo "Karisa"; 
+    
+    //echo "Karisa"; 
+    $this->template->view("welcome/footer",$recent);
 }
     
     public function logout(){

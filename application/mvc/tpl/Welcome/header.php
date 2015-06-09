@@ -59,7 +59,7 @@
         }else{
             echo '<li>'.img_tag("welcome.png").'Welcome Guest <span style="float:right;">&Del;</span>';
             echo '<ul>';
-            echo '<li id="login_link">'. img_tag("lock.png")." ". a_tag("","Login",array("onclick"=>"login();")).'</li><hr>';
+            echo '<li id="login_link">'. img_tag("lock.png")." ". a_tag("Welcome/login/public/1","Login").'</li><hr>';
             echo '<li>'.img_tag("register.png")." ". a_tag("Register/userRegister/public/1","Register User",array("onclick"=>"")).'</li><hr>';
             echo '</ul>';
         }
