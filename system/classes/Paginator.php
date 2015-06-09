@@ -1,5 +1,5 @@
 <?php
-class Paginator extends SQL{
+class Paginator extends E_model{
     private $_offset;
     private $_page;
     private $_rec_limit;
