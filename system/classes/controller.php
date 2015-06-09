@@ -77,8 +77,8 @@ public function offline(){
 }
 
 public function __call($method,$arguments){
-        $_SESSION['error_msg'] = 'Error: Missing method <i>'.$method.'()</i> in the application controller class <i>'.$this->Con."_Controller</i>";
-        header("location:".url_tag($GLOBALS['app_default_controller']."/".$GLOBALS['error_view']));
+        //$_SESSION['error_msg'] = 'Error: Missing method <i>'.$method.'()</i> in the application controller class <i>'.$this->Con."_Controller</i>";
+        //header("location:".url_tag($GLOBALS['app_default_controller']."/".$GLOBALS['error_view']));
         
     }
     
