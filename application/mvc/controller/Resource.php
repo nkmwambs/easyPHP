@@ -4,7 +4,7 @@ class Resource_Controller extends E_Controller
     private $_model;
     public function __construct(){
         parent::__construct();
-                $this->_model=new Resource_Model("voucher_header"); 
+                $this->_model=new Resource_Model("users"); 
                 //$this->_model=new Finance_Model("voucher_header");  
     }
     
@@ -81,5 +81,8 @@ class Resource_Controller extends E_Controller
         $this->template->view();
         $this->template->view("welcome/footer",$recent); 
     }
+	public function testChoice(){
+		//print($this->choice[1]);	
+	}
     
 }

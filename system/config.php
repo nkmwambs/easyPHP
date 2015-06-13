@@ -12,12 +12,6 @@ define('PATH',str_replace("/",DIRECTORY_SEPARATOR,dirname(dirname(filter_input(I
 $default_controller ="welcome";// Overwrite by setting $app_default_controller in the specific application config.php file
 $default_view ="logout";// Overwrite by setting $app_default_view in the specific application config.php file
 
-//Default error view
-$error_view = "error";
-
-//Offline View
-$offline = "offline";
-
 //Define Default Helpers
 
 $default_helpers = array("link","script","url","a","img","approval");

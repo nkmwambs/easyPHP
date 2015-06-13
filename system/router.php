@@ -1,5 +1,5 @@
 <?php
-//if(isset($_GET['url])){}
+
 if(filter_has_var(INPUT_GET, "url")){
     $app_folder_arr = explode("/",filter_input(INPUT_GET,"url"));
     $app_folder = $app_folder_arr[0];
@@ -18,6 +18,7 @@ if(filter_has_var(INPUT_GET, "url")){
 }else{
     print 'Application is not set in the URL';
 }
+
 
 //Set Url 
 
@@ -54,7 +55,7 @@ if(filter_has_var(INPUT_GET, "url")){
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                require_once (BASE_PATH.DS.'system'.DS.'classes'.DS.$file);
+                require_once BASE_PATH.DS.'system'.DS.'classes'.DS.$file;
             }
         }
         closedir($dh);
@@ -65,21 +66,8 @@ if(filter_has_var(INPUT_GET, "url")){
 function __autoload($class_name){
     $Con = explode("_",$class_name);
     $app = $GLOBALS['app'];
-    if(file_exists(BASE_PATH.DS.'application'.DS.$app.DS.'model'.DS.$Con[0].'.php'))
-        {
-            require_once BASE_PATH.DS.'application'.DS.$app.DS.'model'.DS.$Con[0].'.php';   
-        }  else {
-            $_SESSION['error_msg']= "Sorry! Application model class missing!<br>";
-            header("location:http://".filter_input(INPUT_SERVER,'HTTP_HOST')."/easyPHP/".$GLOBALS['app']."/".$GLOBALS['$default_controller']."/".$GLOBALS['error_view']);
-        }
-    if(file_exists(BASE_PATH.DS.'application'.DS.$app.DS.'controller'.DS.$Con[0].'.php'))
-        {
-            require_once BASE_PATH.DS.'application'.DS.$app.DS.'controller'.DS.$Con[0].'.php';
-            
-        }else{
-            $_SESSION['error_msg']="Sorry! Application controller class missing!<br>";
-            header("location:http://".filter_input(INPUT_SERVER,'HTTP_HOST')."/easyPHP/".$GLOBALS['app']."/".$GLOBALS['$default_controller']."/".$GLOBALS['error_view']);
-        }
+    if(file_exists(BASE_PATH.DS.'application'.DS.$app.DS.'model'.DS.$Con[0].'.php')){require_once BASE_PATH.DS.'application'.DS.$app.DS.'model'.DS.$Con[0].'.php';}  else {print "Sorry! Application model class missing!<br>";}
+    if(file_exists(BASE_PATH.DS.'application'.DS.$app.DS.'controller'.DS.$Con[0].'.php')){require_once BASE_PATH.DS.'application'.DS.$app.DS.'controller'.DS.$Con[0].'.php';}else{print "Sorry! Application controller class missing!<br>";}
 
 }
  

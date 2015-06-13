@@ -1,5 +1,6 @@
 <?php
 ?>
+
 <button id="btnAddRow" onclick="addRow('bodyTable')">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo a_tag("Finance/viewAll","<button>Search</button>")." ".a_tag("Finance/voucher","<button>Reset</button>");?>
 <form id="myform" method='POST' action=''>
             <input type="hidden" value="<?php echo $_SESSION['username']; ?>" id="KENo" name="KENo"/>
