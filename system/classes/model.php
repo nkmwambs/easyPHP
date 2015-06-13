@@ -2,32 +2,34 @@
 
 class E_Model {
         
-    protected $mysql_hostname;
-    protected $mysql_user;
-    protected $mysql_password;
-    protected $mysql_database;
-    public $table;
+    protected $host;
+    protected $user;
+    protected $pass;
     protected $db;
+    public $table;
+    protected $dbase;
     protected $comments;
     protected $num_fields;
     protected $value_arr;
     protected $inner_arr;
     protected $combined;
     protected $selectdb;
-    //public $app;
+   	protected $conn;
     
 
 
     public function __construct($table){
                        // $this->app=$GLOBALS['app'];
-                        $this->mysql_hostname = DB_HOST;
-                        $this->mysql_user = DB_USER;
-                        $this->mysql_password = DB_PASSWORD;
-                        $this->mysql_database = $GLOBALS['app'];
+                        $this->host = DB_HOST;
+                        $this->user = DB_USER;
+                        $this->pass = DB_PASSWORD;
+                        $this->dbase = $GLOBALS['app'];
                         $this->table = $table;
-                        $this->db = mysql_connect($this->mysql_hostname, $this->mysql_user, $this->mysql_password) or die("Could not connect database");
-                        $this->selectdb = mysql_select_db($this->mysql_database, $this->db) or die("Could not select database");
-    }
+                        //$this->db = mysql_connect($this->mysql_hostname, $this->mysql_user, $this->mysql_password) or die("Could not connect database");
+                        //$this->selectdb = mysql_select_db($this->mysql_database, $this->db) or die("Could not select database");
+    					//PDO Database Connection
+    					$this->conn = new PDO("mysql:host=$this->host;dbname=$this->dbase",$this->user,$this->pass);
+	}
     
 public function condition($cond){
     //$cond = array(array("where","fld","val","operator"),array("OR","fld","val","operator"),array("AND","fld","val","operator"));
@@ -63,13 +65,15 @@ public function where($cond){
 	{
       if($_table===""){$_table=$this->table;}
         //$this->getTitles();
-                        $s = "SHOW FULL COLUMNS FROM `".$_table."` FROM `".$this->mysql_database."`";
-                        $q = mysql_query($s);
-                        $this->num_fields = mysql_num_rows($q);
-
+                        $s = "SHOW FULL COLUMNS FROM `".$_table."` FROM `".$this->dbase."`";
+                        //$q = mysql_query($s);
+                        $q = $this->conn->prepare($s);
+						$q->execute();
+                        //$this->num_fields = mysql_num_rows($q);
+						$this->num_fields=$q->rowCount();
                         $this->comments=  array();
 
-                        while($rows=mysql_fetch_object($q)){
+                        while($rows= $q->fetch(PDO::FETCH_OBJ)){
                                 array_push($this->comments,$rows->Field);
                         }
       
@@ -81,17 +85,20 @@ public function where($cond){
                 $sql ="SELECT * FROM `".$_table."` $cond";
             }
 
-                        $query = mysql_query($sql);
-                        $num_rows = mysql_num_rows($query);
+                        //$query = mysql_query($sql);
+                        $r=$this->conn->prepare($sql);
+						$r->execute();
+                        //$num_rows = mysql_num_rows($query);
+                        $num_rows = $r->rowCount();
                         if($extra!==""){
                             $sql .= $extra;
                         }
                         
-                        $qry = mysql_query($sql);
+                        //$qry = mysql_query($sql);
 
-                        if($qry){
+                        if($r){
                             $this->value_arr = array();
-                            while ($row = mysql_fetch_array($qry)) {
+                            while ($row =$r->fetch(PDO::FETCH_BOTH)) {
                             $this->inner_arr = array();
                                 for($i=0;$i<$this->num_fields;$i++){
                                     array_push($this->inner_arr,$row[$i]);
@@ -143,11 +150,14 @@ public function where($cond){
             $values_final = substr_replace(str_replace(",)",")",$str),"",-1,1);
             
             $sql = "INSERT INTO $_table $fields_final VALUES $values_final";
-            $query = mysql_query($sql);
-            if($query){
+            //$query = mysql_query($sql);
+            $q = $this->conn->prepare($sql);
+			$q->execute();
+            if($q){
                 echo "Records posted successfully!";
             }  else {
-                echo "Error occurred: ".mysql_error();
+                //echo "Error occurred: ".mysql_error();
+                echo "Error occurred";
             }
         
         }
@@ -179,12 +189,14 @@ public function where($cond){
             
        
         $sql = "INSERT INTO $_table $fields_final VALUES $values_final";
-        $qry = mysql_query($sql);
-        
-        if($qry){
+        //$qry = mysql_query($sql);
+        $q=$this->conn->prepare($sql);
+        $q->execute();
+        if($q){
             return "Record added successfully";
         }  else {
-            return "Error Occurred in inserting record into table ".$this->table."!: ".mysql_error();
+            //return "Error Occurred in inserting record into table ".$this->table."!: ".mysql_error();
+            return "Error Occurred in inserting record into table ".$this->table."!";
         }
 
         
@@ -200,12 +212,15 @@ public function where($cond){
                 
                 $sql ="DELETE FROM `".$_table."` $cond";
             }
-            $qry = mysql_query($sql);
+            //$qry = mysql_query($sql);
             //$num_affected = mysql_affected_rows($qry);
-            if($qry){
+            $q=$this->conn->prepare($sql);
+			$q->execute();
+            if($q){
                 return "Record(s) deleted!";
             }  else {
-                return "Found an error: No records deleted!<br>". mysql_error();
+                //return "Found an error: No records deleted!<br>". mysql_error();
+                return "Found an error: No records deleted!";
             }
     }
     
@@ -229,11 +244,14 @@ public function where($cond){
                 $sql ="UPDATE  `".$_table."` SET $set_str $cond";
             }
             
-            $qry = mysql_query($sql);
-            if($qry){
+            //$qry = mysql_query($sql);
+            $q=$this->conn->prepare($sql);
+			$q->execute();
+            if($q){
                 return 1;
             }  else {
-                return "Update error:<br>".mysql_error();
+                //return "Update error:<br>".mysql_error();
+                return "Update error";
             }
         
     }
