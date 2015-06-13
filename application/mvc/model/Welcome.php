@@ -7,9 +7,11 @@ class Welcome_Model extends E_Model{
         $cond_fname = " `fname` LIKE '%".$user."%' OR `fname` LIKE '%".$user."' OR `fname` LIKE '".$user."%' ";
         $cond_cname = " `cname` LIKE '%".$user."%' OR `cname` LIKE '%".$user."' OR `cname` LIKE '".$user."%' ";
         $sql = "SELECT * FROM `users` WHERE $cond_user OR $cond_lname OR $cond_fname OR $cond_cname";
-        $qry = mysql_query($sql);
+        //$qry = mysql_query($sql);
+        $q=$this->conn->prepare($sql);
+		$q->execute();
         $rst = array();
-        while ($row = mysql_fetch_object($qry)) {
+        while ($row = $q->fetch(PDO::FETCH_OBJ)) {
             $rst[]=$row;
         }
         return $rst;

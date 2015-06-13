@@ -25,7 +25,7 @@ class Resource_Controller extends E_Controller
         
             endforeach;
         endforeach;
-        //$data = "This is the CKE Portal!";
+        $data = "This is the CKE Portal!";
         $this->template->view("",$data);
         $this->template->view("welcome/footer",$recent); 
     }
