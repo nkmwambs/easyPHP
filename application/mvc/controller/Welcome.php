@@ -22,23 +22,18 @@ public $_model;
     }
 
     public function show(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
-            if(!isset($_SESSION['username'])){
+			if(!isset($_SESSION['username'])){
                 $_SESSION['username']="Guest";
                 $_SESSION['userlevel']='0';
             }
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent); 
+				$this->dispatch();
          
     }
     public function login() {
-	$rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
+	//$rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+      //      $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
+        //    $menu = $this->model->getAllRecords();
+          //  $this->load_menu->menu($menu);
         if(isset($_POST)){
         $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"="),
             "AND"=>  array("password",filter_input(INPUT_POST,"password"),"=")));
@@ -51,7 +46,8 @@ public $_model;
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
             if($results[0]->admin==="1"){$_SESSION['adm']="2";}
-            $this->template->view("Welcome/show",$_SESSION['fname']);
+            //$this->template->view("Welcome/show",$_SESSION['fname']);
+            $this->dispatch("Welcome/show",$_SESSION['fname']);
         }  else {
                     $data="";  
                     if(!isset($_SESSION['cnt'])){
@@ -67,11 +63,12 @@ public $_model;
             $this->template->view("",$data);
         }
     }else{
-        $this->template->view("",$data);
+        //$this->template->view("",$data);
+        $this->dispatch("",$data);
     }
     
     //echo "Karisa"; 
-    $this->template->view("welcome/footer",$recent);
+    //$this->template->view("welcome/footer",$recent);
 }
     
     public function logout(){

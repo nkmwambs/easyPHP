@@ -88,16 +88,31 @@ public function __call($method,$arguments){
 }
 **/
 
+/**
+ * System Controller Class
+ * 
+ * This class instatiates the following classes:
+ * <ol>
+ * <li>E_Template Class</li>
+ * <li>E_Menu Class</li>
+ * <li>E_helper Class</li>
+ * <li>E_model Class</li>
+ * </ol>
+ * 
+ * @author Nicodemus Karisa <nkmwambs@gmail.com>
+ * @version 2.0.1
+ * @copyright Copyright (c) 2015, COmpassion Kenya
+ */
 class E_Controller {
-     public $model;	
-     public $template;
-     public $choice;
-     public $helper;
-     public $Con;
-     public $Met;
-     public $Args;
-     public $session;
-     public $load_menu;
+     protected $model;	
+     protected $template;
+     protected $choice;
+     protected $helper;
+     private $Con;
+     private $Met;
+     private $Args;
+     private $session;
+     protected $load_menu;
 
     public function __construct(){
         $this->Con = $GLOBALS['Controller'];
@@ -116,10 +131,10 @@ class E_Controller {
             }
             
         }
-
+		//print($_SESSION['ID']);
         if(!isset($_SESSION['username'])||empty($_SESSION)){
             $_SESSION['username']="Guest";
-            $_SESSION['usrlvl']='0';
+            $_SESSION['userlevel']='0';
             $_SESSION['ID']='0';
         }
 
@@ -136,8 +151,22 @@ class E_Controller {
         
     }
     
+	public function dispatch($path="",$results=""){
+		    $rec_cond=  $this->model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+            $recent = $this->model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
+            $menu = $this->model->getAllRecords();
+            $this->load_menu->menu($menu);
+			
+			$this->template->view();
+            $this->template->view("welcome/footer",$recent); 
+	}
     
-    
+    /**
+	 * Error control
+	 * @param string $var
+	 * @param string $val
+	 * @return void
+	 */
     
     public function __call($var,$val){
         print 'Error: Missing method <i>'.$var.'()</i> in the application controller class <i>'.$this->control."_Controller</i>";
