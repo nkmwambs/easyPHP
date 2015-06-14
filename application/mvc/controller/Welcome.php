@@ -161,7 +161,10 @@ public $_model;
         }
         //$this->template->view("",$data);
     }
+	/**
 	public function testChoice(){
 		print($this->choice[1]);
 	}
+	 * 
+	 */
 }

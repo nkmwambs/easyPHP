@@ -197,7 +197,7 @@ function login(){
     xmlhttp.open("GET",path+"mvc/Welcome/login",true);
     xmlhttp.send();
 }
-
+/**
 function testChoice(){
 	        xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
@@ -214,3 +214,4 @@ function testChoice(){
     xmlhttp.open("GET",path+"mvc/Welcome/testChoice/testChoice/"+testChoice+"/public/1",true);
     xmlhttp.send();
 }
+**/
