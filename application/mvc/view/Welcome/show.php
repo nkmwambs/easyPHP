@@ -5,7 +5,7 @@
                 <h5>Tools available</h5>
                 <ul style="list-style-image: url('<?php echo PATH.DS."system".DS."images".DS."unreject.png";?>');">
                     <li>Medical Claim and Request system</li>
-                    <li>Funds Management System - Vouchers, Cash Journal and MFR</li>
+                    <li>Funds Management System</li>
                     <li>Funds Disbursement System</li>
                     <li>HVC Management System</li>
                 </ul>
