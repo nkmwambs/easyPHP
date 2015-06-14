@@ -91,7 +91,7 @@ public $_model;
     public function switchUser(){
             $cond="";
             if(!isset($_POST)){
-                $this->dispatch();
+                $this->dispatch("","",array("9"));
             }else{
                 if(isset($_POST['username'])){
                     $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"=")));
@@ -107,7 +107,7 @@ public $_model;
                             endforeach;
                     }
                     
-                    $this->dispatch("",$_SESSION['fname']);
+                    $this->dispatch("",$_SESSION['fname'],array("9"));
             }
                      
     }
