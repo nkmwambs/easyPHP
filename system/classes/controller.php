@@ -164,7 +164,17 @@ class E_Controller {
             $menu = $this->model->getAllRecords();
             $this->load_menu->menu($menu);
 			
-			$this->template->view($path,$results);
+			//$cur_menu_cond = $this->model->where(array(array("where","url",$this->Con."/".$this->Met,"=")));
+			//$cur_menu = $this->model->getAllRecords($cur_menu_cond,"menu");
+
+			//$ulvl_arr = explode(",",$cur_menu[0]->userlevel);
+			//if(in_array($_SESSION['userlevel'], $ulvl_arr)){
+				$this->template->view($path,$results);
+			//}else{
+				//$this->template->view($path="welcome/dispatchError",$results="");
+			//}
+			
+            
             $this->template->view("welcome/footer",$recent); 
 	}
 	
