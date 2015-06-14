@@ -37,7 +37,7 @@ class Finance_Controller extends E_Controller
         print_r(json_encode($rst));
     }
 
-    public function voucher($render=1){
+    public function voucher($render=1,$tags=array("1")){
             try{
                 if(isset($_SESSION['username'])){
                     $mth = date('m');
@@ -79,14 +79,14 @@ class Finance_Controller extends E_Controller
             $data[]=$this->_model->accounts();
             $data[] = $this->_model->getVoucherForEcj($cds);
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch("",$data);
+                $this->dispatch("",$data,array("1"));
             }elseif($_SESSION['userlevel']==="2"){
                 $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
                 $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
                 $cluster = $selector_pf[0]->cname;
                 $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
                 $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-                $this->dispatch("Welcome/icpSelector",$selector_icps);
+                $this->dispatch("Welcome/icpSelector",$selector_icps,array("1"));
             }
             
     }
@@ -230,9 +230,9 @@ class Finance_Controller extends E_Controller
             $data[]=$fy;
             $data[]=$acc;
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch("",$data);
+                $this->dispatch("",$data,array("1"));
             }else{
-                $this->dispatch("welcome/pfPlansSchedulesView",$data);
+                $this->dispatch("welcome/pfPlansSchedulesView",$data,array("1"));
             }
 
             }       
@@ -488,7 +488,7 @@ class Finance_Controller extends E_Controller
         
     }
 
-    public function mfr($render=1){
+    public function mfr($render=1,$path="",$tags=array("1")){
             $acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",$_SESSION['fname'],"="),array("AND","Year(voucher_body.TDate)",date('Y'),"="),array("AND","Month(voucher_body.TDate)",date('m'),"=")));
             $acc = $this->_model->accountsForMfr($acc_cond);
             
@@ -510,12 +510,12 @@ class Finance_Controller extends E_Controller
             return $data;
     }
     
-    public function statements($render=1){
+    public function statements($render=1,$path="",$tags=array("1")){
             return $data = "View Bank Statements";
             
     }
 
-    public function disbursement($render=1){
+    public function disbursement($render=1,$path="",$tags=array("1")){
             
     } 
     public function uploadFundsList(){
@@ -651,7 +651,7 @@ public function viewFunds($render=1){
             return $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule","LIMIT 0,100");
 
 }
-public function fundsOpBal($render=1){
+public function fundsOpBal($render=1,$path="",$tags=array("1")){
   
 }
 public function getExpAccounts(){
@@ -705,7 +705,7 @@ public function showOpeningBal($render=1){
         return $icp = $this->_model->getAllRecords($icp_cond,"opfundsbalheader");
 
 }
-public function oustChqBf($render=1){    
+public function oustChqBf($render=1,$path="",$tags=array("1")){    
               
 }
 public function addOustChqBf(){
@@ -723,10 +723,10 @@ public function addOustChqBf(){
     //print_r($frmData);
     
 }
-public function cashBalBf($render=1){   
+public function cashBalBf($render=1,$path="",$tags=array("1")){   
       
 }
-public function opRecon($render=1){   
+public function opRecon($render=1,$path="",$tags=array("1")){   
       
 }
 

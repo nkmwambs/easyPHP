@@ -21,7 +21,7 @@ public $_model;
             $this->template->view("welcome/footer",$recent);  
     }
 
-    public function show($render=1){
+    public function show($render=1,$tags=array("0")){
 			if(!isset($_SESSION['username'])){
                 $_SESSION['username']="Guest";
                 $_SESSION['userlevel']='0';
@@ -41,7 +41,7 @@ public $_model;
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
             if($results[0]->admin==="1"){$_SESSION['adm']="2";}
-            $this->dispatch("Welcome/show",$_SESSION['fname']);
+            $this->dispatch("Welcome/show",$_SESSION['fname'],array("0"));
         }  else {
                     $data="";  
                     if(!isset($_SESSION['cnt'])){
@@ -54,14 +54,14 @@ public $_model;
            
             $_SESSION["username"]="Guest";
             $_SESSION["userlevel"]='0';
-            $this->dispatch("",$data);
+            $this->dispatch("",$data,array("0"));
         }
     }else{
-        $this->dispatch("",$data);
+        $this->dispatch("",$data,array("0"));
     }
 }
     
-    public function logout($render=1,$path="welcome/show"){
+    public function logout($render=1,$path="welcome/show",$tags=array("0")){
             session_unset();
             $_SESSION['username']="Guest";
             $_SESSION['userlevel']='0';

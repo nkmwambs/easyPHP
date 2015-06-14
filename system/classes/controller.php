@@ -158,21 +158,22 @@ class E_Controller {
         
     }
     
-	protected function dispatch($path="",$results=""){
+	protected function dispatch($path="",$results="",$tags=array()){
 		    $rec_cond=  $this->model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
             $recent = $this->model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
             $menu = $this->model->getAllRecords();
             $this->load_menu->menu($menu);
-			
+			//echo $_SESSION['userlevel'];
 			//$cur_menu_cond = $this->model->where(array(array("where","url",$this->Con."/".$this->Met,"=")));
 			//$cur_menu = $this->model->getAllRecords($cur_menu_cond,"menu");
-
+			
 			//$ulvl_arr = explode(",",$cur_menu[0]->userlevel);
-			//if(in_array($_SESSION['userlevel'], $ulvl_arr)){
+			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
+			in_array("0", $tags)){
 				$this->template->view($path,$results);
-			//}else{
-				//$this->template->view($path="welcome/dispatchError",$results="");
-			//}
+			}else{
+				$this->template->view($path="welcome/dispatchError",$results="");
+			}
 			
             
             $this->template->view("welcome/footer",$recent); 
@@ -201,6 +202,8 @@ class E_Controller {
 			foreach ($param_arr as $param) {
 		    	if($param->getName()==='path'){
 		    		$path = $param->getDefaultValue();
+		    	}elseif($param->getName()==='tags'){
+		    		$tags = $param->getDefaultValue();
 		    	}
 			}
 			if($this->{$this->Met}()!==""){
@@ -208,7 +211,7 @@ class E_Controller {
 			}else{
 				$results="";
 			}
-			$this->dispatch($path,$results);
+			$this->dispatch($path,$results,$tags);
 		}
 		
 	}
