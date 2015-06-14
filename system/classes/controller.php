@@ -139,8 +139,12 @@ class E_Controller {
             $_SESSION['username']="Guest";
             $_SESSION['userlevel']='0';
             $_SESSION['ID']='0';
+			//define("USERID",$_SESSION['ID']);
         }
-
+		
+		define("USERID",$_SESSION['ID']);
+		//define("USERNAME",$_SESSION['username']);
+		
         $url = $this->Con."/".$this->Met;
         $cond = $this->model->where(array("where"=>array("public",'1',"="),"AND"=>array("url",$url,"=")));
         $rst = $this->model->getAllRecords($cond);
@@ -163,6 +167,8 @@ class E_Controller {
 			$this->template->view($path,$results);
             $this->template->view("welcome/footer",$recent); 
 	}
+	
+
 
     /**
 	 * Error control
