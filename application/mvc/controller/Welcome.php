@@ -30,10 +30,6 @@ public $_model;
          
     }
     public function login() {
-	//$rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-      //      $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        //    $menu = $this->model->getAllRecords();
-          //  $this->load_menu->menu($menu);
         if(isset($_POST)){
         $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"="),
             "AND"=>  array("password",filter_input(INPUT_POST,"password"),"=")));
@@ -46,7 +42,6 @@ public $_model;
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
             if($results[0]->admin==="1"){$_SESSION['adm']="2";}
-            //$this->template->view("Welcome/show",$_SESSION['fname']);
             $this->dispatch("Welcome/show",$_SESSION['fname']);
         }  else {
                     $data="";  
@@ -60,41 +55,24 @@ public $_model;
            
             $_SESSION["username"]="Guest";
             $_SESSION["userlevel"]='0';
-            $this->template->view("",$data);
+            $this->dispatch("",$data);
         }
     }else{
-        //$this->template->view("",$data);
         $this->dispatch("",$data);
     }
-    
-    //echo "Karisa"; 
-    //$this->template->view("welcome/footer",$recent);
 }
     
     public function logout(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-                    //if(isset($_SESSION['username'])){
-                        session_unset();
-
-                    //}
-                    $_SESSION['username']="Guest";
-                    $_SESSION['userlevel']='0';
-                    $_SESSION['ID']='0';
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view("welcome/show");
-            $this->template->view("welcome/footer",$recent); 
+            session_unset();
+            $_SESSION['username']="Guest";
+            $_SESSION['userlevel']='0';
+            $_SESSION['ID']='0';
+            $this->dispatch("welcome/show");
 }
 
     public function profile(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
             //$data = "User Profile";
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent); 
+            $this->dispatch();
          
     }
     function newRecent(){

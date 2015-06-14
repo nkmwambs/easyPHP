@@ -8,23 +8,12 @@ class Finance_Controller extends E_Controller
         $this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
     }
     public function switchboard(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
         $cluster = $this->_model->getClusters();
-        $this->template->view("",$cluster);
-        $this->template->view("welcome/footer",$recent); 
+        $this->dispatch("",$cluster);
     }
 
     public function viewAll(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            //$data = "Finance Module View";
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent); 
+            $this->dispatch();
     }    
     public function accounts(){
         $voucherType_code = $this->choice[1];
@@ -49,30 +38,20 @@ class Finance_Controller extends E_Controller
     }
 
     public function voucher(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            //$data = "Voucher View";
             try{
                 if(isset($_SESSION['username'])){
                     $mth = date('m');
                     $icp = $_SESSION['username'];
                     $data = $this->_model->getMonthByNumber($mth,$icp);
-                    $this->template->view("",$data);
+                    $this->dispatch("",$data);
                 }  else {
                     throw new customException("Session ID username is not set!");
                 }
             }catch(customException $e){
                 echo $e->errorMessage();
-            }
-            $this->template->view("welcome/footer",$recent); 
+            } 
     }
     public function ecjOther(){
-       $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");  
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
         if(isset($_POST['icpSelector'])){
                     $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"icpSelector")),"=")));
         }elseif(isset ($this->choice[1])) {
@@ -89,19 +68,13 @@ class Finance_Controller extends E_Controller
             //}
             $data[]=$this->_model->accounts();
             $data[] = $this->_model->getVoucherForEcj($cds);
-            $this->template->view("",$data);
+            $this->dispatch("",$data);
     //}
 
-            $this->template->view("welcome/footer",$recent); 
                 
 }   
 
-    public function ecj(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");  
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
-            
+    public function ecj(){            
             if(isset($this->choice[1])){
                 $cds = $this->_model->where(array("where"=>array("icpNo",$_SESSION['username'],"="),"AND"=>array("Month(`TDate`)",date('m', strtotime($this->choice[1])),"=")));
             }  else {
@@ -112,41 +85,30 @@ class Finance_Controller extends E_Controller
             $data[]=$this->_model->accounts();
             $data[] = $this->_model->getVoucherForEcj($cds);
             if($_SESSION['userlevel']==="1"){
-                $this->template->view("",$data);
+                $this->dispatch("",$data);
             }elseif($_SESSION['userlevel']==="2"){
                 $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
                 $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
                 $cluster = $selector_pf[0]->cname;
                 $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
                 $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-                $this->template->view("Welcome/icpSelector",$selector_icps);
+                $this->dispatch("Welcome/icpSelector",$selector_icps);
             }
             
-            $this->template->view("welcome/footer",$recent); 
     }
     
     public function ppbf(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
             if($_SESSION['userlevel']==="1"){
                 $this->template->view();    
             }elseif($_SESSION['userlevel']==="2"){
                 $cluster_cond = $this->_model->where(array(array("where","cname",$_SESSION['cname'],"="),array("AND","userlevel","2","<>")));
                 $cluster_arr = $this->_model->getAllRecords($cluster_cond,"users");
-                $this->template->view("Welcome/icpSelectorForPpbf",$cluster_arr);
+                $this->dispatch("Welcome/icpSelectorForPpbf",$cluster_arr);
             }  else {
                 
-            }
-            $this->template->view("welcome/footer",$recent); 
+            } 
     }
     public function ppbfOther(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
-        
         if(isset($this->choice[1])){
             $icp_cond = $this->_model->where(array(array("where","icpNo",  $this->choice[1],"=")));
         }else{
@@ -155,16 +117,11 @@ class Finance_Controller extends E_Controller
         
         $icp_arr = $this->_model->getAllRecords($icp_cond,"plansHeader");
         
-        $this->template->view("",$icp_arr);
+        $this->dispatch("",$icp_arr);
         
-        $this->template->view("welcome/footer",$recent);
     }
 
         public function getPpbf(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
         if($_SESSION['userlevel']==="1"){ 
             if($this->choice[1]==='1'||$this->choice[1]==='2'){
                 $plan_cond = $this->_model->where(array(array("WHERE","plansheader.icpNo",$_SESSION['username'],"="),array("AND","plansheader.fy",$this->choice[3],"="),array("AND","plansheader.planType",  $this->choice[1],"=")));
@@ -186,25 +143,17 @@ class Finance_Controller extends E_Controller
                     
                     $data[]=$acc;
                     $data[]=$plan;    
-                    $this->template->view("",$data);
+                    $this->dispatch("",$data);
                  }
              } catch (customException $e) {
                     echo $e->errorMessage();
-             }            
-
-        $this->template->view("welcome/footer",$recent);         
+             }                     
     }
 
     public function newPlan(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            
             $acc_cond=$this->_model->where(array("where"=>array("AccGrp","0","="),"AND"=>array("AccNo","100","<")));
             $acc = $this->_model->getAllRecords($acc_cond,"accounts");
-            $this->template->view("",$acc);
-            $this->template->view("welcome/footer",$recent); 
+            $this->dispatch("",$acc);
     }
     
     public function searchPlan(){
@@ -284,11 +233,6 @@ class Finance_Controller extends E_Controller
     }
     
     public function schedules(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);  
-            
             $acc_cond=  $this->_model->where(array(array("where","AccGrp","0","="),array("AND","AccNo",100,"<")));
             $acc = $this->_model->getAllRecords($acc_cond,"accounts");
 
@@ -299,22 +243,11 @@ class Finance_Controller extends E_Controller
             if($_SESSION['userlevel']==="1"){
                 $this->template->view("",$data);
             }else{
-                $this->template->view("welcome/pfPlansSchedulesView",$data);
+                $this->dispatch("welcome/pfPlansSchedulesView",$data);
             }
-            $this->template->view("welcome/footer",$recent); 
 
             }       
-    public function pfSchedules(){
-        //if($this->choice[2]==="scheduleID"){
-          //  $scheduleID=  $this->choice[3];
-            //$del_cond = $this->_model->where(array(array("where","scheduleID",$scheduleID,"=")));
-            //$this->_model->deleteQuery($del_cond,"plansschedule");
-        //}
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);  
-            
+    public function pfSchedules(){           
         $fy = $this->choice[3];
         $icpNo = $this->choice[1];
         $schedules_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$icpNo,"=")));
@@ -335,10 +268,7 @@ class Finance_Controller extends E_Controller
         $data[]=$acDetails;
         $data[]=$schedules;
         $data[]=$totals;
-        $this->template->view("",$data);
-        
-        $this->template->view("welcome/footer",$recent); 
-
+        $this->dispatch("",$data);
     }
     public function showNewPlansItems(){
         $fy = $this->choice[1];
@@ -567,11 +497,6 @@ class Finance_Controller extends E_Controller
     }
 
     public function mfr(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            
             $acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",$_SESSION['fname'],"="),array("AND","Year(voucher_body.TDate)",date('Y'),"="),array("AND","Month(voucher_body.TDate)",date('m'),"=")));
             $acc = $this->_model->accountsForMfr($acc_cond);
             
@@ -590,27 +515,16 @@ class Finance_Controller extends E_Controller
             //$balBf=0;
             $data[]=$balBf;
             $data[]=$acc;
-            $this->template->view("",$data);
-            $this->template->view("welcome/footer",$recent); 
+            $this->dispatch("",$data);
     }
     
     public function statements(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
             $data = "View Bank Statements";
-            $this->template->view("",$data);
-            $this->template->view("welcome/footer",$recent); 
+            $this->dispatch("",$data);
     }
 
     public function disbursement(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent); 
+            $this->dispatch();
     } 
     public function uploadFundsList(){
         set_time_limit(3600); 
@@ -620,47 +534,27 @@ class Finance_Controller extends E_Controller
         $this->_model->uploadFunds($lists,$file);
     }
     public function advicePerICP(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
             $cluster_cond = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
             $cluster = $this->_model->getAllRecords($cluster_cond,"users");
             
             //$cst_cond = $this->_model->where(array(array("where","cname",$cluster[0]->cname,"="),array("AND","userlevel","2","<>")));
             $cst = $this->_model->fundsPerICP($cluster[0]->cname);
             
-            $this->template->view("",$cst);
-            $this->template->view("welcome/footer",$recent);         
+            $this->dispatch("",$cst);       
     }
 
     public function fundsCategories(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent);         
+            $this->dispatch();        
     }
 
     public function fundsUpload(){
-              $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent);   
+            $this->dispatch();   
     }
 
     public function viewSlip(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
             $funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
             $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule");
-            $this->template->view("",$funds);
-            $this->template->view("welcome/footer",$recent);  
+            $this->dispatch("",$funds);
     }
 
     public function chqIntel(){
@@ -723,10 +617,7 @@ class Finance_Controller extends E_Controller
         endforeach;
         
     }
-    public function showVoucher(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
-        
+    public function showVoucher(){       
         $VNum=  $this->choice[1];
         if($_SESSION['userlevel']==="1"){
             $icpNo = $_SESSION['username'];
@@ -737,11 +628,8 @@ class Finance_Controller extends E_Controller
         }
         
         $data = $this->_model->showVoucher($VNum,$icpNo);
-        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view("",$data);
-            $this->template->view("welcome/footer",$recent);
+
+            $this->dispatch("",$data);
     }
     public function getFlds(){
         $arr_tables=$this->_model->dbTables();
@@ -749,64 +637,32 @@ class Finance_Controller extends E_Controller
         print_r(json_encode($flds));
     }
     public function searchResults(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
                 $data = $this->_model->searchResultsQuery($_POST);
                 if(is_array($data)){
                     $rst = $data;
                 }  else {
                     $rst = $data;
                 }
-                $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-                $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-                $menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view("",$rst);
-		$this->template->view("Welcome/footer",$recent); 
+		$this->dispatch("",$rst);
 
     }
-public function civ(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
-        
+public function civ(){       
         $civa_cond = $this->_model->where(array(array("where","civa.open","1","="),array("AND","accounts.AccGrp","0","=")));
         //$civa = $this->_model->getAllRecords($civa_cond,"civa");
         $civa[] = $this->_model->civaExpenseAccounts($civa_cond);
-
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view("",$civa);
-            $this->template->view("welcome/footer",$recent); 
+            $this->dispatch("",$civa);
 }
 public function AddCIVA(){
-          $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
-
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent);   
+            $this->dispatch();  
 }
 
 public function viewFunds(){
-    
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
             $funds_cond=  $this->_model->where(array(array("where","Month",date('Y-m-01'),"=")));
             $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule","LIMIT 0,100");
-            $this->template->view("",$funds);
-            $this->template->view("welcome/footer",$recent);  
+            $this->dispatch("",$funds); 
 }
 public function fundsOpBal(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent);     
+            $this->dispatch();   
 }
 public function getExpAccounts(){
             $acc_cond=  $this->_model->where(array(array("where","AccGrp","1","=")));
@@ -843,25 +699,14 @@ public function addFundBal(){
     
 }
 public function pfSettings(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
                 $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
                 $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
                 $cluster = $selector_pf[0]->cname;
                 $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
                 $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-                $this->template->view("Welcome/icpSelectorForBal",$selector_icps);
-        $this->template->view("welcome/footer",$recent);       
+                $this->dispatch("Welcome/icpSelectorForBal",$selector_icps);     
 }
 public function showOpeningBal(){
-        
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
-        
         if(isset($_POST['icpSelector'])){
             $icpNo = $_POST['icpSelector'];
         }else{
@@ -869,16 +714,10 @@ public function showOpeningBal(){
         }
         $icp_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"=")));
         $icp = $this->_model->getAllRecords($icp_cond,"opfundsbalheader");
-        $this->template->view("",$icp);
-        $this->template->view("welcome/footer",$recent);
+        $this->dispatch("",$icp);
 }
-public function oustChqBf(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);    
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);        
+public function oustChqBf(){    
+        $this->dispatch();       
 }
 public function addOustChqBf(){
     //print_r($_POST);
@@ -895,21 +734,11 @@ public function addOustChqBf(){
     //print_r($frmData);
     
 }
-public function cashBalBf(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);    
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);
+public function cashBalBf(){   
+        $this->dispatch();
 }
-public function opRecon(){
-         $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);    
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);   
+public function opRecon(){   
+        $this->dispatch(); 
 }
 
 

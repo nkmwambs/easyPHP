@@ -151,16 +151,16 @@ class E_Controller {
         
     }
     
-	public function dispatch($path="",$results=""){
+	protected function dispatch($path="",$results=""){
 		    $rec_cond=  $this->model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
             $recent = $this->model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
             $menu = $this->model->getAllRecords();
             $this->load_menu->menu($menu);
 			
-			$this->template->view();
+			$this->template->view($path,$results);
             $this->template->view("welcome/footer",$recent); 
 	}
-    
+
     /**
 	 * Error control
 	 * @param string $var
