@@ -113,6 +113,8 @@ class E_Controller {
      private $Args;
      private $session;
      protected $load_menu;
+	 private $method_args_count;
+	 //public static $RENDER=1;
 
     public function __construct(){
         $this->Con = $GLOBALS['Controller'];
@@ -124,6 +126,7 @@ class E_Controller {
         $this->choice=  $this->Args;
         $this->session=session_start();
         $this->model=new E_Model($table="menu");
+		//$reflection = new ReflectionClass($this);
         
         if(!empty($this->helper->global_helpers)){
             foreach ($this->helper->global_helpers as $value) {
@@ -172,4 +175,25 @@ class E_Controller {
         print 'Error: Missing method <i>'.$var.'()</i> in the application controller class <i>'.$this->control."_Controller</i>";
     }
     
+	public function __destruct(){
+		$reflection=new ReflectionClass($this);
+		$num_args = $reflection->getMethod($this->Met)->getNumberOfParameters();
+		if($num_args!==0){
+			$param_arr = $reflection->getMethod($this->Met)->getParameters();
+			
+			$path="";
+			foreach ($param_arr as $param) {
+		    	if($param->getName()==='path'){
+		    		$path = $param->getDefaultValue();
+		    	}
+			}
+			if($this->{$this->Met}()!==""){
+				$results=$this->{$this->Met}();
+			}else{
+				$results="";
+			}
+			$this->dispatch($path,$results);
+		}
+		
+	}
 }

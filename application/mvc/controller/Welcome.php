@@ -21,12 +21,11 @@ public $_model;
             $this->template->view("welcome/footer",$recent);  
     }
 
-    public function show(){
+    public function show($render=1){
 			if(!isset($_SESSION['username'])){
                 $_SESSION['username']="Guest";
                 $_SESSION['userlevel']='0';
             }
-				$this->dispatch();
          
     }
     public function login() {
@@ -62,19 +61,17 @@ public $_model;
     }
 }
     
-    public function logout(){
+    public function logout($render=1,$path="welcome/show"){
             session_unset();
             $_SESSION['username']="Guest";
             $_SESSION['userlevel']='0';
             $_SESSION['ID']='0';
-            $this->dispatch("welcome/show");
 }
 
-    public function profile(){
-            //$data = "User Profile";
-            $this->dispatch();
+    public function profile($render=1){
          
     }
+	
     function newRecent(){
         $record['itemTitle']=  $this->choice[1];
         $record['url']=  $directory = str_replace("_", "/", $this->choice[3]);
@@ -92,14 +89,9 @@ public $_model;
         
     }
     public function switchUser(){
-        
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
             $cond="";
             if(!isset($_POST)){
-                $this->template->view();
+                $this->dispatch();
             }else{
                 if(isset($_POST['username'])){
                     $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"=")));
@@ -115,31 +107,21 @@ public $_model;
                             endforeach;
                     }
                     
-                    $this->template->view("",$_SESSION['fname']);
+                    $this->dispatch("",$_SESSION['fname']);
             }
-              
-            $this->template->view("welcome/footer",$recent);         
+                     
     }
     
     public function searchUser(){
         $_SESSION['search_user'] =  $this->choice[1];
         $username = $_SESSION['search_user'];
-        //$search_cond = $this->_model->where(array("where"=>array("username",$username,"=")));
-        //$search=  $this->_model->getAllRecords($search_cond,"users");
         $search=  $this->_model->searchUsers($username);
         
-        //print_r($search);
         if(count($search)===0){
             echo "No match Found";
         }else{
              print_r($search);
         }
-        //$this->template->view("",$data);
     }
-	/**
-	public function testChoice(){
-		print($this->choice[1]);
-	}
-	 * 
-	 */
+
 }

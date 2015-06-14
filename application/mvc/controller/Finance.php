@@ -7,13 +7,13 @@ class Finance_Controller extends E_Controller
         $this->_model=new Finance_Model("voucher_header");  
         $this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
     }
-    public function switchboard(){
-        $cluster = $this->_model->getClusters();
-        $this->dispatch("",$cluster);
+    public function switchboard($render=1){
+        return $cluster = $this->_model->getClusters();
+        //$this->dispatch("",$cluster);
     }
 
-    public function viewAll(){
-            $this->dispatch();
+    public function viewAll($render=1){
+            //$this->dispatch();
     }    
     public function accounts(){
         $voucherType_code = $this->choice[1];
@@ -37,13 +37,13 @@ class Finance_Controller extends E_Controller
         print_r(json_encode($rst));
     }
 
-    public function voucher(){
+    public function voucher($render=1){
             try{
                 if(isset($_SESSION['username'])){
                     $mth = date('m');
                     $icp = $_SESSION['username'];
-                    $data = $this->_model->getMonthByNumber($mth,$icp);
-                    $this->dispatch("",$data);
+                    return $data = $this->_model->getMonthByNumber($mth,$icp);
+                    //$this->dispatch("",$data);
                 }  else {
                     throw new customException("Session ID username is not set!");
                 }
@@ -51,7 +51,7 @@ class Finance_Controller extends E_Controller
                 echo $e->errorMessage();
             } 
     }
-    public function ecjOther(){
+    public function ecjOther($render=1){
         if(isset($_POST['icpSelector'])){
                     $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"icpSelector")),"=")));
         }elseif(isset ($this->choice[1])) {
@@ -61,17 +61,11 @@ class Finance_Controller extends E_Controller
                 foreach($results[0] as $key=>$value):
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
-            //if(isset($this->choice[1])){
-            //    $cds = $this->_model->where(array("where"=>array("icpNo",$_SESSION['username'],"="),"AND"=>array("Month(`TDate`)",date('m', strtotime($this->choice[1])),"=")));
-            //}  else {
               $cds = $this->_model->where(array("where"=>array("icpNo",$_SESSION['username_backup'],"="),"AND"=>array("Month(`TDate`)",date('m'),"=")));  
-            //}
+            
             $data[]=$this->_model->accounts();
             $data[] = $this->_model->getVoucherForEcj($cds);
-            $this->dispatch("",$data);
-    //}
-
-                
+            return $data;                
 }   
 
     public function ecj(){            
@@ -99,7 +93,7 @@ class Finance_Controller extends E_Controller
     
     public function ppbf(){
             if($_SESSION['userlevel']==="1"){
-                $this->template->view();    
+                $this->dispatch();    
             }elseif($_SESSION['userlevel']==="2"){
                 $cluster_cond = $this->_model->where(array(array("where","cname",$_SESSION['cname'],"="),array("AND","userlevel","2","<>")));
                 $cluster_arr = $this->_model->getAllRecords($cluster_cond,"users");
@@ -108,20 +102,18 @@ class Finance_Controller extends E_Controller
                 
             } 
     }
-    public function ppbfOther(){
+    public function ppbfOther($render=1){
         if(isset($this->choice[1])){
             $icp_cond = $this->_model->where(array(array("where","icpNo",  $this->choice[1],"=")));
         }else{
            $icp_cond = $this->_model->where(array(array("where","icpNo",$_POST['icpSelector'],"="))); 
         }
         
-        $icp_arr = $this->_model->getAllRecords($icp_cond,"plansHeader");
-        
-        $this->dispatch("",$icp_arr);
+        return $icp_arr = $this->_model->getAllRecords($icp_cond,"plansHeader");
         
     }
 
-        public function getPpbf(){
+        public function getPpbf($render=1){
         if($_SESSION['userlevel']==="1"){ 
             if($this->choice[1]==='1'||$this->choice[1]==='2'){
                 $plan_cond = $this->_model->where(array(array("WHERE","plansheader.icpNo",$_SESSION['username'],"="),array("AND","plansheader.fy",$this->choice[3],"="),array("AND","plansheader.planType",  $this->choice[1],"=")));
@@ -143,25 +135,22 @@ class Finance_Controller extends E_Controller
                     
                     $data[]=$acc;
                     $data[]=$plan;    
-                    $this->dispatch("",$data);
+                    return $data;
                  }
              } catch (customException $e) {
                     echo $e->errorMessage();
              }                     
     }
 
-    public function newPlan(){
+    public function newPlan($render=1){
             $acc_cond=$this->_model->where(array("where"=>array("AccGrp","0","="),"AND"=>array("AccNo","100","<")));
-            $acc = $this->_model->getAllRecords($acc_cond,"accounts");
-            $this->dispatch("",$acc);
+            return $acc = $this->_model->getAllRecords($acc_cond,"accounts");
+            
     }
     
     public function searchPlan(){
                 $chk_cond = $this->_model->where(array(array("where","plansheader.icpNo",$_SESSION['username'],"="),array("AND","plansheader.planType",$this->choice[1],"="),array("AND","plansheader.fy",$this->choice[3],"=")));
-                //$chk =  $this->_model->getAllRecords($chk_cond,"plans");
                 $chk =  $this->_model->getPpbfModel($chk_cond);
-                //echo $this->choice[3];
-                //print_r($chk);
                 if(empty($chk)){
                     echo 0;
                 }else{
@@ -241,13 +230,13 @@ class Finance_Controller extends E_Controller
             $data[]=$fy;
             $data[]=$acc;
             if($_SESSION['userlevel']==="1"){
-                $this->template->view("",$data);
+                $this->dispatch("",$data);
             }else{
                 $this->dispatch("welcome/pfPlansSchedulesView",$data);
             }
 
             }       
-    public function pfSchedules(){           
+    public function pfSchedules($render=1){           
         $fy = $this->choice[3];
         $icpNo = $this->choice[1];
         $schedules_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$icpNo,"=")));
@@ -268,15 +257,16 @@ class Finance_Controller extends E_Controller
         $data[]=$acDetails;
         $data[]=$schedules;
         $data[]=$totals;
-        $this->dispatch("",$data);
+        return $data;
     }
-    public function showNewPlansItems(){
+    public function showNewPlansItems($render=1){
         $fy = $this->choice[1];
         $new_item_cond = $this->_model->where(array(array("where","plansschedule.approved",1,"="),array("AND","users.cname",$_SESSION['cname'],"="),array("AND","planheader.fy",$fy,"=")));  
         $new_item = $this->_model->countNewSchedules($new_item_cond);
         $data[] =$fy;
         $data[]=$new_item;
-        $this->template->view("",$data);
+		return $data;
+        //$this->template->view("",$data);
     }
 
     public function adjust_financial_year(){
@@ -289,13 +279,14 @@ class Finance_Controller extends E_Controller
         
         print($Fy);
     }
-    public function pfPlansView(){
+    public function pfPlansView($render=1){
         $fy = $this->choice[1];
         $all_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","users.cname",$_SESSION['cname'],"=")));
         $all = $this->_model->countNewSchedules($all_cond);
         $data[]=$fy;
         $data[]=$all;
-        $this->template->view("",$data);
+		return $data;
+        //$this->template->view("",$data);
     }
 
     public function checkSchedule(){
@@ -356,7 +347,7 @@ class Finance_Controller extends E_Controller
         $data[]=$fy;
         $this->template->view("",$data);
     }
-    public function viewPlanSummaryByPf(){
+    public function viewPlanSummaryByPf($render=1){
         $fy = $this->choice[1];
         $icpNo = $this->choice[3];
         //if($_SESSION['userlevel']==="1"){
@@ -378,7 +369,7 @@ class Finance_Controller extends E_Controller
         $data[]=$All_Totals;
         $data[]=$icpNo;
         $data[]=$fy;
-        $this->template->view("",$data);
+        return $data;
     }
     public function postSchedule(){
         $AccNo = array_shift($_POST);
@@ -433,7 +424,7 @@ class Finance_Controller extends E_Controller
         }
         print_r(json_encode($requests));
     }
-    public function submitNewPlanItem(){
+    public function submitNewPlanItem($render=1,$path="welcome/viewAllSchedules"){
         $scheduleID =  $this->choice[1];
         $set_arr = array("approved"=>"1");
         $update_cond = $this->_model->where(array(array("where","scheduleID",$scheduleID,"=")));
@@ -456,15 +447,16 @@ class Finance_Controller extends E_Controller
                 //array_unique((array)$acDetails);
                 $data[]=$acDetails;
                 $data[]=$schedules;
-                $data[]=$totals;    
-                $this->template->view("welcome/viewAllSchedules",$data);
+                $data[]=$totals;  
+				return $data;  
+                
                 
         }else{
             echo "0";
         }
         
     }
-    public function massSubmitPlanItems(){
+    public function massSubmitPlanItems($render=1,$path="welcome/viewAllSchedules"){
         $fy = $this->choice[1];
         $new_schedules_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$_SESSION['fname'],"="),array("AND","plansschedule.approved",0,"=")));
         $new_schedules = $this->_model->getScheduleIDs($new_schedules_cond);
@@ -492,11 +484,11 @@ class Finance_Controller extends E_Controller
                 $data[]=$acDetails;
                 $data[]=$schedules;
                 $data[]=$totals;    
-                $this->template->view("welcome/viewAllSchedules",$data);
+                return $data;
         
     }
 
-    public function mfr(){
+    public function mfr($render=1){
             $acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",$_SESSION['fname'],"="),array("AND","Year(voucher_body.TDate)",date('Y'),"="),array("AND","Month(voucher_body.TDate)",date('m'),"=")));
             $acc = $this->_model->accountsForMfr($acc_cond);
             
@@ -515,16 +507,16 @@ class Finance_Controller extends E_Controller
             //$balBf=0;
             $data[]=$balBf;
             $data[]=$acc;
-            $this->dispatch("",$data);
+            return $data;
     }
     
-    public function statements(){
-            $data = "View Bank Statements";
-            $this->dispatch("",$data);
+    public function statements($render=1){
+            return $data = "View Bank Statements";
+            
     }
 
-    public function disbursement(){
-            $this->dispatch();
+    public function disbursement($render=1){
+            
     } 
     public function uploadFundsList(){
         set_time_limit(3600); 
@@ -533,28 +525,27 @@ class Finance_Controller extends E_Controller
         //$handle = fopen($file,"r");
         $this->_model->uploadFunds($lists,$file);
     }
-    public function advicePerICP(){
+    public function advicePerICP($render=1){
             $cluster_cond = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
             $cluster = $this->_model->getAllRecords($cluster_cond,"users");
             
             //$cst_cond = $this->_model->where(array(array("where","cname",$cluster[0]->cname,"="),array("AND","userlevel","2","<>")));
-            $cst = $this->_model->fundsPerICP($cluster[0]->cname);
-            
-            $this->dispatch("",$cst);       
+            return $cst = $this->_model->fundsPerICP($cluster[0]->cname);
+      
     }
 
-    public function fundsCategories(){
-            $this->dispatch();        
+    public function fundsCategories($render=1){
+                    
     }
 
-    public function fundsUpload(){
-            $this->dispatch();   
+    public function fundsUpload($render=1){
+           
     }
 
-    public function viewSlip(){
+    public function viewSlip($render=1){
             $funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
-            $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule");
-            $this->dispatch("",$funds);
+            return $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule");
+
     }
 
     public function chqIntel(){
@@ -617,7 +608,7 @@ class Finance_Controller extends E_Controller
         endforeach;
         
     }
-    public function showVoucher(){       
+    public function showVoucher($render=1){       
         $VNum=  $this->choice[1];
         if($_SESSION['userlevel']==="1"){
             $icpNo = $_SESSION['username'];
@@ -627,42 +618,41 @@ class Finance_Controller extends E_Controller
             
         }
         
-        $data = $this->_model->showVoucher($VNum,$icpNo);
+        return $data = $this->_model->showVoucher($VNum,$icpNo);
 
-            $this->dispatch("",$data);
     }
     public function getFlds(){
         $arr_tables=$this->_model->dbTables();
         $flds = $this->_model->getVoucherTableFields($arr_tables[$this->choice[1]]);
         print_r(json_encode($flds));
     }
-    public function searchResults(){
+    public function searchResults($render=1){
                 $data = $this->_model->searchResultsQuery($_POST);
                 if(is_array($data)){
                     $rst = $data;
                 }  else {
                     $rst = $data;
                 }
-		$this->dispatch("",$rst);
+		return $rst;
 
     }
-public function civ(){       
+public function civ($render=1){       
         $civa_cond = $this->_model->where(array(array("where","civa.open","1","="),array("AND","accounts.AccGrp","0","=")));
         //$civa = $this->_model->getAllRecords($civa_cond,"civa");
         $civa[] = $this->_model->civaExpenseAccounts($civa_cond);
-            $this->dispatch("",$civa);
+            return $civa;
 }
-public function AddCIVA(){
-            $this->dispatch();  
+public function AddCIVA($render=1){
+           
 }
 
-public function viewFunds(){
+public function viewFunds($render=1){
             $funds_cond=  $this->_model->where(array(array("where","Month",date('Y-m-01'),"=")));
-            $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule","LIMIT 0,100");
-            $this->dispatch("",$funds); 
+            return $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule","LIMIT 0,100");
+
 }
-public function fundsOpBal(){
-            $this->dispatch();   
+public function fundsOpBal($render=1){
+  
 }
 public function getExpAccounts(){
             $acc_cond=  $this->_model->where(array(array("where","AccGrp","1","=")));
@@ -698,26 +688,25 @@ public function addFundBal(){
     
     
 }
-public function pfSettings(){
+public function pfSettings($render=1,$path="Welcome/icpSelectorForBal"){
                 $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
                 $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
                 $cluster = $selector_pf[0]->cname;
                 $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
-                $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-                $this->dispatch("Welcome/icpSelectorForBal",$selector_icps);     
+                return $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");     
 }
-public function showOpeningBal(){
+public function showOpeningBal($render=1){
         if(isset($_POST['icpSelector'])){
             $icpNo = $_POST['icpSelector'];
         }else{
             $icpNo=$_SESSION['fname'];
         }
         $icp_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"=")));
-        $icp = $this->_model->getAllRecords($icp_cond,"opfundsbalheader");
-        $this->dispatch("",$icp);
+        return $icp = $this->_model->getAllRecords($icp_cond,"opfundsbalheader");
+
 }
-public function oustChqBf(){    
-        $this->dispatch();       
+public function oustChqBf($render=1){    
+              
 }
 public function addOustChqBf(){
     //print_r($_POST);
@@ -734,11 +723,11 @@ public function addOustChqBf(){
     //print_r($frmData);
     
 }
-public function cashBalBf(){   
-        $this->dispatch();
+public function cashBalBf($render=1){   
+      
 }
-public function opRecon(){   
-        $this->dispatch(); 
+public function opRecon($render=1){   
+      
 }
 
 

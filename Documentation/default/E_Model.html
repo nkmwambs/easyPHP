@@ -1,0 +1,594 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Docs For Class E_Model</title>
+	<link rel="stylesheet" type="text/css" id="layout" href="../media/layout.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="../media/style.css" media="all">
+	<link rel="stylesheet" type="text/css" href="../media/print.css" media="print">
+        <meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/>
+</head>
+
+<body>
+<div id="header">
+	<div id="navLinks">
+        
+                                    
+                            	        [ <a href="../classtrees_default.html">Class Tree: default</a> ]
+            [ <a href="../elementindex_default.html">Index: default</a> ]
+        		[ <a href="../elementindex.html">All elements</a> ]		
+	</div>
+	<div id="packagePosition">
+		<div id="packageTitle2">default</div>
+		<div id="packageTitle">default</div>
+		<div id="elementPath"> &middot; </div>
+	</div>
+</div>
+
+<div id="nav" class="small">
+	<div id="packages">
+		Packages:
+					<p><a href="../li_default.html">default</a></p>
+			</div>
+
+				<div id="index">
+			<div id="files">
+								Files:<br>
+								<a href="../default/_controller.php.html">		controller.php
+		</a><br>
+			<a href="../default/_customException.php.html">		customException.php
+		</a><br>
+			<a href="../default/_Helpers.php.html">		Helpers.php
+		</a><br>
+			<a href="../default/_Menu.php.html">		Menu.php
+		</a><br>
+			<a href="../default/_model.php.html">		model.php
+		</a><br>
+			<a href="../default/_Template.php.html">		Template.php
+		</a><br>
+				</div>
+			<div id="interfaces">
+							</div>
+			<div id="classes">
+				Classes:<br>
+								<a href="../default/customException.html">		customException
+		</a><br>
+			<a href="../default/E_Controller.html">		E_Controller
+		</a><br>
+			<a href="../default/E_Helpers.html">		E_Helpers
+		</a><br>
+			<a href="../default/E_Menu.html">		E_Menu
+		</a><br>
+			<a href="../default/E_Model.html">		E_Model
+		</a><br>
+			<a href="../default/Template.html">		Template
+		</a><br>
+				</div>
+		</div>
+	</div>
+
+<div id="body">
+	    		<h1>Class: E_Model</h1>
+	<p style="margin: 0px;">Source Location: /model.php</p>
+	
+
+<div class="leftcol">
+	<h3><a href="#class_details">Class Overview</a> <span class="smalllinenumber">[line 3]</span></h3>
+	<div id="classTree"><pre></pre>
+</div>
+	<div class="small">
+	<p></p>
+		<h4>Author(s):</h4>
+	<ul>
+			</ul>
+	<h4>Version:</h4>
+	<ul>
+			</ul>
+
+	<h4>Copyright:</h4>
+	<ul>
+			</li>
+	</div>
+</div>
+
+<div class="middlecol">
+	<h3><a href="#class_vars">Variables</a></h3>
+	<ul class="small">
+				<li><a href="../default/E_Model.html#var$combined">$combined</a></li>
+				<li><a href="../default/E_Model.html#var$comments">$comments</a></li>
+				<li><a href="../default/E_Model.html#var$conn">$conn</a></li>
+				<li><a href="../default/E_Model.html#var$db">$db</a></li>
+				<li><a href="../default/E_Model.html#var$dbase">$dbase</a></li>
+				<li><a href="../default/E_Model.html#var$host">$host</a></li>
+				<li><a href="../default/E_Model.html#var$inner_arr">$inner_arr</a></li>
+				<li><a href="../default/E_Model.html#var$num_fields">$num_fields</a></li>
+				<li><a href="../default/E_Model.html#var$pass">$pass</a></li>
+				<li><a href="../default/E_Model.html#var$selectdb">$selectdb</a></li>
+				<li><a href="../default/E_Model.html#var$table">$table</a></li>
+				<li><a href="../default/E_Model.html#var$user">$user</a></li>
+				<li><a href="../default/E_Model.html#var$value_arr">$value_arr</a></li>
+			</ul>
+	<h3><a href="#class_consts">Constants</a></h3>
+	<ul class="small">
+			</ul>
+</div>
+<div class="rightcol">
+	<h3><a href="#class_methods">Methods</a></h3>
+	<ul class="small">
+				<li><a href="../default/E_Model.html#method__construct">__construct</a></li>
+				<li><a href="../default/E_Model.html#methodcondition">condition</a></li>
+				<li><a href="../default/E_Model.html#methoddeleteQuery">deleteQuery</a></li>
+				<li><a href="../default/E_Model.html#methodgetAllRecords">getAllRecords</a></li>
+				<li><a href="../default/E_Model.html#methodinsertArray">insertArray</a></li>
+				<li><a href="../default/E_Model.html#methodinsertRecord">insertRecord</a></li>
+				<li><a href="../default/E_Model.html#methodupdateQuery">updateQuery</a></li>
+				<li><a href="../default/E_Model.html#methodwhere">where</a></li>
+			</ul>
+</div>
+
+<div id="content">
+<hr>
+	<div class="contents">
+	</div>
+
+	<div class="leftCol">
+    	<h2>Inherited Variables</h2>
+		<h2>Inherited Constants</h2>
+		</div>
+
+	<div class="rightCol">
+	<h2>Inherited Methods</h2>
+		</div>
+	<br clear="all">
+	<hr>
+
+	<a name="class_details"></a>
+	<h2>Class Details</h2>
+		<p class="small" style="color: #334B66;">[ <a href="#top">Top</a> ]</p>
+
+	<hr>
+	<a name="class_vars"></a>
+	<h2>Class Variables</h2>
+		<a name="var$combined"></a>
+	<p></p>
+	<h4>$combined</h4>
+	<div class="indent">
+		<p class="linenumber">[line 15]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$comments"></a>
+	<p></p>
+	<h4>$comments</h4>
+	<div class="indent">
+		<p class="linenumber">[line 11]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$conn"></a>
+	<p></p>
+	<h4>$conn</h4>
+	<div class="indent">
+		<p class="linenumber">[line 17]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$db"></a>
+	<p></p>
+	<h4>$db</h4>
+	<div class="indent">
+		<p class="linenumber">[line 8]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$dbase"></a>
+	<p></p>
+	<h4>$dbase</h4>
+	<div class="indent">
+		<p class="linenumber">[line 10]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$host"></a>
+	<p></p>
+	<h4>$host</h4>
+	<div class="indent">
+		<p class="linenumber">[line 5]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$inner_arr"></a>
+	<p></p>
+	<h4>$inner_arr</h4>
+	<div class="indent">
+		<p class="linenumber">[line 14]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$num_fields"></a>
+	<p></p>
+	<h4>$num_fields</h4>
+	<div class="indent">
+		<p class="linenumber">[line 12]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$pass"></a>
+	<p></p>
+	<h4>$pass</h4>
+	<div class="indent">
+		<p class="linenumber">[line 7]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$selectdb"></a>
+	<p></p>
+	<h4>$selectdb</h4>
+	<div class="indent">
+		<p class="linenumber">[line 16]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$table"></a>
+	<p></p>
+	<h4>$table</h4>
+	<div class="indent">
+		<p class="linenumber">[line 9]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$user"></a>
+	<p></p>
+	<h4>$user</h4>
+	<div class="indent">
+		<p class="linenumber">[line 6]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="var$value_arr"></a>
+	<p></p>
+	<h4>$value_arr</h4>
+	<div class="indent">
+		<p class="linenumber">[line 13]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - protected</li>
+</ul>
+		<p><b>Type:</b> mixed</p>
+		<p><b>Overrides:</b> </p>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+
+	<hr>
+	<a name="class_methods"></a>
+	<h2>Class Methods</h2>
+	
+	<a name="method__construct"></a>
+	<p></p>
+	<h3>__construct</h3>
+	<div class="indent">
+		<p>
+		<code>E_Model __construct(
+
+$table)</code>
+		</p>
+	
+		<p class="linenumber">[line 21]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$table</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="methodcondition"></a>
+	<p></p>
+	<h3>condition</h3>
+	<div class="indent">
+		<p>
+		<code>void condition(
+
+$cond)</code>
+		</p>
+	
+		<p class="linenumber">[line 34]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$cond</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="methoddeleteQuery"></a>
+	<p></p>
+	<h3>deleteQuery</h3>
+	<div class="indent">
+		<p>
+		<code>void deleteQuery(
+[
+$cond = &quot;&quot;], [
+$_table = &quot;&quot;])</code>
+		</p>
+	
+		<p class="linenumber">[line 205]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$cond</b> 
+		- 
+		</li>
+			<li>
+		<span class="type"></span>
+		<b>$_table</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="methodgetAllRecords"></a>
+	<p></p>
+	<h3>getAllRecords</h3>
+	<div class="indent">
+		<p>
+		<code>void getAllRecords(
+[
+$cond = &quot;&quot;], [
+$_table = &quot;&quot;], [
+$extra = &quot;&quot;])</code>
+		</p>
+	
+		<p class="linenumber">[line 64]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$cond</b> 
+		- 
+		</li>
+			<li>
+		<span class="type"></span>
+		<b>$_table</b> 
+		- 
+		</li>
+			<li>
+		<span class="type"></span>
+		<b>$extra</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="methodinsertArray"></a>
+	<p></p>
+	<h3>insertArray</h3>
+	<div class="indent">
+		<p>
+		<code>void insertArray(
+
+$getPost, [
+$_table = &quot;&quot;])</code>
+		</p>
+	
+		<p class="linenumber">[line 117]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$getPost</b> 
+		- 
+		</li>
+			<li>
+		<span class="type"></span>
+		<b>$_table</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="methodinsertRecord"></a>
+	<p></p>
+	<h3>insertRecord</h3>
+	<div class="indent">
+		<p>
+		<code>void insertRecord(
+
+$getPost, [
+$_table = &quot;&quot;])</code>
+		</p>
+	
+		<p class="linenumber">[line 166]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$getPost</b> 
+		- 
+		</li>
+			<li>
+		<span class="type"></span>
+		<b>$_table</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="methodupdateQuery"></a>
+	<p></p>
+	<h3>updateQuery</h3>
+	<div class="indent">
+		<p>
+		<code>void updateQuery(
+
+$sets, [
+$cond = &quot;&quot;], [
+$_table = &quot;&quot;])</code>
+		</p>
+	
+		<p class="linenumber">[line 227]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$sets</b> 
+		- 
+		</li>
+			<li>
+		<span class="type"></span>
+		<b>$cond</b> 
+		- 
+		</li>
+			<li>
+		<span class="type"></span>
+		<b>$_table</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+	<a name="methodwhere"></a>
+	<p></p>
+	<h3>where</h3>
+	<div class="indent">
+		<p>
+		<code>void where(
+
+$cond)</code>
+		</p>
+	
+		<p class="linenumber">[line 45]</p>
+		<h4>Tags:</h4>
+<ul>
+	<li><b>access</b> - public</li>
+</ul>
+		
+	
+	<h4>Parameters:</h4>
+	<ul>
+			<li>
+		<span class="type"></span>
+		<b>$cond</b> 
+		- 
+		</li>
+		</ul>
+	</div>
+	<p class="top">[ <a href="#top">Top</a> ]</p>
+
+	<hr>
+	<a name="class_consts"></a>
+	<h2>Class Constants</h2>
+	</div>
+	<div id="credit">
+		<hr>
+		Documentation generated on Sun, 14 Jun 2015 15:31:40 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+	</div>
+</div>
+</body>
+</html>

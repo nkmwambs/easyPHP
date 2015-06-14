@@ -8,33 +8,27 @@ class Resource_Controller extends E_Controller
                 //$this->_model=new Finance_Model("voucher_header");  
     }
     
-    public function portal(){
-        $data = "This is the CKE Portal!";
-        $this->dispatch("",$data);
-
+    public function portal($render=1){
+        return $data = "This is the CKE Portal!";
     }
     
-    public function listing(){
-        $data = "Resource Listing!";
-        $this->dispatch("",$data);
+    public function listing($render=1){
+        return $data = "Resource Listing!";
     }
     
-    public function guides(){
-        $data = "Userguides!";
-        $this->dispatch("",$data);
+    public function guides($render=1){
+        return $data = "Userguides!";
     }   
         
-    public function faqs(){
-        $rec ="Faqs";
-        $this->dispatch("",$rec);
+    public function faqs($render=1){
+        return $rec ="Faqs";
     }
 
-    public function materials(){
-        //$data = "List of Training Materials";
-        $this->dispatch();
+    public function materials($render=1){
+    	
     }
-    public function addMaterial(){
-        $this->dispatch();
+    public function addMaterial($render=1){
+
     }
 	public function testChoice(){
 		//print($this->choice[1]);	
