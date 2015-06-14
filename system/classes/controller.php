@@ -139,8 +139,12 @@ class E_Controller {
             $_SESSION['username']="Guest";
             $_SESSION['userlevel']='0';
             $_SESSION['ID']='0';
+			//define("USERID",$_SESSION['ID']);
         }
-
+		
+		define("USERID",$_SESSION['ID']);
+		//define("USERNAME",$_SESSION['username']);
+		
         $url = $this->Con."/".$this->Met;
         $cond = $this->model->where(array("where"=>array("public",'1',"="),"AND"=>array("url",$url,"=")));
         $rst = $this->model->getAllRecords($cond);
@@ -160,9 +164,21 @@ class E_Controller {
             $menu = $this->model->getAllRecords();
             $this->load_menu->menu($menu);
 			
-			$this->template->view($path,$results);
+			//$cur_menu_cond = $this->model->where(array(array("where","url",$this->Con."/".$this->Met,"=")));
+			//$cur_menu = $this->model->getAllRecords($cur_menu_cond,"menu");
+
+			//$ulvl_arr = explode(",",$cur_menu[0]->userlevel);
+			//if(in_array($_SESSION['userlevel'], $ulvl_arr)){
+				$this->template->view($path,$results);
+			//}else{
+				//$this->template->view($path="welcome/dispatchError",$results="");
+			//}
+			
+            
             $this->template->view("welcome/footer",$recent); 
 	}
+	
+
 
     /**
 	 * Error control

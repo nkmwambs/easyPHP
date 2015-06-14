@@ -50,7 +50,7 @@
     <?php
     
         if(isset($_SESSION)&&$_SESSION['username']!=='Guest'){
-            echo '<li>'.img_tag("welcome.png").'Welcome '.$_SESSION['fname'].'<span style="float:right;">&Del;</span>';
+            echo '<li>'.img_tag("welcome.png").'Welcome '.Users::userCredentials(USERID)->RealName.'<span style="float:right;">&Del;</span>';
             echo '<ul>';
             echo '<li>'.img_tag("register.png")." ". a_tag("Register/userRegister/public/1","Register User",array("onclick"=>"")).'</li><hr>';
             if(isset($_SESSION['adm'])){echo '<li>'.img_tag("switch.png").' '.a_tag("Welcome/switchUser","Switch User").'</li><hr>';}
