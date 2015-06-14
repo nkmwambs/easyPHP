@@ -36,7 +36,7 @@ class E_Controller {
             $_SESSION['userlevel']='0';
             $_SESSION['ID']='0';
         }
-        
+    /**    
         if(!isset($_SESSION['adm'])){$this->offline();}
             
         $url = $this->Con."/".$this->Met;
@@ -48,9 +48,9 @@ class E_Controller {
             }
         }
       
-        
+   **/     
 }
-
+/**
 public function offline(){
     
     $offline_cond = $this->_model->where(array("where"=>array("info","offline","="),"AND"=>array("flag","1","=")));  
@@ -75,7 +75,7 @@ public function offline(){
         }          
     }     
 }
-
+**/
 public function __call($method,$arguments){
         //$_SESSION['error_msg'] = 'Error: Missing method <i>'.$method.'()</i> in the application controller class <i>'.$this->Con."_Controller</i>";
         //header("location:".url_tag($GLOBALS['app_default_controller']."/".$GLOBALS['error_view']));

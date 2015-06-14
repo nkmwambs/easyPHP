@@ -211,6 +211,6 @@ function testChoice(){
           }
         };
        var testChoice=document.getElementById('user').value;
-    xmlhttp.open("GET",path+"mvc/Welcome/testChoice/testChoice/"+testChoice+"/public/0",true);
+    xmlhttp.open("GET",path+"mvc/Welcome/testChoice/testChoice/"+testChoice+"/public/1",true);
     xmlhttp.send();
 }
