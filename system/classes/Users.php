@@ -38,6 +38,20 @@ class Users{
 		}
 		return (object)$credentials;
 	}
+	public static function log_sessions($results){
+                foreach($results[0] as $key=>$value):
+                    $_SESSION[$key]=$value;
+                    $_SESSION[$key."_backup"]=$value;
+                endforeach;
+            if($results[0]->admin==="1"){$_SESSION['adm']="2";}		
+	}
+	
+	public static function unset_log_sessions(){
+		    session_unset();
+            $_SESSION['username']="Guest";
+            $_SESSION['userlevel']='0';
+            $_SESSION['ID']='0';	
+	}
 
 }
 ?>

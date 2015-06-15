@@ -608,7 +608,7 @@ class Finance_Controller extends E_Controller
         endforeach;
         
     }
-    public function showVoucher($render=1){       
+    public function showVoucher($render=1,$path="",$tags=array("1")){       
         $VNum=  $this->choice[1];
         if($_SESSION['userlevel']==="1"){
             $icpNo = $_SESSION['username'];

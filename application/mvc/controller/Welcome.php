@@ -36,12 +36,8 @@ public $_model;
         $results = $this->_model->getAllRecords($cond,"Users");
         
         if(is_array($results)&&sizeof($results)>0){
-                foreach($results[0] as $key=>$value):
-                    $_SESSION[$key]=$value;
-                    $_SESSION[$key."_backup"]=$value;
-                endforeach;
-            if($results[0]->admin==="1"){$_SESSION['adm']="2";}
-            $this->dispatch("Welcome/show",$_SESSION['fname'],array("0"));
+			 users::log_sessions($results);
+            $this->dispatch("Welcome/show",users::userCredentials(USERID)->RealName,array("0"));
         }  else {
                     $data="";  
                     if(!isset($_SESSION['cnt'])){
@@ -62,10 +58,7 @@ public $_model;
 }
     
     public function logout($render=1,$path="welcome/show",$tags=array("0")){
-            session_unset();
-            $_SESSION['username']="Guest";
-            $_SESSION['userlevel']='0';
-            $_SESSION['ID']='0';
+		   users::unset_log_sessions();
 }
 
     public function profile($render=1){
