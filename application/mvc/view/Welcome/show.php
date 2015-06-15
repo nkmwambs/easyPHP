@@ -14,6 +14,8 @@
 <?php
 //echo Users::userRights(USERID);
 //print_r(Users::userCredentials(USERID));
+//echo Resources::a_href("Welcome/show", "Home")
+//echo Resources::img("view.png",array("style"=>"border:1px red solid;"))
 ?>
 
             

@@ -15,7 +15,8 @@ class Users{
 	
 	public static function userRights($getid){
 		if(is_array(self::setUser($getid))&&!empty(self::setUser($getid))){
-			$_SESSION['rights']=self::setUser($getid)[0]->admin;
+			$user_arr = self::setUser($getid);
+			$_SESSION['rights']=$user_arr[0]->admin;
 		}else{
 			$_SESSION['rights']=0;
 		}
@@ -29,7 +30,8 @@ class Users{
 		$required_keys = array("username"=>"LogName","fname"=>"RealName","lname"=>"OtherName","email"=>"Contact",
 		"admin"=>"AdminRights","userlevel"=>"AccessLevel","delegated_role"=>"Delegation","department"=>"Department",
 		"logs_after_register"=>"NumberOfLogs");
-		foreach (self::setUser($getid)[0] as $key=>$value) {
+		$user_arr =self::setUser($getid); 
+		foreach ($user_arr[0] as $key=>$value) {
 			if(array_key_exists($key, $required_keys)){
 				$credentials[$required_keys[$key]]=$value;
 			}
