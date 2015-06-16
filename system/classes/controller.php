@@ -114,6 +114,7 @@ class E_Controller {
      private $session;
      protected $load_menu;
 	 private $method_args_count;
+	 //public $deprecate;
 	 //public static $RENDER=1;
 
     public function __construct(){
@@ -159,24 +160,13 @@ class E_Controller {
     }
     
 	protected function dispatch($path="",$results="",$tags=array()){
-		    $rec_cond=  $this->model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-			//echo $_SESSION['userlevel'];
-			//$cur_menu_cond = $this->model->where(array(array("where","url",$this->Con."/".$this->Met,"=")));
-			//$cur_menu = $this->model->getAllRecords($cur_menu_cond,"menu");
-			
-			//$ulvl_arr = explode(",",$cur_menu[0]->userlevel);
+		//	define("DEPRECATE", 1);
 			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
-			in_array("0", $tags)){
-				$this->template->view($path,$results);
+				in_array("0", $tags)){
+				Resources::render($path,$results);
 			}else{
-				$this->template->view($path="welcome/dispatchError",$results="");
-			}
-			
-            
-            $this->template->view("welcome/footer",$recent); 
+				Resources::render($path="welcome/dispatchError",$results="");
+			} 
 	}
 	
 

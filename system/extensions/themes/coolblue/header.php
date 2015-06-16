@@ -5,8 +5,11 @@
     <head>
         <title>Toolkit | Compassion Kenya</title>
         <?php
-            link_tag(array("coolBlue_template.css","elements.css","designerTables.css","error.css"));
-            script_tag(array("js.js","xmlhttp.js","designerTables.js","mce/tinymce.min.js"));
+        //Resources::link_tag(array("coolBlue_template.css","elements.css","designerTables.css","error.css"));
+        Resources::link_tag(array("elements.css"));
+		Resources::script_tag(array("js.js","xmlhttp.js","designerTables.js","mce/tinymce.min.js"));
+            //link_tag();
+            //script_tag();
         ?>
         <script>
         tinymce.init({

@@ -1,0 +1,144 @@
+body{
+    font-family: calibri;
+}
+a{
+    text-decoration: none;
+}
+a:visited{
+    color: purple;
+}
+a:active{
+    color: green;
+}
+
+#hdr-menu{
+    height: 15px;
+    padding: 10px 5px 10px 5px;
+    background-color:#000099;
+    margin-left: -8px;
+    margin-right: -8px;
+    background: -webkit-linear-gradient(#000099, white,#000099); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#000099,white,#000099); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#000099,white,#000099); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#000099,#336699,#000099); /* Standard syntax */
+}
+
+#container{
+    min-width: 100%;
+    max-width: 100%;
+    display: inline-block;
+    z-index: 1;
+}
+#header{
+    //background-color:#336699;
+    height: 200px;
+    margin-top: -30px;
+    margin-left: -8px;
+    margin-right: -8px;
+
+}
+#logo{
+    color:#336699;
+    position: absolute;
+    top:50px;
+    left: 60px;
+    font-size: 30pt;
+}
+.cntr{
+    text-align: center;
+}
+#content{
+    min-width: 50%;
+    max-width: 50%;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    overflow-x: auto;
+}
+#footer{
+    min-width: 100%;
+    float: left;
+    background-color:#336699;
+    color:white;
+    height: 80px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.mid{
+    min-height: 350px;
+    padding: 10px;
+    float: left;
+}
+
+#news-section{
+    background-color: lightgrey;
+    min-height: 395px;
+    //padding:5px;
+    position:relative;
+    top: -30px;
+    left: 20px;
+    margin-bottom: 0px;
+    width: 220px;
+}
+.hd-news{
+    background-color: #336699;
+    min-height:25px;
+    color: white;
+    font-weight: bold;
+    padding: 10px 0px 5px 15px;
+}
+#list-menu{
+    list-style: none;
+
+}
+#list-menu>li{
+    float: left;
+    padding:0px 10px 0px 10px;
+    position: relative;
+    top:-18px;
+    border-left: 1px white solid;
+}
+
+#list-menu:nth-child{
+    border-right: 1px white solid;
+}
+
+#list-menu>li>a{
+    color: white;
+}
+#list-menu>li:hover{
+    cursor: pointer;
+    font-weight: bolder;
+}
+.side-bar{
+    list-style:circle;
+}
+.side-bar>li{
+    text-align: left;
+    padding-bottom: 10px;
+}
+#lt-bar{
+    margin-left: 80px;
+}
+#lt-block{
+    border: 2px  #336699 solid;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    width:220px;
+    padding-top: 0px;
+}
+.side-bar>li:hover{
+   font-weight: bold;
+   cursor: pointer;
+}
+
+#hdr-lft{
+    background-color:  #336699;
+    padding: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color: white;
+}
+table{
+    width: 100%;
+}
+

@@ -1,0 +1,9 @@
+
+.designerTable tr:nth-child(odd):hover{
+    //font-weight: bold;
+    color: tomato;
+}
+
+.designerTable tr:nth-child(even):hover{
+    color: green;
+}
