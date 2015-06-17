@@ -1,16 +1,13 @@
 <?php
 class Resources{
-<<<<<<< HEAD
-	
-=======
->>>>>>> master
+
 	 public static function import($path){
 		$path_arr = explode(".", $path);
 		$path_str="";
 		foreach($path_arr as $value):
 			$path_str.=DIRECTORY_SEPARATOR.$value;
 		endforeach;
-<<<<<<< HEAD
+
 		if(file_exists(BASE_PATH.DS."system".DS."libs".$path_str.".class.php")){
 			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".class.php";
 		}
@@ -359,10 +356,8 @@ public static function render($path="",$results=""){
 		}
 		//return $recent;
     }
-=======
-		$fPath = BASE_PATH.DIRECTORY_SEPARATOR."system".DIRECTORY_SEPARATOR."libs".$path_str.".class.php";
-		require_once $fPath;
-	}
->>>>>>> master
+
+
+
 }
 ?>

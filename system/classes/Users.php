@@ -15,12 +15,11 @@ class Users{
 	
 	public static function userRights($getid){
 		if(is_array(self::setUser($getid))&&!empty(self::setUser($getid))){
-<<<<<<< HEAD
+
 			$user_arr = self::setUser($getid);
 			$_SESSION['rights']=$user_arr[0]->admin;
-=======
-			$_SESSION['rights']=self::setUser($getid)[0]->admin;
->>>>>>> master
+
+			$_SESSION['rights']=$user_arr[0]->admin;
 		}else{
 			$_SESSION['rights']=0;
 		}
@@ -34,19 +33,20 @@ class Users{
 		$required_keys = array("username"=>"LogName","fname"=>"RealName","lname"=>"OtherName","email"=>"Contact",
 		"admin"=>"AdminRights","userlevel"=>"AccessLevel","delegated_role"=>"Delegation","department"=>"Department",
 		"logs_after_register"=>"NumberOfLogs");
-<<<<<<< HEAD
+
 		$user_arr =self::setUser($getid); 
 		foreach ($user_arr[0] as $key=>$value) {
-=======
-		foreach (self::setUser($getid)[0] as $key=>$value) {
->>>>>>> master
+
+		foreach ($user_arr[0] as $key=>$value) {
+
 			if(array_key_exists($key, $required_keys)){
 				$credentials[$required_keys[$key]]=$value;
 			}
 		}
 		return (object)$credentials;
 	}
-<<<<<<< HEAD
+	}
+
 	public static function log_sessions($results){
                 foreach($results[0] as $key=>$value):
                     $_SESSION[$key]=$value;
@@ -61,8 +61,7 @@ class Users{
             $_SESSION['userlevel']='0';
             $_SESSION['ID']='0';	
 	}
-=======
->>>>>>> master
+
 
 }
 ?>
