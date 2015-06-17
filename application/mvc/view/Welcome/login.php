@@ -12,7 +12,7 @@
             <tr><td align="center" id="logError"><?php echo $data; ?></td></tr>
             <tr><td align="center"><input type="text" name="username" id="username" placeholder="Username"/></td></tr>
             <tr><td align="center"><input type="password" name="password" id="password" placeholder="Password"/></td></tr>
-            <tr><td align="center"><button formaction="<?php echo url_tag("welcome/login");?>" formmethod="post">Login</button></form><?php echo a_tag("welcome/logout","<button>Home</button>")?></td></tr>
+            <tr><td align="center"><button formaction="<?php echo Resources::url("welcome/login");?>" formmethod="post">Login</button></form><?php echo Resources::a_href("welcome/logout","<button>Home</button>")?></td></tr>
         </tbody>
     </table>
     

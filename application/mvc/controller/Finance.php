@@ -5,7 +5,7 @@ class Finance_Controller extends E_Controller
     public function __construct(){
         parent::__construct();
         $this->_model=new Finance_Model("voucher_header");  
-        $this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
+        //$this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
     }
     public function switchboard($render=1){
         return $cluster = $this->_model->getClusters();
@@ -225,7 +225,9 @@ class Finance_Controller extends E_Controller
             $acc_cond=  $this->_model->where(array(array("where","AccGrp","0","="),array("AND","AccNo",100,"<")));
             $acc = $this->_model->getAllRecords($acc_cond,"accounts");
 
-            $fy = get_financial_year(date('Y-m-d'));
+            //$fy = get_financial_year(date('Y-m-d'));
+            $fy = Resources::func("get_financial_year");
+            get_financial_year(date('Y-m-d'));
             
             $data[]=$fy;
             $data[]=$acc;
@@ -297,7 +299,7 @@ class Finance_Controller extends E_Controller
         $schedule = $this->_model->getSchedule($schedule_cond);
         print_r(json_encode($schedule));
     }
-    public function viewAllSchedules(){
+    public function viewAllSchedules($render=1){
         //echo "Budget Schedules View for FY".$this->choice[1];
         if($this->choice[2]==="scheduleID"){
             $scheduleID=  $this->choice[3];
@@ -323,7 +325,7 @@ class Finance_Controller extends E_Controller
         $data[]=$acDetails;
         $data[]=$schedules;
         $data[]=$totals;
-        $this->template->view("",$data);
+        return $data;
     }
     public function viewPlanSummary(){
         $fy = $this->choice[1];

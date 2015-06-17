@@ -7,7 +7,14 @@ class Resources{
 		foreach($path_arr as $value):
 			$path_str.=DIRECTORY_SEPARATOR.$value;
 		endforeach;
-		$fPath = BASE_PATH.DIRECTORY_SEPARATOR."system".DIRECTORY_SEPARATOR."libs".$path_str.".class.php";
+		if(file_exists(BASE_PATH.DS."system".DS."libs".$path_str.".class.php")){
+			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".class.php";
+		}elseif(BASE_PATH.DS."system".DS."functions".$path_str.".php"){
+			$fPath = BASE_PATH.DS."system".DS."functions".DS.$path_str.".php";
+		}elseif(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."functions".$path_str.".php"){
+			$fPath = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."functions".$path_str.".php";
+		}
+		
 		require_once $fPath;
 	}
 	 
@@ -51,7 +58,7 @@ public static function img($path,$properties=""){
     $str .="/>";
     return $str;
 }
-public static function link_tag($links=array()){
+public static function link($links=array()){
     
         //Load grouped default app level css
 
@@ -121,7 +128,7 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     }
     	
 }
-public static function script_tag($scripts){
+public static function script($scripts){
     
     //Load grouped default app level js
     
@@ -197,6 +204,8 @@ public static function script_tag($scripts){
                     }  else {
                         require_once BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'functions'.DS.$func_name.".php";
                     }
+					
+					
             //endforeach;
         //}        
     }

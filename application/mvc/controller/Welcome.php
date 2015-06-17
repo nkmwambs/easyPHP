@@ -4,21 +4,15 @@ public $_model;
 //public $__model;
     public function __construct(){
         parent::__construct();
-        $this->helper->load("img");
+        //$this->helper->load("img");
         $this->_model=new Welcome_Model("users");
         //$this->__model=new Welcome_Model("extras");
     }
-    public function popup(){
-    $this->template->view();
+    public function popup($render=1){
     }
-    public function error(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
+    public function error($render=1,$path="Welcome/error"){
             $data = $_SESSION['error_msg'];
-            $this->template->view("Welcome/error",$data);
-            $this->template->view("welcome/footer",$recent);  
+            return $data;
     }
 
     public function show($render=1,$tags=array("0")){

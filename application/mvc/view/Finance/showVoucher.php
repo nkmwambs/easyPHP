@@ -1,6 +1,6 @@
 <?php
 //print_r($data);
-echo img_tag("print.png",array("onclick"=>'printData("tblVoucher");'));
+echo Resources::img("print.png",array("onclick"=>'printData("tblVoucher");'));
     echo "<table id='tblVoucher' border='1'>";
     echo "<tr><th colspan='5'>COMPASSION ASSISTED PROJECT</th></tr>";
     echo "<tr><th colspan='5'>".$data[0]->icpNo." - ".$_SESSION['lname_backup']."<br>Payment Voucher</th></tr>";

@@ -6,7 +6,7 @@
                                 if(!empty($data)){
                                     echo '<ul class="side-bar">';
                                        foreach ($data as $value) {
-                                            echo '<li>'.img_tag($value["img"]).' '.a_tag($value["url"],$value["name"],array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$_SESSION['ID'].'","'.$value['img'].'");')).'</li>' ;
+                                            echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],$value["name"],array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$_SESSION['ID'].'","'.$value['img'].'");')).'</li>' ;
                                         }
                                     echo '</ul>';
                                 }  else {

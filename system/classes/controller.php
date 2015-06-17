@@ -105,14 +105,14 @@ public function __call($method,$arguments){
  */
 class E_Controller {
      protected $model;	
-     protected $template;
+     //protected $template;
      protected $choice;
-     protected $helper;
+     //protected $helper;
      private $Con;
      private $Met;
      private $Args;
      private $session;
-     protected $load_menu;
+     //protected $load_menu;
 	 private $method_args_count;
 	 //public $deprecate;
 	 //public static $RENDER=1;
@@ -121,9 +121,9 @@ class E_Controller {
         $this->Con = $GLOBALS['Controller'];
         $this->Met = $GLOBALS['Method'];
         $this->Args = $GLOBALS['args'];
-        $this->template=new Template($this->Con,  $this->Met);
-        $this->load_menu=new E_Menu;
-        $this->helper=new E_Helpers();
+        //$this->template=new Template($this->Con,  $this->Met);
+        //$this->load_menu=new E_Menu;
+        //$this->helper=new E_Helpers();
         $this->choice=  $this->Args;
         $this->session=session_start();
         $this->model=new E_Model($table="menu");
@@ -151,7 +151,7 @@ class E_Controller {
         $rst = $this->model->getAllRecords($cond);
         if(count($rst)===0&&$_SESSION["username"]==="Guest"){
             if($this->choice[0]!=='public'&&$this->choice[1]!=='1'){
-                header("location:".url_tag($GLOBALS['app_default_controller']."/".$GLOBALS['app_default_view']));
+                header("location:".Resources::url($GLOBALS['app_default_controller']."/".$GLOBALS['app_default_view']));
             }
             
         }
