@@ -3,7 +3,7 @@ echo "<button onclick='adjust_financial_year(\"p\");' style='float:left;'><< FY<
 echo "<br><br><hr>";
 echo "<button onclick='viewPlanSummary();'>View Budget Summary</button>"." "."<button onclick='viewAllSchedules();'>View All Schedules</button>".Resources::a_href("Finance/schedules","<button>New Budget Schedules</button>",array("id"=>"btnNewSchedule","style"=>"display:none"))."<br><br>";
 echo "<hr><br>";
-$months_arr = Resources::func("get_month_number_array",array());
+$months_arr = Resources::func("get_month_number_array");
 
 $arr_financial_year_months_order =array("","July","August","September","October","November","December","January","February","March","April","May","June");
 echo "<button onclick='addScheduleRow();' id='btnAddRow' style='display:none;'>Add Row</button><button style='display:none;' id='btnPostSchedule' onclick='postSchedule(\"frmSchedule\");'>Post Schedule</button>";
@@ -20,8 +20,10 @@ echo "<tr><th colspan='2'>Account:<select name='AccNo' id='AccNo'><option value=
     
 echo "<tr><th><input type='checkbox' id=''/></th><th>Item Description</th><th>Quantity</th><th>Unit Cost</th><th>How Often</th><th>Total Cost</th><th>Validation</th><th>Action!</th><th>Jul</th><th>Aug</th><th>Sept</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Approval Status</th></tr>";
 
-Resources::import("get_month_number_array");
-$mth=get_month_number_array();
+//Resources::import("get_month_number_array");
+$mth=Resources::func("get_month_number_array");
+//$mth=get_month_number_array();
+//print_r($mth);
 echo "<tr><td colspan='5'><b>Totals</b></td><td><input type='text' id='acTotal' style='width:80px;text-align:right;' readonly/></td><td>&nbsp;</td><td>&nbsp;</td>";
 $tbl_arr = array("JulAmt","AugAmt","SepAmt","OctAmt","NovAmt","DecAmt","JanAmt","FebAmt","MarAmt","AprAmt","MayAmt","JunAmt");
 foreach ($mth as $key=>$value):

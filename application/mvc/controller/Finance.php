@@ -226,8 +226,8 @@ class Finance_Controller extends E_Controller
             $acc = $this->_model->getAllRecords($acc_cond,"accounts");
 
             //$fy = get_financial_year(date('Y-m-d'));
-            $fy = Resources::func("get_financial_year");
-            get_financial_year(date('Y-m-d'));
+            $fy = Resources::func("get_financial_year",array(date('Y-m-d')));
+            //$fy = get_financial_year(date('Y-m-d'));
             
             $data[]=$fy;
             $data[]=$acc;
@@ -544,7 +544,7 @@ class Finance_Controller extends E_Controller
            
     }
 
-    public function viewSlip($render=1){
+    public function viewSlip($render=1,$path="",$tags=array("1")){
             $funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
             return $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule");
 

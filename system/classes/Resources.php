@@ -9,10 +9,6 @@ class Resources{
 		endforeach;
 		if(file_exists(BASE_PATH.DS."system".DS."libs".$path_str.".class.php")){
 			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".class.php";
-		}elseif(BASE_PATH.DS."system".DS."functions".$path_str.".php"){
-			$fPath = BASE_PATH.DS."system".DS."functions".DS.$path_str.".php";
-		}elseif(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."functions".$path_str.".php"){
-			$fPath = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."functions".$path_str.".php";
 		}
 		
 		require_once $fPath;
@@ -195,7 +191,7 @@ public static function script($scripts){
     }
 
 }
-    public static function func($func_name){
+    public static function func($func_name,$var = array()){
         //if(is_array($param)){
             //foreach ($param as $func_name):
                 if(realpath(BASE_PATH.DS.'system'.DS.'functions'.DS.$func_name.".php"))
@@ -205,6 +201,12 @@ public static function script($scripts){
                         require_once BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'functions'.DS.$func_name.".php";
                     }
 					
+					if(count($var)===0){
+						return $func_name();
+					}else{
+						$str = implode(",",$var);
+						return $func_name($str);
+					}
 					
             //endforeach;
         //}        
