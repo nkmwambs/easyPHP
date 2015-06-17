@@ -71,6 +71,7 @@ class E_Controller {
     }
     
 	protected function dispatch($path="",$results="",$tags=array()){
+<<<<<<< HEAD
 		//	define("DEPRECATE", 1);
 			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
 				in_array("0", $tags)){
@@ -78,6 +79,26 @@ class E_Controller {
 			}else{
 				Resources::render($path="welcome/dispatchError",$results="");
 			} 
+=======
+		    $rec_cond=  $this->model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+            $recent = $this->model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
+            $menu = $this->model->getAllRecords();
+            $this->load_menu->menu($menu);
+			//echo $_SESSION['userlevel'];
+			//$cur_menu_cond = $this->model->where(array(array("where","url",$this->Con."/".$this->Met,"=")));
+			//$cur_menu = $this->model->getAllRecords($cur_menu_cond,"menu");
+			
+			//$ulvl_arr = explode(",",$cur_menu[0]->userlevel);
+			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
+			in_array("0", $tags)){
+				$this->template->view($path,$results);
+			}else{
+				$this->template->view($path="welcome/dispatchError",$results="");
+			}
+			
+            
+            $this->template->view("welcome/footer",$recent); 
+>>>>>>> master
 	}
 	
 
