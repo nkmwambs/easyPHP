@@ -232,9 +232,9 @@ class Finance_Controller extends E_Controller
             $data[]=$fy;
             $data[]=$acc;
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch("",$data,$tags=array("1"));
+                $this->dispatch($render=1,"",$data,$tags=array("1"));
             }else{
-                $this->dispatch("welcome/pfPlansSchedulesView",$data,$tags=array("1"));
+                $this->dispatch($render=1,"welcome/pfPlansSchedulesView",$data,$tags=array("1"));
             }
 
             }       
@@ -299,7 +299,7 @@ class Finance_Controller extends E_Controller
         $schedule = $this->_model->getSchedule($schedule_cond);
         print_r(json_encode($schedule));
     }
-    public function viewAllSchedules($render=1){
+    public function viewAllSchedules(){
         //echo "Budget Schedules View for FY".$this->choice[1];
         if($this->choice[2]==="scheduleID"){
             $scheduleID=  $this->choice[3];
@@ -327,7 +327,7 @@ class Finance_Controller extends E_Controller
         $data[]=$totals;
         return $data;
     }
-    public function viewPlanSummary(){
+    public function viewPlanSummary($render=2,$path="",$tags=array("1")){
         $fy = $this->choice[1];
         //if($_SESSION['userlevel']==="1"){
         $summary_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$_SESSION['fname'],"="),array("AND","plansschedule.approved","2","=")));
@@ -347,7 +347,7 @@ class Finance_Controller extends E_Controller
         $data[]=$total_summary;
         $data[]=$All_Totals;
         $data[]=$fy;
-        $this->template->view("",$data);
+        return $data;
     }
     public function viewPlanSummaryByPf($render=1){
         $fy = $this->choice[1];

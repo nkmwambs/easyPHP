@@ -219,7 +219,7 @@ public static function menuItems(){
             $menu = $model->getAllRecords();
             return $menu;
 }
-public static function render($path="",$results=""){
+public static function render($render="1",$path="",$results=""){
 		$model = new E_Model("menu");
 		$menu = self::menuItems();
         /**
@@ -334,14 +334,16 @@ public static function render($path="",$results=""){
 		
 		$rec_cond=  $model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
         $recent = $model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
-		
-		if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php")){
-			$data = $menu_data;		
-			include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php";
-		}
-        if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
-			$data = $side_menu_data;
-			include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php";
+		//echo $render;
+		if($render===1){
+			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php")){
+				$data = $menu_data;		
+				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php";
+			}
+	        if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
+				$data = $side_menu_data;
+				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php";
+			}
 		}
 		if($path===""){
 			$data = $results;
@@ -350,9 +352,11 @@ public static function render($path="",$results=""){
         	$data = $results;
             include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS.'tpl'.DS.$path.".php";
         }
-		if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
-			$data = $recent;
-			include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."footer.php";
+		if($render===1){
+			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
+				$data = $recent;
+				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."footer.php";
+			}
 		}
 		//return $recent;
     }

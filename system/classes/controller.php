@@ -70,13 +70,13 @@ class E_Controller {
         
     }
     
-	protected function dispatch($path="",$results="",$tags=array()){
+	protected function dispatch($render="1",$path="",$results="",$tags=array()){
 		//	define("DEPRECATE", 1);
 			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
 				in_array("0", $tags)){
-				Resources::render($path,$results);
+				Resources::render($render,$path,$results);
 			}else{
-				Resources::render($path="welcome/dispatchError",$results="");
+				Resources::render($render,$path="welcome/dispatchError",$results="");
 			}  
 
 	}
@@ -106,6 +106,8 @@ class E_Controller {
 		    		$path = $param->getDefaultValue();
 		    	}elseif($param->getName()==='tags'){
 		    		$tags = $param->getDefaultValue();
+		    	}elseif($param->getName()==='render'){
+		    		$render = $param->getDefaultValue();
 		    	}
 			}
 			if($this->{$this->Met}()!==""){
@@ -113,7 +115,7 @@ class E_Controller {
 			}else{
 				$results="";
 			}
-			$this->dispatch($path,$results,$tags);
+			$this->dispatch($render,$path,$results,$tags);
 		}
 		
 	}
