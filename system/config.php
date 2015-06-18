@@ -7,6 +7,8 @@ define('BASE_PATH',dirname(dirname(__FILE__)));
 define('DS',DIRECTORY_SEPARATOR);
 define('PATH',str_replace("/",DIRECTORY_SEPARATOR,dirname(dirname(filter_input(INPUT_SERVER,"SCRIPT_NAME")))));
 
+$theme = "coolblue";
+
 //Define Default Controller and Controller Method
 
 $default_controller ="welcome";// Overwrite by setting $app_default_controller in the specific application config.php file

@@ -39,7 +39,7 @@
     
     //print_r($get_num);
 
-    echo img_tag("print.png",array("onclick"=>'printData("ecj");',"title"=>"Print","id"=>"printecj"));
+    echo Resources::img("print.png",array("onclick"=>'printData("ecj");',"title"=>"Print","id"=>"printecj"));
 ?>
 
 <table id="ecj" border='1'>
@@ -108,7 +108,7 @@
     <tbody>
         <?php
             foreach($data[1] as $arr):
-                echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".a_tag("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>{$arr->ChqNo}</td>";
+                echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>{$arr->ChqNo}</td>";
                 //Bank Deposit
                 if($arr->VType==="CR"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
                 if($arr->VType==="CHQ"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}

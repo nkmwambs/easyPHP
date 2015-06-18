@@ -5,7 +5,7 @@ class Finance_Controller extends E_Controller
     public function __construct(){
         parent::__construct();
         $this->_model=new Finance_Model("voucher_header");  
-        $this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
+        //$this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
     }
     public function switchboard($render=1){
         return $cluster = $this->_model->getClusters();
@@ -225,14 +225,16 @@ class Finance_Controller extends E_Controller
             $acc_cond=  $this->_model->where(array(array("where","AccGrp","0","="),array("AND","AccNo",100,"<")));
             $acc = $this->_model->getAllRecords($acc_cond,"accounts");
 
-            $fy = get_financial_year(date('Y-m-d'));
+            //$fy = get_financial_year(date('Y-m-d'));
+            $fy = Resources::func("get_financial_year",array(date('Y-m-d')));
+            //$fy = get_financial_year(date('Y-m-d'));
             
             $data[]=$fy;
             $data[]=$acc;
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch("",$data,array("1"));
+                $this->dispatch($render=1,"",$data,$tags=array("1"));
             }else{
-                $this->dispatch("welcome/pfPlansSchedulesView",$data,array("1"));
+                $this->dispatch($render=1,"welcome/pfPlansSchedulesView",$data,$tags=array("1"));
             }
 
             }       
@@ -323,9 +325,9 @@ class Finance_Controller extends E_Controller
         $data[]=$acDetails;
         $data[]=$schedules;
         $data[]=$totals;
-        $this->template->view("",$data);
+        return $data;
     }
-    public function viewPlanSummary(){
+    public function viewPlanSummary($render=2,$path="",$tags=array("1")){
         $fy = $this->choice[1];
         //if($_SESSION['userlevel']==="1"){
         $summary_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$_SESSION['fname'],"="),array("AND","plansschedule.approved","2","=")));
@@ -345,7 +347,7 @@ class Finance_Controller extends E_Controller
         $data[]=$total_summary;
         $data[]=$All_Totals;
         $data[]=$fy;
-        $this->template->view("",$data);
+        return $data;
     }
     public function viewPlanSummaryByPf($render=1){
         $fy = $this->choice[1];
@@ -542,7 +544,7 @@ class Finance_Controller extends E_Controller
            
     }
 
-    public function viewSlip($render=1){
+    public function viewSlip($render=1,$path="",$tags=array("1")){
             $funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
             return $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule");
 
@@ -608,7 +610,7 @@ class Finance_Controller extends E_Controller
         endforeach;
         
     }
-    public function showVoucher($render=1){       
+    public function showVoucher($render=1,$path="",$tags=array("1")){       
         $VNum=  $this->choice[1];
         if($_SESSION['userlevel']==="1"){
             $icpNo = $_SESSION['username'];

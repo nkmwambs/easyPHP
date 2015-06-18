@@ -1,5 +1,5 @@
 <?php
-function get_financial_year($date){
+function get_financial_year($date=""){
         $months = range(1,12);
         $qtrs = array_chunk($months,3);
         $chk = array(3,4,1,2);

@@ -4,21 +4,15 @@ public $_model;
 //public $__model;
     public function __construct(){
         parent::__construct();
-        $this->helper->load("img");
+        //$this->helper->load("img");
         $this->_model=new Welcome_Model("users");
         //$this->__model=new Welcome_Model("extras");
     }
-    public function popup(){
-    $this->template->view();
+    public function popup($render=1){
     }
-    public function error(){
-            $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
+    public function error($render=1,$path="Welcome/error"){
             $data = $_SESSION['error_msg'];
-            $this->template->view("Welcome/error",$data);
-            $this->template->view("welcome/footer",$recent);  
+            return $data;
     }
 
     public function show($render=1,$tags=array("0")){
@@ -36,12 +30,17 @@ public $_model;
         $results = $this->_model->getAllRecords($cond,"Users");
         
         if(is_array($results)&&sizeof($results)>0){
+
+			 users::log_sessions($results);
+            $this->dispatch("Welcome/show",users::userCredentials(USERID)->RealName,array("0"));
+
                 foreach($results[0] as $key=>$value):
                     $_SESSION[$key]=$value;
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
             if($results[0]->admin==="1"){$_SESSION['adm']="2";}
             $this->dispatch("Welcome/show",$_SESSION['fname'],array("0"));
+
         }  else {
                     $data="";  
                     if(!isset($_SESSION['cnt'])){
@@ -62,10 +61,7 @@ public $_model;
 }
     
     public function logout($render=1,$path="welcome/show",$tags=array("0")){
-            session_unset();
-            $_SESSION['username']="Guest";
-            $_SESSION['userlevel']='0';
-            $_SESSION['ID']='0';
+		   	users::unset_log_sessions();
 }
 
     public function profile($render=1){
