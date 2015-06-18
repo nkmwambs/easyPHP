@@ -232,9 +232,9 @@ class Finance_Controller extends E_Controller
             $data[]=$fy;
             $data[]=$acc;
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch("",$data,array("1"));
+                $this->dispatch("",$data,$tags=array("1"));
             }else{
-                $this->dispatch("welcome/pfPlansSchedulesView",$data,array("1"));
+                $this->dispatch("welcome/pfPlansSchedulesView",$data,$tags=array("1"));
             }
 
             }       

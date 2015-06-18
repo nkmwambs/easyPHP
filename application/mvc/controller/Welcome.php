@@ -61,14 +61,7 @@ public $_model;
 }
     
     public function logout($render=1,$path="welcome/show",$tags=array("0")){
-
-		   users::unset_log_sessions();
-
-            session_unset();
-            $_SESSION['username']="Guest";
-            $_SESSION['userlevel']='0';
-            $_SESSION['ID']='0';
-
+		   	users::unset_log_sessions();
 }
 
     public function profile($render=1){

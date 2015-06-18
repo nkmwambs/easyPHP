@@ -57,9 +57,10 @@ class Users{
 	
 	public static function unset_log_sessions(){
 		    session_unset();
-            $_SESSION['username']="Guest";
-            $_SESSION['userlevel']='0';
-            $_SESSION['ID']='0';	
+            $model = new E_Model("users");
+            $cond = $model->where(array(array("where","ID","0","=")));
+			$rst = $model->getAllRecords($cond,"users");
+            self::log_sessions($rst);
 	}
 
 

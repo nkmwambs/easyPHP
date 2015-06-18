@@ -357,7 +357,9 @@ public static function render($path="",$results=""){
 		//return $recent;
     }
 
-
+public static function session(){
+	return (object)$_SESSION;
+}
 
 }
 ?>

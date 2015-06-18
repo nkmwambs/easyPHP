@@ -1,5 +1,5 @@
 <?php
-//echo $_SESSION['adm'];
+$sess = Resources::session();
 ?>
 <html>
     <head>
@@ -47,20 +47,20 @@
 		});
         </script>
     </head>
-    <body onload="sumEcj(); ppbfCalc(<?php echo $_SESSION['userlevel'];?>);">
+    <body onload="sumEcj(); ppbfCalc(<?php echo $sess->userlevel;?>);">
         <div id='overlay'></div>
     <ul id='extra_access'>    
     <?php
-    
-        if(isset($_SESSION)&&$_SESSION['username']!=='Guest'){
-            echo '<li>'.Resources::img("welcome.png").'Welcome '.Users::userCredentials(USERID)->RealName.'<span style="float:right;">&Del;</span>';
+    //echo $sess->username;
+        if($sess->username!=='Guest'){
+            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->username.'<span style="float:right;">&Del;</span>';
             echo '<ul>';
             echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/1","Register User",array("onclick"=>"")).'</li><hr>';
             if(isset($_SESSION['adm'])){echo '<li>'.Resources::img("switch.png").' '.Resources::a_href("Welcome/switchUser","Switch User").'</li><hr>';}
             echo "<li>".Resources::img("logout.png")." ".Resources::a_href("Welcome/logout/public/1","Log Out",array())."</li><hr>";
             echo '</ul>';
         }else{
-            echo '<li>'.Resources::img("welcome.png").'Welcome Guest <span style="float:right;">&Del;</span>';
+            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->username.' <span style="float:right;">&Del;</span>';
             echo '<ul>';
             echo '<li id="login_link">'. Resources::img("lock.png")." ". Resources::a_href("Welcome/login/public/1","Login").'</li><hr>';
             echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/1","Register User",array("onclick"=>"")).'</li><hr>';
@@ -76,7 +76,7 @@
                     
                       <?php
  	foreach ($data as $value) {
-		echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],$value["name"],array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$_SESSION['ID'].'","'.$value['img'].'");')).'</li>';
+		echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],$value["name"],array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$sess->ID.'","'.$value['img'].'");')).'</li>';
 	 }
                       ?>
                 </ul><br><br>
@@ -84,9 +84,9 @@
             <br>
             
             <div id="breadcrump"><?php 
-                if(isset($_SESSION['adm'])&&$_SESSION['adm']==='1'){echo "<div class='alerts'>The Site is in Offline Mode.</div> ";} 
-                if(isset($_SESSION['adm'])&&$_SESSION['adm']==='2'&&$_SESSION['admin']!=="1"){echo "<div class='alerts'>You are on a Switch Mode (Your user profile is ".$_SESSION['username_backup']." ".Resources::img("user.png",array("id"=>"".$_SESSION['username_backup']."","onclick"=>'switchUser(this);',"style"=>'cursor:pointer;')).")</div>";}
+                if(isset($sess->adm)&&$sess->adm==='1'){echo "<div class='alerts'>The Site is in Offline Mode.</div> ";} 
+                if(isset($sess->adm)&&$sess->adm==='2'&&$sess->adm!=="1"){echo "<div class='alerts'>You are on a Switch Mode (Your user profile is ".$_SESSION['username_backup']." ".Resources::img("user.png",array("id"=>"".$_SESSION['username_backup']."","onclick"=>'switchUser(this);',"style"=>'cursor:pointer;')).")</div>";}
                 ?>
             </div>
-            <div id="error"></div>
+            <div id="error"><?php ?></div>
             <br>

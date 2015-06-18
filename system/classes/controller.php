@@ -46,16 +46,16 @@ class E_Controller {
             }
             
         }
-		//print($_SESSION['ID']);
-        if(!isset($_SESSION['username'])||empty($_SESSION)){
-            $_SESSION['username']="Guest";
-            $_SESSION['userlevel']='0';
-            $_SESSION['ID']='0';
-			//define("USERID",$_SESSION['ID']);
+		
+        if(!isset($_SESSION['username'])&&empty($_SESSION)){
+            		$cond = $this->model->where(array(array("where","ID","0","=")));
+					$rst = $this->model->getAllRecords($cond,"users");
+					foreach($rst[0] as $key=>$value):
+                    $_SESSION[$key]=$value;
+                    $_SESSION[$key."_backup"]=$value;
+                	endforeach;
         }
 		
-		define("USERID",$_SESSION['ID']);
-		//define("USERNAME",$_SESSION['username']);
 		
         $url = $this->Con."/".$this->Met;
         $cond = $this->model->where(array("where"=>array("public",'1',"="),"AND"=>array("url",$url,"=")));
@@ -77,25 +77,7 @@ class E_Controller {
 				Resources::render($path,$results);
 			}else{
 				Resources::render($path="welcome/dispatchError",$results="");
-			} 
-		    $rec_cond=  $this->model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            $recent = $this->model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-			//echo $_SESSION['userlevel'];
-			//$cur_menu_cond = $this->model->where(array(array("where","url",$this->Con."/".$this->Met,"=")));
-			//$cur_menu = $this->model->getAllRecords($cur_menu_cond,"menu");
-			
-			//$ulvl_arr = explode(",",$cur_menu[0]->userlevel);
-			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
-			in_array("0", $tags)){
-				$this->template->view($path,$results);
-			}else{
-				$this->template->view($path="welcome/dispatchError",$results="");
-			}
-			
-            
-            $this->template->view("welcome/footer",$recent); 
+			}  
 
 	}
 	
