@@ -6,69 +6,33 @@ class Reports_Controller extends E_Controller
         parent::__construct();
         $this->_model=new Reports_Model("recent");
     }
-    public function viewAll(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
+    public function viewAll($render=1,$path="",$tags=array("All")){
         $data = "All Reports!";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
-    public function csp(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
+    public function csp($render=1,$path="",$tags=array("All")){
         $data = "CSP Report!";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
     
-    public function health(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
+    public function health($render=1,$path="",$tags=array("All")){
         $data = "Health Report!";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
    
-    public function hvcQtrly(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
+    public function hvcQtrly($render=1,$path="",$tags=array("All")){
         $data = "HVC Report!";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
     
-    public function pds(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
+    public function pds($render=1,$path="",$tags=array("All")){
         $data = "Monthly PD's Report!";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
     
         
-    public function hvcIndexing(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
+    public function hvcIndexing($render=1,$path="",$tags=array("All")){
         $data = "Annual HVC Indexing Form!";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
 }

@@ -32,14 +32,14 @@ public $_model;
         if(is_array($results)&&sizeof($results)>0){
 
 			 users::log_sessions($results);
-            $this->dispatch("Welcome/show",users::userCredentials(USERID)->RealName,array("0"));
+            $this->dispatch($render=1,"Welcome/show",users::userCredentials(USERID)->RealName,array("0"));
 
                 foreach($results[0] as $key=>$value):
                     $_SESSION[$key]=$value;
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
             if($results[0]->admin==="1"){$_SESSION['adm']="2";}
-            $this->dispatch("Welcome/show",$_SESSION['fname'],array("0"));
+            $this->dispatch($render=1,"Welcome/show",$_SESSION['fname'],array("0"));
 
         }  else {
                     $data="";  
@@ -53,10 +53,10 @@ public $_model;
            
             $_SESSION["username"]="Guest";
             $_SESSION["userlevel"]='0';
-            $this->dispatch("",$data,array("0"));
+            $this->dispatch($render=1,"",$data,array("0"));
         }
     }else{
-        $this->dispatch("",$data,array("0"));
+        $this->dispatch($render=1,"",$data,array("0"));
     }
 }
     

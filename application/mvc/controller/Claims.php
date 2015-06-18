@@ -12,13 +12,8 @@ class Claims_Controller extends E_Controller
 
     }
     
-    public function viewClaims() {
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords();
-        $this->load_menu->menu($menu);
-        $this->template->view("welcome/views");
-        $this->template->view("welcome/footer",$recent);
+    public function viewClaims($render=1,$path="welcome/views",$tags=array("All")) {
+
     }
     
     public function viewMedicalClaims(){

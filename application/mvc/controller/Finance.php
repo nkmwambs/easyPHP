@@ -79,25 +79,25 @@ class Finance_Controller extends E_Controller
             $data[]=$this->_model->accounts();
             $data[] = $this->_model->getVoucherForEcj($cds);
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch("",$data,array("1"));
+                $this->dispatch($render=1,"",$data,array("1"));
             }elseif($_SESSION['userlevel']==="2"){
                 $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
                 $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
                 $cluster = $selector_pf[0]->cname;
                 $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
                 $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-                $this->dispatch("Welcome/icpSelector",$selector_icps,array("1"));
+                $this->dispatch($render=1,"Welcome/icpSelector",$selector_icps,array("1"));
             }
             
     }
     
     public function ppbf(){
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch();    
+                $this->dispatch($render=1,$path="");    
             }elseif($_SESSION['userlevel']==="2"){
                 $cluster_cond = $this->_model->where(array(array("where","cname",$_SESSION['cname'],"="),array("AND","userlevel","2","<>")));
                 $cluster_arr = $this->_model->getAllRecords($cluster_cond,"users");
-                $this->dispatch("Welcome/icpSelectorForPpbf",$cluster_arr);
+                $this->dispatch($render=1,"Welcome/icpSelectorForPpbf",$cluster_arr);
             }  else {
                 
             } 
@@ -232,9 +232,9 @@ class Finance_Controller extends E_Controller
             $data[]=$fy;
             $data[]=$acc;
             if($_SESSION['userlevel']==="1"){
-                $this->dispatch("",$data,$tags=array("1"));
+                $this->dispatch($render=1,"",$data,$tags=array("1"));
             }else{
-                $this->dispatch("welcome/pfPlansSchedulesView",$data,$tags=array("1"));
+                $this->dispatch($render=1,"welcome/pfPlansSchedulesView",$data,$tags=array("1"));
             }
 
             }       
@@ -299,7 +299,7 @@ class Finance_Controller extends E_Controller
         $schedule = $this->_model->getSchedule($schedule_cond);
         print_r(json_encode($schedule));
     }
-    public function viewAllSchedules($render=1){
+    public function viewAllSchedules(){
         //echo "Budget Schedules View for FY".$this->choice[1];
         if($this->choice[2]==="scheduleID"){
             $scheduleID=  $this->choice[3];
@@ -327,7 +327,7 @@ class Finance_Controller extends E_Controller
         $data[]=$totals;
         return $data;
     }
-    public function viewPlanSummary(){
+    public function viewPlanSummary($render=2,$path="",$tags=array("1")){
         $fy = $this->choice[1];
         //if($_SESSION['userlevel']==="1"){
         $summary_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$_SESSION['fname'],"="),array("AND","plansschedule.approved","2","=")));
@@ -347,7 +347,7 @@ class Finance_Controller extends E_Controller
         $data[]=$total_summary;
         $data[]=$All_Totals;
         $data[]=$fy;
-        $this->template->view("",$data);
+        return $data;
     }
     public function viewPlanSummaryByPf($render=1){
         $fy = $this->choice[1];
@@ -662,6 +662,8 @@ public function getExpAccounts(){
             print_r(json_encode($acc));
 }
 public function addFundBal(){
+	print_r($_POST);
+	/**
     $header_arr['closureDate']=$_POST['closureDate'];
     $header_arr['icpNo']=$_SESSION['fname'];
     $header_arr['totalBal']=$_POST['totalBal'];
@@ -687,7 +689,7 @@ public function addFundBal(){
         $_POST['balHdID'][$i]=$curID;
     }
     $this->_model->insertArray($_POST,"opfundsbal");
-    
+   **/ 
     
 }
 public function pfSettings($render=1,$path="Welcome/icpSelectorForBal"){

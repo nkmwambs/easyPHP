@@ -8,13 +8,8 @@ class Settings_Controller extends E_Controller
             
     }
     
-    public function viewSettings(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view("welcome/views");
-        $this->template->view("welcome/footer",$recent);
+    public function viewSettings($render=1,$path="welcome/views",$tags=array("All")){
+		
     }
     
    // Users Methods
@@ -143,15 +138,8 @@ class Settings_Controller extends E_Controller
         $this->template->view("",$data);
         //$this->template->view("welcome/footer");  
      }
-     public function profile(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-         
-            $menu = $this->model->getAllRecords();
-            $this->load_menu->menu($menu);
-            //$data = "User Profile";
-            $this->template->view();
-            $this->template->view("welcome/footer",$recent); 
+     public function profile($render=1,$path="",$tags=array("All")){
+
      }
      
      public function confirmUserExist(){

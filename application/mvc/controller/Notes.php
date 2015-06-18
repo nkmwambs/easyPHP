@@ -7,34 +7,16 @@ class Notes_Controller extends E_Controller
         $this->_model=new Notes_Model("helpdesk");
     }
 
-    public function getAllNotes(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
+    public function getAllNotes($render=1,$path="",$tags=array("All")){
         $data = "All Notes";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
-    public function sentNotes(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
+    public function sentNotes($render=1,$path="",$tags=array("All")){
         $data = "Sent Notes";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
-    public function receivedNotes(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
+    public function receivedNotes($render=1,$path="",$tags=array("All")){
         $data = "Received Notes";
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
 }
