@@ -141,7 +141,7 @@ public function where($cond){
             foreach($arr as $val_arr):
                 $str.="(";
                 foreach($val_arr as $elem):
-                    $str.="'".mysql_real_escape_string($elem)."',";
+                    $str.="'".$elem."',";
 
                 endforeach;
                 $str .="),";

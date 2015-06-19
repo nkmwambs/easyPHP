@@ -662,7 +662,32 @@ public function getExpAccounts(){
             print_r(json_encode($acc));
 }
 public function addFundBal(){
-	print_r($_POST);
+	//$month = date('n',strtotime($_POST['closureDate']));
+	//$year = date("Y",strtotime($_POST['closureDate']));
+	$day = date("j",strtotime($_POST['closureDate']));
+	//print(date('t',strtotime($_POST['closureDate'])));
+	
+	$cond  = $this->_model->where(array(array("WHERE","icpNo",Resources::session()->fname,"="),array("AND","accID",2,">")));
+	$qry = $this->_model->getAllRecords($cond,"bal");
+	if(sizeof($qry)){
+		print("Only one set of opening balances is allowed!");
+	}else{	
+		if(date('t',strtotime($_POST['closureDate']))===$day){
+		$new_arr = array();
+		$size = count($_POST['funds']);
+		for($x=0;$x<$size;$x++){
+			$new_arr['month'][]=$_POST['closureDate'];
+			$new_arr['accID']=$_POST['funds'];
+			$new_arr['icpNo'][]=Resources::session()->fname;
+			$new_arr['specialCode'][]=0;
+			$new_arr['Amount']=$_POST['amount'];
+			
+		}
+		//print($this->_model->insertArray($new_arr,"bal"));
+		}else{
+			print("Choose the last day of the month as the close date.");
+		}
+	}
 	/**
     $header_arr['closureDate']=$_POST['closureDate'];
     $header_arr['icpNo']=$_SESSION['fname'];
@@ -726,6 +751,11 @@ public function addOustChqBf(){
         echo $this->_model->insertArray($frmData,"oschqbf");
     //print_r($frmData);
     
+}
+public function viewBal($render=2,$path="",$tags=array("All")){
+	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+	$qry = $this->_model->getAllRecords($cond,"bal");
+	return $qry;
 }
 public function cashBalBf($render=1,$path="",$tags=array("1")){   
       

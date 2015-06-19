@@ -189,7 +189,7 @@ function addFundBal(frmid){
                 var tbl = document.getElementById("tblFundsBalBf");
                 var rws = tbl.rows.length;
                 for(var k=2;k<rws;k++){
-                    tbl.deleteRow(k);
+                   tbl.deleteRow(k);
                 }
             }
         };
@@ -1097,5 +1097,22 @@ function viewPlans(){
         };
 
       xmlhttp.open("GET",path+"mvc/Finance/pfPlansView/fy/"+fy,true);      
+      xmlhttp.send();
+}
+function viewBal(){
+	//alert("Hello");
+	     //var fy=document.getElementById("curFy").value;
+      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    document.getElementById("balView").innerHTML=xmlhttp.responseText;
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/viewBal",true);      
       xmlhttp.send();
 }
