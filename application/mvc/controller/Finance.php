@@ -86,7 +86,7 @@ class Finance_Controller extends E_Controller
                 $cluster = $selector_pf[0]->cname;
                 $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
                 $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-                $this->dispatch($render=1,"Welcome/icpSelector",$selector_icps,array("1"));
+                $this->dispatch($render=1,"icpSelector",$selector_icps,array("2"));
             }
             
     }
@@ -234,11 +234,11 @@ class Finance_Controller extends E_Controller
             if($_SESSION['userlevel']==="1"){
                 $this->dispatch($render=1,"",$data,$tags=array("1"));
             }else{
-                $this->dispatch($render=1,"welcome/pfPlansSchedulesView",$data,$tags=array("1"));
+                $this->dispatch($render=1,"pfPlansSchedulesView",$data,$tags=array("2"));
             }
 
             }       
-    public function pfSchedules($render=1){           
+    public function pfSchedules($render=1,$path="",$tags=array("2")){           
         $fy = $this->choice[3];
         $icpNo = $this->choice[1];
         $schedules_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$icpNo,"=")));
@@ -261,7 +261,8 @@ class Finance_Controller extends E_Controller
         $data[]=$totals;
         return $data;
     }
-    public function showNewPlansItems($render=1){
+    public function showNewPlansItems($render=2,$path="",$tags=array("2")){
+    	
         $fy = $this->choice[1];
         $new_item_cond = $this->_model->where(array(array("where","plansschedule.approved",1,"="),array("AND","users.cname",$_SESSION['cname'],"="),array("AND","planheader.fy",$fy,"=")));  
         $new_item = $this->_model->countNewSchedules($new_item_cond);
@@ -281,7 +282,7 @@ class Finance_Controller extends E_Controller
         
         print($Fy);
     }
-    public function pfPlansView($render=1){
+    public function pfPlansView($render=2,$path="",$tags=array("2")){
         $fy = $this->choice[1];
         $all_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","users.cname",$_SESSION['cname'],"=")));
         $all = $this->_model->countNewSchedules($all_cond);
@@ -683,7 +684,7 @@ public function addFundBal(){
 			$new_arr['Amount']=$_POST['amount'];
 			
 		}
-		//print($this->_model->insertArray($new_arr,"bal"));
+		print($this->_model->insertArray($new_arr,"bal"));
 		}else{
 			print("Choose the last day of the month as the close date.");
 		}
@@ -717,7 +718,7 @@ public function addFundBal(){
    **/ 
     
 }
-public function pfSettings($render=1,$path="Welcome/icpSelectorForBal"){
+public function pfSettings($render=1,$path="icpSelectorForBal",$tags=array("2")){
                 $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
                 $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
                 $cluster = $selector_pf[0]->cname;

@@ -15,7 +15,7 @@ public $_model;
             return $data;
     }
 
-    public function show($render=1,$tags=array("0")){
+    public function show($render=1,$path="",$tags=array("0")){
 			if(!isset($_SESSION['username'])){
                 $_SESSION['username']="Guest";
                 $_SESSION['userlevel']='0';
@@ -60,7 +60,7 @@ public $_model;
     }
 }
     
-    public function logout($render=1,$path="welcome/show",$tags=array("0")){
+    public function logout($render=1,$path="show",$tags=array("0")){
 		   	users::unset_log_sessions();
 }
 

@@ -123,6 +123,19 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
         closedir($dh);
     }
     }
+	
+	$dir = BASE_PATH.DS."system".DS."scripts".DS."css";
+    
+    if (is_dir($dir)) {
+    if ($dh = opendir($dir)) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file != "." && $file != ".."){
+                print "<link rel='stylesheet' type='text/css' href='".PATH.DS."system".DS."scripts".DS."css".DS.$file."'>\n";
+            }
+        }
+        closedir($dh);
+    }
+    }
     	
 }
 public static function script($scripts){
@@ -345,13 +358,23 @@ public static function render($render="1",$path="",$results=""){
 				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php";
 			}
 		}
-		if($path===""){
-			$data = $results;
-            include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$GLOBALS['Method'].".php";
-        }else{
-        	$data = $results;
-            include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS.'tpl'.DS.$path.".php";
-        }
+			if($path===""&&file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$GLOBALS['Method'].".php")){
+				$data = $results;
+	            include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$GLOBALS['Method'].".php";
+				
+			}elseif(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$path.".php")){
+				$data = $results;
+				include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$path.".php";
+			}else{
+				if($path==="err"){
+					$data = self::img("error.png")." Error Log:<br>".$results;
+				}else{
+					$data = self::img("error.png")." Error Log:<br>View <i><span style='color:blue;'>{$path}</span></i> not found in Method <i><span style='color:blue;'>{$GLOBALS['Method']}</span></i> of <i><span style='color:blue;'>{$GLOBALS['Controller']}</span></i> controller!";
+				
+				}
+				//$data = self::img("error.png")." Error Log:<br>View <i><span style='color:blue;'>{$path}</span></i> not found in Method <i><span style='color:blue;'>{$GLOBALS['Method']}</span></i> of <i><span style='color:blue;'>{$GLOBALS['Controller']}</span></i> controller!";
+				include BASE_PATH.DS."system".DS."logs".DS."error.php";
+			}
 		if($render===1){
 			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
 				$data = $recent;

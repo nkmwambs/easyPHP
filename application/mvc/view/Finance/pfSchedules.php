@@ -1,6 +1,6 @@
 <?php
 //print_r($data[1]);
-echo a_tag("Finance/schedules","<button>Back</button>");
+echo Resources::a_href("Finance/schedules","<button>Back</button>");
 echo "<br><br>";
 echo "<form id='frmRq'>";
 echo "<div id='rqMsgDiv' style='display:none'></div>";
@@ -17,13 +17,13 @@ foreach($data[0] as $item):
     foreach($data[1] as $scheduledItem):
         if($scheduledItem->AccNo===$item->AccNo){
             if($scheduledItem->approved=="0"){
-                echo "<tr><td>".img_tag("view.png",array("title"=>"DView Only","style"=>"border:1px red solid;cursor:pointer;"))."</td>"; 
+                echo "<tr><td>".Resources::img("view.png",array("title"=>"DView Only","style"=>"border:1px red solid;cursor:pointer;"))."</td>"; 
             }elseif ($scheduledItem->approved=="1") {
-                echo "<tr style='background-color:red;'><td>".img_tag("approved.png",array("title"=>"Approve","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".img_tag("disapprove.png",array("title"=>"Disapprove","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;","id"=>"rejItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                     
+                echo "<tr style='background-color:red;'><td>".Resources::img("approved.png",array("title"=>"Approve","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("disapprove.png",array("title"=>"Disapprove","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;","id"=>"rejItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                     
             }elseif($scheduledItem->approved=="2"){
-                echo "<tr><td>".img_tag("mail.png",array("title"=>"Send Update Request","style"=>"cursor:pointer;","id"=>"item_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                    
+                echo "<tr><td>".Resources::img("mail.png",array("title"=>"Send Update Request","style"=>"cursor:pointer;","id"=>"item_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                    
             }elseif($scheduledItem->approved=="3"){
-                echo "<tr style='background-color:red;'><td>".img_tag("mail.png",array("title"=>"Send Reminder","style"=>"cursor:pointer;","id"=>"remItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."".img_tag("approved.png")."</td>";
+                echo "<tr style='background-color:red;'><td>".Resources::img("mail.png",array("title"=>"Send Reminder","style"=>"cursor:pointer;","id"=>"remItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."".Resources::img("approved.png")."</td>";
             }
             
             echo "<td style='text-align:left;'>".$scheduledItem->details."</td><td>".$scheduledItem->qty."</td><td>".number_format($scheduledItem->unitCost,2)."</td><td>".$scheduledItem->often."</td><td>".number_format($scheduledItem->totalCost,2)."</td><td>".number_format($scheduledItem->validate,2)."</td><td>".number_format($scheduledItem->JulAmt,2)."</td><td>".number_format($scheduledItem->AugAmt,2)."</td><td>".number_format($scheduledItem->SepAmt,2)."</td><td>".number_format($scheduledItem->OctAmt)."</td><td>".number_format($scheduledItem->NovAmt,2)."</td><td>".number_format($scheduledItem->DecAmt,2)."</td><td>".number_format($scheduledItem->JanAmt,2)."</td><td>".number_format($scheduledItem->FebAmt,2)."</td><td>".number_format($scheduledItem->MarAmt,2)."</td><td>".number_format($scheduledItem->AprAmt)."</td><td>".number_format($scheduledItem->MayAmt,2)."</td><td>".number_format($scheduledItem->JunAmt,2)."</td>";

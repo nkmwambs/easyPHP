@@ -75,9 +75,8 @@ class E_Controller {
 			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
 				in_array("0", $tags)){
 				Resources::render($render,$path,$results);
-			}else{
-				Resources::render($render,$path="welcome/dispatchError",$results="");
-			}  
+								
+			}
 
 	}
 	
@@ -115,7 +114,14 @@ class E_Controller {
 			}else{
 				$results="";
 			}
-			$this->dispatch($render,$path,$results,$tags);
+			
+			if(!isset($tags)){
+				$results = "View <i><span style='color:blue;'>{$this->Met}</span></i> of <i><span style='color:blue;'>{$GLOBALS['Controller']}</span></i> controller is not tagged!";
+				$this->dispatch($render=2,$path="err",$results,$tags=array("0"));
+			}else{
+				$this->dispatch($render,$path,$results,$tags);
+			}
+				
 		}
 		
 	}
