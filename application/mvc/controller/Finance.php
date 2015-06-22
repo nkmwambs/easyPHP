@@ -68,27 +68,77 @@ class Finance_Controller extends E_Controller
             return $data;                
 }   
 
-    public function ecj(){            
+    public function ecj(){
+
             if(isset($this->choice[1])){
-                $cds = $this->_model->where(array("where"=>array("icpNo",$_SESSION['username'],"="),"AND"=>array("Month(`TDate`)",date('m', strtotime($this->choice[1])),"=")));
-            }  else {
-              $cds = $this->_model->where(array("where"=>array("icpNo",$_SESSION['username'],"="),"AND"=>array("Month(`TDate`)",date('m'),"=")));  
+					
+					$bc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","month",date('Y-m-t',strtotime("-1 month",$this->choice[1])),"="),array("AND","accNo","BC","=")));
+    				$pc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","month",date('Y-m-t',strtotime("-1 month",$this->choice[1])),"="),array("AND","accNo","PC","=")));
+		
+					$bc_arr = $this->_model->getAllRecords($bc_cond,"cashBal");
+					$pc_arr = $this->_model->getAllRecords($pc_cond,"cashBal");		
+		
+					//print($bc_arr[0]->amount);
+    				if(count($bc_arr)&&count($pc_arr)){
+    					$bc = $bc_arr[0]->amount;
+				  		$pc= $pc_arr[0]->amount;
+    				}else{
+    					$bc =0;
+				  		$pc= 0;
+    				}
+		          		
+            	
+				
+                	$cds = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","Month(`TDate`)",date('m',$this->choice[1]),"=")));
+            	    $data[]=$this->_model->accounts();
+		            $data[] = $this->_model->getVoucherForEcj($cds);
+					$data[]=$bc;//BC Balance
+					$data[]=$pc;//PC Balance
+					$data[]=$this->choice[1];
+		            if(Resources::session()->userlevel==="1"){
+		                $this->dispatch($render=2,"",$data,array("1"));
+		            }elseif(Resources::session()->userlevel==="2"){
+		                $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
+		                $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
+		                $cluster = $selector_pf[0]->cname;
+		                $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
+		                $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
+		                $this->dispatch($render=2,"icpSelector",$selector_icps,array("2"));
+		            }
+			}  else {
+            	//echo date('m');
+				    	$bc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","month",date('Y-m-t',strtotime("-1 month")),"="),array("AND","accNo","BC","=")));
+				    	$pc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","month",date('Y-m-t',strtotime("-1 month")),"="),array("AND","accNo","PC","=")));
+						
+						$bc_arr = $this->_model->getAllRecords($bc_cond,"cashBal");
+						$pc_arr = $this->_model->getAllRecords($pc_cond,"cashBal");		
+						
+						//print($bc_arr[0]->amount);
+				    if(count($bc_arr)&&count($pc_arr)){	
+						$bc = $bc_arr[0]->amount;
+						$pc= $pc_arr[0]->amount;
+					}else{
+						$bc = 0;
+						$pc= 0;
+					}
+						            	
+              	$cds = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","Month(`TDate`)",date('m'),"=")));  
+    		    $data[]=$this->_model->accounts();
+            	$data[] = $this->_model->getVoucherForEcj($cds);
+				$data[]=$bc;//BC Balance
+				$data[]=$pc;//PC Balance
+	            	if(Resources::session()->userlevel==="1"){
+	                	$this->dispatch($render=1,"",$data,array("1"));
+	            	}elseif(Resources::session()->userlevel==="2"){
+		                $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
+		                $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
+		                $cluster = $selector_pf[0]->cname;
+		                $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
+		                $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
+		                $this->dispatch($render=1,"icpSelector",$selector_icps,array("2"));
             }
-              
-            
-            $data[]=$this->_model->accounts();
-            $data[] = $this->_model->getVoucherForEcj($cds);
-            if($_SESSION['userlevel']==="1"){
-                $this->dispatch($render=1,"",$data,array("1"));
-            }elseif($_SESSION['userlevel']==="2"){
-                $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
-                $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
-                $cluster = $selector_pf[0]->cname;
-                $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
-                $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-                $this->dispatch($render=1,"icpSelector",$selector_icps,array("2"));
-            }
-            
+	        }
+             
     }
     
     public function ppbf(){
@@ -663,60 +713,47 @@ public function getExpAccounts(){
             print_r(json_encode($acc));
 }
 public function addFundBal(){
-	//$month = date('n',strtotime($_POST['closureDate']));
-	//$year = date("Y",strtotime($_POST['closureDate']));
-	$day = date("j",strtotime($_POST['closureDate']));
-	//print(date('t',strtotime($_POST['closureDate'])));
-	
-	$cond  = $this->_model->where(array(array("WHERE","icpNo",Resources::session()->fname,"="),array("AND","accID",2,">")));
-	$qry = $this->_model->getAllRecords($cond,"bal");
-	if(sizeof($qry)){
-		print("Only one set of opening balances is allowed!");
-	}else{	
-		if(date('t',strtotime($_POST['closureDate']))===$day){
-		$new_arr = array();
-		$size = count($_POST['funds']);
-		for($x=0;$x<$size;$x++){
-			$new_arr['month'][]=$_POST['closureDate'];
-			$new_arr['accID']=$_POST['funds'];
-			$new_arr['icpNo'][]=Resources::session()->fname;
-			$new_arr['specialCode'][]=0;
-			$new_arr['Amount']=$_POST['amount'];
-			
-		}
-		print($this->_model->insertArray($new_arr,"bal"));
-		}else{
-			print("Choose the last day of the month as the close date.");
-		}
-	}
-	/**
-    $header_arr['closureDate']=$_POST['closureDate'];
-    $header_arr['icpNo']=$_SESSION['fname'];
-    $header_arr['totalBal']=$_POST['totalBal'];
-    $header_arr['systemOpening']="1";
-    $bal_chk_cond = $this->_model->where(array(array("where","icpNo",$_SESSION['fname'],"="),array("AND","systemOpening","1","=")));
-    $bal_chk = $this->_model->getAllRecords($bal_chk_cond,"opfundsbalheader");
- 
-    if(count($bal_chk)>0){
-        $balID = $bal_chk[0]->balHdID;
-        $id_cond = $this->_model->where(array(array("where","balHdID",$balID,"=")));
-        $this->_model->deleteQuery($bal_chk_cond,"opfundsbalheader");
-        $this->_model->deleteQuery($id_cond,"opfundsbal");
-    }
-    array_shift($_POST);
-    array_shift($_POST);
-    $this->_model->insertRecord($header_arr,"opfundsbalheader");
-    
-    $new_bal_chk_cond = $this->_model->where(array(array("where","icpNo",$_SESSION['fname'],"=")));
-    $new_bal_chk = $this->_model->getAllRecords($new_bal_chk_cond,"opfundsbalheader");
-    $curID = $new_bal_chk[0]->balHdID;
 
-    for($i=0;$i<sizeof($_POST['funds']);$i++){
-        $_POST['balHdID'][$i]=$curID;
-    }
-    $this->_model->insertArray($_POST,"opfundsbal");
-   **/ 
-    
+	$day = date("j",strtotime($_POST['closureDate']));
+	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","allowEdit","1","=")));
+	$qry = $this->_model->getAllRecords($cond,"opfundsbalheader");
+	
+	$cond_two = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+	$qry_two = $this->_model->getAllRecords($cond_two,"opfundsbalheader");
+		
+	if(count($qry)===0&&count($qry_two)>0){
+		print("You are not allowed to edit this record!");	
+	}else{
+		//if(date('t',strtotime($_POST['closureDate']))===$day){
+		//	print("Choose the last day of the month as the close date.");
+		//}else{
+		    $header_arr['closureDate']=$_POST['closureDate'];
+		    $header_arr['icpNo']=$_SESSION['fname'];
+		    $header_arr['totalBal']=$_POST['totalBal'];
+		    $header_arr['systemOpening']="1";
+		    $bal_chk_cond = $this->_model->where(array(array("where","icpNo",$_SESSION['fname'],"="),array("AND","systemOpening","1","=")));
+		    $bal_chk = $this->_model->getAllRecords($bal_chk_cond,"opfundsbalheader");
+		 
+		    if(count($bal_chk)>0){
+		        $balID = $bal_chk[0]->balHdID;
+		        $id_cond = $this->_model->where(array(array("where","balHdID",$balID,"=")));
+		        $this->_model->deleteQuery($bal_chk_cond,"opfundsbalheader");
+		        $this->_model->deleteQuery($id_cond,"opfundsbal");
+		    }
+		    array_shift($_POST);
+		    array_shift($_POST);
+		    $this->_model->insertRecord($header_arr,"opfundsbalheader");
+		    
+		    $new_bal_chk_cond = $this->_model->where(array(array("where","icpNo",$_SESSION['fname'],"=")));
+		    $new_bal_chk = $this->_model->getAllRecords($new_bal_chk_cond,"opfundsbalheader");
+		    $curID = $new_bal_chk[0]->balHdID;
+		
+		    for($i=0;$i<sizeof($_POST['funds']);$i++){
+		        $_POST['balHdID'][$i]=$curID;
+		    }
+		    $this->_model->insertArray($_POST,"opfundsbal");
+		//}
+	}
 }
 public function pfSettings($render=1,$path="icpSelectorForBal",$tags=array("2")){
                 $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
@@ -754,16 +791,82 @@ public function addOustChqBf(){
     
 }
 public function viewBal($render=2,$path="",$tags=array("All")){
-	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
-	$qry = $this->_model->getAllRecords($cond,"bal");
+	$cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"=")));
+	$qry = $this->_model->viewFundsBal($cond);
 	return $qry;
 }
 public function cashBalBf($render=1,$path="",$tags=array("1")){   
       
 }
+
+public function addCash(){
+	$day = date("t",strtotime($_POST['cjCashOpBal']));	
+	
+	$cond = $this->_model->where(array(array("where","month",$_POST['cjCashOpBal'],"="),array("AND","icpNo",Resources::session()->fname,"=")));
+	$qry = $this->_model->getAllRecords($cond,"cashbal");
+	$cnt = count($qry);
+	if($cnt===0){
+		if(date("j",strtotime($_POST['cjCashOpBal']))===$day){
+			$size = count($_POST['cashBal']);
+			$accNos =array("BC","PC");
+			$arr=array();
+			for ($i=0; $i < $size; $i++) { 
+				$arr['month'][]=$_POST['cjCashOpBal'];
+				$arr['icpNo'][]=Resources::session()->fname;
+				$arr['accNo'][]=$accNos[$i];
+				$arr['amount'][]=$_POST['cashBal'][$i];
+				
+			}
+			//print(count($qry));
+			print($this->_model->insertArray($arr,"cashbal"));
+		}else{
+			print("The date specified should be the last date of the month!");
+		}
+	}else{
+		print("Closing Cash Balances for the specified period exists!");
+	}
+}
+public function addStmtCash(){
+	//print_r($_POST);
+	$day = date("t",strtotime($_POST['bsCashOpBalDate']));	
+	
+	$cond = $this->_model->where(array(array("where","month",$_POST['bsCashOpBalDate'],"="),array("AND","icpNo",Resources::session()->fname,"=")));
+	$qry = $this->_model->getAllRecords($cond,"cashbal");
+	$cnt = count($qry);
+	
+	if($cnt===0){
+		if(date("j",strtotime($_POST['bsCashOpBalDate']))===$day){
+			$arr['month']=$_POST['bsCashOpBalDate'];
+			$arr['icpNo']=Resources::session()->fname;
+			$arr['amount']=$_POST['bsCashOpBal'];
+			print($this->_model->insertRecord($arr,"statementBal"));
+		}else{
+			print("The date specified should be the last date of the month!");
+		}
+	}else{
+		print("Closing Balances for the specified period exists!");
+	}
+}
+
 public function opRecon($render=1,$path="",$tags=array("1")){   
       
 }
 
+public function viewCashBal($render=2,$path="",$tags=array("1")){
+	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+	$qry = $this->_model->getAllRecords($cond,"cashbal");
+	return $qry;
+}
+public function viewCashStmtBal($render=2,$path="",$tags=array("1")){
+	//print("Hello there!");
+	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+	$qry = $this->_model->getAllRecords($cond,"statementBal");
+	return $qry;
+}
+public function ocView($render=2,$path="",$tags=array("1")){
+	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","chqState",0,"=")));
+	$qry = $this->_model->getAllRecords($cond,"oschqbf");
+	return $qry;
+}
 
 }

@@ -1116,3 +1116,92 @@ function viewBal(){
       xmlhttp.open("GET",path+"mvc/Finance/viewBal",true);      
       xmlhttp.send();
 }
+
+function addCash(frmid){
+	 var frm = document.getElementById(frmid);  
+   //frm.submit();
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+            }
+        };
+        if(frmid==="frmCashBf"){
+        	xmlhttp.open("POST",path+"/mvc/Finance/addCash/public/0",true);
+        }else{
+        	xmlhttp.open("POST",path+"/mvc/Finance/addStmtCash/public/0",true);
+        }                                       
+         
+         
+         xmlhttp.send(frmData);
+}
+function viewCashBal(){
+//document.getElementById('viewCashBal').innerHTML="Hello";	
+      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    document.getElementById("viewCashBal").innerHTML=xmlhttp.responseText;
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/viewCashBal",true);      
+      xmlhttp.send();
+}
+function viewCashStmtBal(){
+//document.getElementById('viewCashBal').innerHTML="Hello";	
+      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    document.getElementById("viewCashStmtBal").innerHTML=xmlhttp.responseText;
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/viewCashStmtBal",true);      
+      xmlhttp.send();
+}
+function ocView(){
+	//document.getElementById('balView').innerHTML="Hello!";
+	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    document.getElementById("balView").innerHTML=xmlhttp.responseText;
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/ocView",true);      
+      xmlhttp.send();
+}
+function selectCJ(tym){
+	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('content').innerHTML=xmlhttp.responseText;
+                sumEcj();
+                //document.write(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/ecj/tym/"+tym+"/public/0",true);      
+      xmlhttp.send();
+}

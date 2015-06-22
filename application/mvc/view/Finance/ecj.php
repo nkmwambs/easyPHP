@@ -1,7 +1,15 @@
 <?php 
-    $curSelect=date('F-Y');
-    echo "<button onclick='selectCJ(\"".strtotime('-1 month')."\");'>".date('F-Y',  strtotime('-1 month'))."</button><button style='background-color:lightgreen;'  onclick='selectCJ(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectCJ(\"".strtotime('+1 month')."\");'>".  date('F-Y',  strtotime('+1 month'))."</button>";
-    //print_r($data[0]);
+//print($data[2]);
+echo "<br>";
+if(isset($data[4])){
+	$curSelect=date('F-Y',$data[4]);
+	$cur = $data[4];
+}else{
+	$curSelect=date('F-Y',strtotime("now"));
+	$cur = strtotime("now");
+}
+    
+	echo "<button onclick='selectCJ(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectCJ(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectCJ(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
     
      //An array of the used accounts  
     $count=0;
@@ -50,7 +58,7 @@
         }
     ?>
     <thead>
-        <tr><th style="text-align:right;" colspan="3">ICP: </th><th  style="text-align:left;background-color: honeydew;" colspan="5"><?php echo $_SESSION['username'] ?></th><th>Month:</th><th style="background-color: honeydew;"><?php echo date('F'); ?></th><th>Year: </th><th style="background-color: honeydew;"><?php echo date('Y'); ?></th>
+        <tr><th style="text-align:right;" colspan="3">ICP: </th><th  style="text-align:left;background-color: honeydew;" colspan="5"><?php echo $_SESSION['username'] ?></th><th>Month:</th><th style="background-color: honeydew;"><?php echo date('F',strtotime($curSelect)); ?></th><th>Year: </th><th style="background-color: honeydew;"><?php echo date('Y',strtotime($curSelect)); ?></th>
             
             <?php
                 if(!empty($dis_arr)){echo "<th style='text-align:left;' colspan='".$income."'>INCOME</th></th><th style='text-align:left;' colspan='".$expense."'>EXPENSES</th>";}
@@ -86,7 +94,7 @@
             ?>
         </tr><!-- End Row 5 -->
         
-        <tr><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;"><?php echo date('F'); ?></th><th style="background-color: honeydew;"><?php echo date('Y'); ?></th><th>Totals:</th><th>&nbsp;</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th>
+        <tr><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;"><?php echo date('F',strtotime($curSelect)); ?></th><th style="background-color: honeydew;"><?php echo date('Y',strtotime($curSelect)); ?></th><th>Totals:</th><th>&nbsp;</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th><th style="background-color: honeydew;">0.00</th>
         <?php 
             foreach($data[0] as $hdr):
                 $class_four = "Ac".$hdr->AccNo;
@@ -96,7 +104,7 @@
         
         </tr><!-- End Row 6 -->
         
-        <tr><th>&nbsp;</th><th>&nbsp;</th><th>Bank & Cash</th><th colspan="2">Balance Brought Forward</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;">348120</th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;">2310</th>
+        <tr><th>&nbsp;</th><th>&nbsp;</th><th>Bank & Cash</th><th colspan="2">Balance Brought Forward</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;"><?php echo $data[2];?></th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;"><?php echo $data[3];?></th>
            
             <?php 
                 if(!empty($dis_arr)){echo "<th colspan='".count($data[0])."'>&nbsp;</th>";}

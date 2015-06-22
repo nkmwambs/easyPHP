@@ -255,7 +255,10 @@ public function where($cond){
             }
         
     }
-
+public function __destruct(){
+	//$getPost =array("334","voucher_header","1","Add a Voucher");
+	//$this->insertRecord($getPost,"history");
+}
 
 
 }

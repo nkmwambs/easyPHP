@@ -454,5 +454,16 @@ public function countNewSchedules($cond){
     return $rst;
     
 }
+public function viewFundsBal($cond){
+    $s = "SELECT  opfundsbalheader.closureDate, opfundsbal.funds,opfundsbalheader.icpNo,opfundsbal.amount FROM opfundsbal LEFT JOIN opfundsbalheader ON opfundsbal.balHdID=opfundsbalheader.balHdID $cond";
+    //$q =  mysql_query($s);
+    $q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+        $rst[]=$row;
+    }
+    return $rst;	
+}
 }
 
