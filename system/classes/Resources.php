@@ -16,7 +16,7 @@ class Resources{
 	}
 	 
 public static function url($url){
-    return "http://".filter_input(INPUT_SERVER,"HTTP_HOST")."/easyPHP/".$GLOBALS['app']."/".$url;
+    return HOST_NAME.DS."easyPHP/".$GLOBALS['app']."/".$url;
 }
 public static function a_href($path,$text,$properties=""){
     //property array example - array("width"=>"80px","heigth"=>"90px","title"=>"Petty","style"=>"margin-top:10px;border:5px solid black;")
@@ -24,7 +24,7 @@ public static function a_href($path,$text,$properties=""){
     if($path===""){
     	$str  = "<a href='#' ";
     }else{
-    	$str  = "<a href='".PATH.DS.$GLOBALS['app'].DS.$path."' ";
+    	$str  = "<a href='".HOST_NAME.DS.'easyPHP'.DS.$GLOBALS['app'].DS.$path."' ";
     }
     
     
@@ -60,13 +60,13 @@ public static function link($links=array()){
         //Load grouped default app level css
 
 if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$GLOBALS['Controller'].".css")){
-        print "<link rel='stylesheet' type='text/css' href='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['Controller'].".css'>\n";
+        print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['Controller'].".css'>\n";
     }
     
         //Load single default app level js
     
     if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$GLOBALS['app'].".css")){
-        print "<link rel='stylesheet' type='text/css' href='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['app'].".css'>\n";
+        print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['app'].".css'>\n";
     }
     
     
@@ -78,7 +78,7 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['app'].DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['app'].DS.$file."'>\n";
             }
         }
         closedir($dh);
@@ -93,7 +93,7 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['Controller'].DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['Controller'].DS.$file."'>\n";
             }
         }
         closedir($dh);
@@ -104,9 +104,9 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     
     foreach($links as $value){
         if(!file_exists(BASE_PATH.DS.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$value)){
-            print "<link rel='stylesheet' type='text/css' href='".PATH.DS."system".DS."scripts".DS."css".DS.$value."'>\n";
+            print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."css".DS.$value."'>\n";
         }  else {
-            print "<link rel='stylesheet' type='text/css' href='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$value."'>\n";
+            print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$value."'>\n";
         }
     }
 	
@@ -117,7 +117,7 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."scripts".DS."css".DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."scripts".DS."css".DS.$file."'>\n";
             }
         }
         closedir($dh);
@@ -130,7 +130,7 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".PATH.DS."system".DS."scripts".DS."css".DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."css".DS.$file."'>\n";
             }
         }
         closedir($dh);
@@ -229,12 +229,14 @@ public static function menuItems(){
 			$model = new E_Model("menu");
 			$rec_cond=  $model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
             $recent = $model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
-            $menu = $model->getAllRecords();
-            return $menu;
+            //$menu = $model->getAllRecords();
+            return $recent;
 }
 public static function render($render="1",$path="",$results=""){
 		$model = new E_Model("menu");
-		$menu = self::menuItems();
+		$recent = self::menuItems();
+		$menu = $model->getAllRecords();
+		
         /**
          * $menu - A multi-dimensional array with all rows of the menus table
          * This part of the function makes an array of the string found in the exception field of each row of the menu table using the explode function
@@ -345,8 +347,8 @@ public static function render($render="1",$path="",$results=""){
             }
         }
 		
-		$rec_cond=  $model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
+		//$rec_cond=  $model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+        //$recent = $model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
 		//echo $render;
 		if($render===1){
 			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php")){
@@ -372,7 +374,7 @@ public static function render($render="1",$path="",$results=""){
 					$data = self::img("error.png")." Error Log:<br>View <i><span style='color:blue;'>{$path}</span></i> not found in Method <i><span style='color:blue;'>{$GLOBALS['Method']}</span></i> of <i><span style='color:blue;'>{$GLOBALS['Controller']}</span></i> controller!";
 				
 				}
-				//$data = self::img("error.png")." Error Log:<br>View <i><span style='color:blue;'>{$path}</span></i> not found in Method <i><span style='color:blue;'>{$GLOBALS['Method']}</span></i> of <i><span style='color:blue;'>{$GLOBALS['Controller']}</span></i> controller!";
+				
 				include BASE_PATH.DS."system".DS."logs".DS."error.php";
 			}
 		if($render===1){
