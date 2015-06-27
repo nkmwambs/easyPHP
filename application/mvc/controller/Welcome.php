@@ -24,9 +24,15 @@ public $_model;
          
     }
     public function login() {
-        if(isset($_POST)){
-        $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"="),
-            "AND"=>  array("password",filter_input(INPUT_POST,"password"),"=")));
+        if(isset($_POST)&&!empty($_POST)){
+       // $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"="),
+         //   "AND"=>  array("password",filter_input(INPUT_POST,"password"),"=")));
+         $cond = $this->_model->where(array(
+         									array("where","username",trim(filter_input(INPUT_POST,"username"),"=")),
+         									array("AND","password",filter_input(INPUT_POST,"password"),"="),
+         									array("AND","auth","1","=")
+         									)
+										);
        
         $results = $this->_model->getAllRecords($cond,"Users");
         
@@ -57,6 +63,7 @@ public $_model;
            
             $_SESSION["username"]="Guest";
             $_SESSION["userlevel"]='0';
+			$_SESSION["ID"]='0';
             $this->dispatch($render=1,"",$data,array("0"));
         }
     }else{
