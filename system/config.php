@@ -6,6 +6,7 @@ define('DB_PASSWORD','');
 define('BASE_PATH',dirname(dirname(__FILE__)));
 define('DS',DIRECTORY_SEPARATOR);
 define('PATH',str_replace("/",DIRECTORY_SEPARATOR,dirname(dirname(filter_input(INPUT_SERVER,"SCRIPT_NAME")))));
+define('DB_PREFIX','');
 
 $theme = "coolblue";
 

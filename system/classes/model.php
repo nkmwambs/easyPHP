@@ -23,7 +23,7 @@ class E_Model {
                         $this->host = DB_HOST;
                         $this->user = DB_USER;
                         $this->pass = DB_PASSWORD;
-                        $this->dbase = $GLOBALS['app'];
+                        $this->dbase = DB_PREFIX.$GLOBALS['app'];
                         $this->table = $table;
                         //$this->db = mysql_connect($this->mysql_hostname, $this->mysql_user, $this->mysql_password) or die("Could not connect database");
                         //$this->selectdb = mysql_select_db($this->mysql_database, $this->db) or die("Could not select database");
