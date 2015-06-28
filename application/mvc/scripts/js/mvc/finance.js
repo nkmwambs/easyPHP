@@ -841,7 +841,10 @@ function checkSchedule(){
     
 }
 function viewAllSchedules(){
+	document.getElementById('btnPostSchedule').style.display='none';
+		document.getElementById('btnAddRow').style.display='none';
       var fy=document.getElementById("curFy").value;
+      
         xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
@@ -884,7 +887,9 @@ function editSchedule(scheduleID){
     alert("Function not operational!");
 }
 function viewPlanSummary(){
-           var fy=document.getElementById("curFy").value;
+		document.getElementById('btnPostSchedule').style.display='none';
+		document.getElementById('btnAddRow').style.display='none';
+        var fy=document.getElementById("curFy").value;
         xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
@@ -1223,3 +1228,5 @@ function selectSlip(tym){
       xmlhttp.open("GET",path+"mvc/Finance/viewSlip/tym/"+tym+"/public/0",true);      
       xmlhttp.send();
 }
+
+

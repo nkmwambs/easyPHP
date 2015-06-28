@@ -465,5 +465,6 @@ public function viewFundsBal($cond){
     }
     return $rst;	
 }
+
 }
 

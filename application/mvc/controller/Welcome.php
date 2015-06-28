@@ -27,29 +27,22 @@ public $_model;
         if(isset($_POST)&&!empty($_POST)){
        // $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"="),
          //   "AND"=>  array("password",filter_input(INPUT_POST,"password"),"=")));
-         $cond = $this->_model->where(array(
-         									array("where","username",trim(filter_input(INPUT_POST,"username"),"=")),
-         									array("AND","password",filter_input(INPUT_POST,"password"),"="),
+
+                  $cond = $this->_model->where(array(
+         									array("where","username",$_POST['username'],"="),
+         									array("AND","password",$_POST["password"],"="),
          									array("AND","auth","1","=")
          									)
 										);
+ 
+
        
         $results = $this->_model->getAllRecords($cond,"Users");
         
         if(is_array($results)&&sizeof($results)>0){
 
 			 users::log_sessions($results);
-            
-
-                foreach($results[0] as $key=>$value):
-                    $_SESSION[$key]=$value;
-                    $_SESSION[$key."_backup"]=$value;
-                endforeach;
-            if($results[0]->admin==="1"){
-            	$_SESSION['adm']="2";
-			}
-
-            $this->dispatch($render=1,$path="show",$data=$_SESSION['fname'],$tags=array("0"));
+            $this->dispatch(1,"show",$_SESSION['fname'],array("0"));
 
         }  else {
                     $data="";  
@@ -67,7 +60,7 @@ public $_model;
             $this->dispatch($render=1,"",$data,array("0"));
         }
     }else{
-        $this->dispatch($render=1,"",$data,array("0"));
+        $this->dispatch(1,"","",array("0"));
     }
 }
     

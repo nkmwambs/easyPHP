@@ -8,7 +8,7 @@ class Settings_Controller extends E_Controller
             
     }
     
-    public function viewSettings($render=1,$path="welcome/views",$tags=array("All")){
+    public function viewSettings($render=1,$path="",$tags=array("All")){
 		
     }
     
@@ -145,4 +145,85 @@ class Settings_Controller extends E_Controller
      public function confirmUserExist(){
          
      }
+	public function plansHeaderUpload($render=1,$path="",$tags=array("9")){
+		
+	}
+	public function uploadplansheader(){
+        set_time_limit(3600); 
+        $fy=$_POST['fy'];
+        $cond = $this->_model->where(array(array("where","fy",$fy,"=")));
+		$qry = $this->_model->getAllRecords($cond,"planheader");
+		$cnt = count($qry);
+		if($cnt>0){
+			print("Budgets for the FY{$fy} have already been initiated. Please consider deleting them or updating the records!");
+		}else{
+	        $file = $_FILES['plansheader']['tmp_name'];
+			$handle = fopen($file,"r");
+	    	$rec=array();
+			$recNums=0;
+			while($data = fgetcsv($handle,1000,",","'")){
+				$recNums++;
+				$rec['fy']=$data[0];
+				$rec['icpNo']=$data[1];
+				$this->_model->insertRecord($rec,"planheader");
+			}
+			print($recNums." records uploaded successfully!");
+			
+		}
+        
+    }
+	public function viewPlansHeader($render=2,$path="",$tags=array("9")){
+		//print("Hello All Of You");
+		$fy = $this->choice[1];
+		$cond = $this->_model->where(array(array("where","fy",$fy,"=")));
+		$qry = $this->_model->getAllRecords($cond,"plansheader",'ORDER BY icpNo ASC');
+		return $qry;
+	}
+	public function uploadSchedules(){
+		//print("Jesus!");
+		set_time_limit(3600);
+		$fy=$_POST['fy2'];
+		//print($fy);
+		$cond = $this->_model->where(array(array("where","plansheader.fy",$fy,"=")));
+		$qry = $this->_model->fetchSchedulesforFy($cond);
+		$cnt = count($qry);
+		if($cnt===0){
+			$file = $_FILES['plansschedules']['tmp_name'];
+			if(empty($file)){
+				print("Browse to Upload a file");	
+			}else{
+				$handle = fopen($file, "r");
+				$rec=array();
+				$recNum=0;
+				while($data=fgetcsv($handle,1000,",","'")){
+					$recNum++;
+					$rec['planHeaderID']=$data[0];
+					$rec['AccNo']=$data[1];
+					$rec['details']=$data[2];
+					$rec['qty']=$data[3];
+					$rec['unitCost']=$data[4];
+					$rec['often']=$data[5];
+					$rec['totalCost']=$data[6];
+					$rec['JulAmt']=$data[7];
+					$rec['AugAmt']=$data[8];
+					$rec['SepAmt']=$data[9];
+					$rec['OctAmt']=$data[10];
+					$rec['NovAmt']=$data[11];
+					$rec['DecAmt']=$data[12];
+					$rec['JanAmt']=$data[13];
+					$rec['FebAmt']=$data[14];
+					$rec['MarAmt']=$data[15];
+					$rec['AprAmt']=$data[16];
+					$rec['MayAmt']=$data[17];
+					$rec['JunAmt']=$data[18];
+					$this->_model->insertRecord($rec,"plansschedule");
+				}
+				print($recNum ." records uploaded successfully!");
+			}
+				
+			
+		}else{
+			print("Mass upload aborted because some budget schedules for FY{$fy} have already been uploaded. Please consider deleting them or updating the records!");
+		}
+	}
 }

@@ -350,8 +350,7 @@ class Finance_Controller extends E_Controller
         $schedule = $this->_model->getSchedule($schedule_cond);
         print_r(json_encode($schedule));
     }
-    public function viewAllSchedules(){
-        //echo "Budget Schedules View for FY".$this->choice[1];
+    public function viewAllSchedules($render=2,$path="",$tags=array("1")){
         if($this->choice[2]==="scheduleID"){
             $scheduleID=  $this->choice[3];
             $del_cond = $this->_model->where(array(array("where","scheduleID",$scheduleID,"=")));
@@ -360,7 +359,6 @@ class Finance_Controller extends E_Controller
         $fy = $this->choice[1];
         $schedules_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$_SESSION['fname'],"=")));
         $schedules = $this->_model->getScheduleWithAcNames($schedules_cond);
-        //print_r($schedules);
         
         $acDetails=array();
         foreach ($schedules as $filter):
@@ -372,7 +370,6 @@ class Finance_Controller extends E_Controller
         endforeach;
         
         $totals=$this->_model->getSchedulesSummaryWithAcNames($schedules_cond);
-        //array_unique((array)$acDetails);
         $data[]=$acDetails;
         $data[]=$schedules;
         $data[]=$totals;
@@ -846,7 +843,7 @@ public function addStmtCash(){
 	$day = date("t",strtotime($_POST['bsCashOpBalDate']));	
 	
 	$cond = $this->_model->where(array(array("where","month",$_POST['bsCashOpBalDate'],"="),array("AND","icpNo",Resources::session()->fname,"=")));
-	$qry = $this->_model->getAllRecords($cond,"cashbal");
+	$qry = $this->_model->getAllRecords($cond,"statementbal");
 	$cnt = count($qry);
 	
 	if($cnt===0){
