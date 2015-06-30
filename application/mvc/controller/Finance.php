@@ -7,10 +7,12 @@ class Finance_Controller extends E_Controller
         $this->_model=new Finance_Model("voucher_header");  
         //$this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
     }
-    public function switchboard($render=1){
+    public function switchboard($render=1,$path='',$tags=array("2","3","9")){
         return $cluster = $this->_model->getClusters();
-        //$this->dispatch("",$cluster);
     }
+	public function view($render=1,$path="",$tags=array("All")){
+		
+	}
 
     public function viewAll($render=1){
             //$this->dispatch();
@@ -51,17 +53,17 @@ class Finance_Controller extends E_Controller
                 echo $e->errorMessage();
             } 
     }
-    public function ecjOther($render=1){
+    public function ecjOther($render=1,$path='',$tags=array("2","3")){
         if(isset($_POST['icpSelector'])){
-                    $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"icpSelector")),"=")));
+                    $cond = $this->model->where(array(array("where","fname",trim(filter_input(INPUT_POST,"icpSelector")),"=")));
         }elseif(isset ($this->choice[1])) {
-            $cond = $this->model->where(array("where"=>array("username",  $this->choice[1],"=")));
+            $cond = $this->model->where(array(array("where","fname",  $this->choice[1],"=")));
         }
                     $results = $this->_model->getAllRecords($cond,"Users");
                 foreach($results[0] as $key=>$value):
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
-              $cds = $this->_model->where(array("where"=>array("icpNo",$_SESSION['username_backup'],"="),"AND"=>array("Month(`TDate`)",date('m'),"=")));  
+              $cds = $this->_model->where(array(array("where","icpNo",$_SESSION['username_backup'],"="),array("AND","Month(`TDate`)",date('m'),"=")));  
             
             $data[]=$this->_model->accounts();
             $data[] = $this->_model->getVoucherForEcj($cds);
@@ -152,7 +154,7 @@ class Finance_Controller extends E_Controller
                 
             } 
     }
-    public function ppbfOther($render=1){
+    public function ppbfOther($render=1,$path='',$tags=array("2","3")){
         if(isset($this->choice[1])){
             $icp_cond = $this->_model->where(array(array("where","icpNo",  $this->choice[1],"=")));
         }else{
@@ -567,7 +569,7 @@ class Finance_Controller extends E_Controller
             
     }
 
-    public function disbursement($render=1,$path="",$tags=array("1")){
+    public function disbursement($render=1,$path="",$tags=array("1","3")){
             
     } 
     public function uploadFundsList(){
@@ -586,11 +588,19 @@ class Finance_Controller extends E_Controller
       
     }
 
-    public function fundsCategories($render=1){
+    public function fundsCategories(){
+    	if(isset($this->choice[1])){
+    		//$this->dispatch($render=2,'fundsCategories',$data,array("2","3"));
+    	}else{
+    		$cond = $this->_model->where(array(array("where","Month",date('Y-m-01',strtotime('-1 month')),"=")));
+			$qry = $this->_model->getAllRecords($cond,"fundsschedule","LIMIT 0,10");
+    		$this->dispatch($render=1,'fundsCategories',$qry,array("2","3"));
+    	}
                     
     }
 
-    public function fundsUpload($render=1){
+    public function fundsUpload($render=1,$path='',$tags=array("3")){
+    	
            
     }
 
@@ -701,7 +711,7 @@ class Finance_Controller extends E_Controller
 		return $rst;
 
     }
-public function civ($render=1){       
+public function civ($render=1,$path='',$tags=array("3")){       
         $civa_cond = $this->_model->where(array(array("where","civa.open","1","="),array("AND","accounts.AccGrp","0","=")));
         //$civa = $this->_model->getAllRecords($civa_cond,"civa");
         $civa[] = $this->_model->civaExpenseAccounts($civa_cond);
@@ -711,9 +721,19 @@ public function AddCIVA($render=1){
            
 }
 
-public function viewFunds($render=1){
-            $funds_cond=  $this->_model->where(array(array("where","Month",date('Y-m-01'),"=")));
-            return $funds = $this->_model->getAllRecords($funds_cond,"fundsschedule","LIMIT 0,100");
+public function viewFunds(){
+			if(isset($this->choice[1])){
+				$funds_cond=  $this->_model->where(array(array("where","Month",date('Y-m-01',$this->choice[1]),"=")));
+            	$funds[] = $this->_model->getAllRecords($funds_cond,"fundsschedule","LIMIT 0,100");
+				$funds[]=$this->choice[1];
+				$this->dispatch($render=2,"viewFunds",$funds,array("2","3"));
+			}else{
+				$funds_cond=  $this->_model->where(array(array("where","Month",date('Y-m-01'),"=")));
+            	$funds[] = $this->_model->getAllRecords($funds_cond,"fundsschedule","LIMIT 0,100");
+				$funds[]=time();
+				$this->dispatch($render=1,"viewFunds",$funds,array("2","3"));
+			}
+
 
 }
 public function fundsOpBal($render=1,$path="",$tags=array("1")){

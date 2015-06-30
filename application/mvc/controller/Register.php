@@ -6,36 +6,29 @@ private $_model;
         $this->_model=new Register_Model("users");
     }
 
-    public function userRegister() {
-		$menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view();
-		$this->template->view("Welcome/footer");            
+    public function userRegister($render=1,$path="",$tags=array("0","All")) {
+		//$menu=$this->model->getAllRecords("","menu");
+		//$this->load_menu->menu($menu);
+		//$this->template->view();
+		//$this->template->view("Welcome/footer");            
         }
 
     public function submitUser(){
-           //function encryptPwd($value,$key){
-             //   if($key==='password'){
-               //     $hashPass = md5($value);
-                   // $_POST[$key]=$hashPass;
+
+            //foreach($_POST as $key=>$value):
+              //  if($key==='password'){
+                //    $_POST[$key]=  md5($value);
                 //}
-            //}
-            foreach($_POST as $key=>$value):
-                if($key==='password'){
-                    $_POST[$key]=  md5($value);
-                }
-            endforeach; 
+            //endforeach; 
             array_pop($_POST);
-            $cond = $this->_model->where(array("where"=>array("username",$_POST['username'],"="),"OR"=>array("email",$_POST['email'],"=")));
+			$arr = $_POST;
+            $cond = $this->_model->where(array(array("where","username",$_POST['username'],"="),array("AND","uname",$_POST['uname'],"=")));
             $rst = $this->_model->getAllRecords($cond,"users");
             if(count($rst)===0){
-                //$post_array=array_pop($_POST);
-                //array_walk($_POST, "encryptPwd");      
-                //print_r($_POST);
                 
-                echo $this->_model->insertRecord($_POST,"users");
+                echo $this->_model->insertRecord($arr,"users");
             }  else {
-                echo "The username {$_POST['username']} or email {$_POST['email']} is already used!";
+                echo "The username {$_POST['username']} or email {$_POST['uname']} is already used!";
             }
         }
     public function changePwd(){

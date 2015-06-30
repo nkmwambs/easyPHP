@@ -1,9 +1,9 @@
 <?php
-    echo "<form id='frmClaim' method='POST' action='".url_tag("Claims/medicalClaimEntry")."' enctype='multipart/form-data'>";
+    echo "<form id='frmClaim' method='POST' action='".Resources::url("Claims/medicalClaimEntry")."' enctype='multipart/form-data'>";
 
 echo "<div onclick='addClaim(\"tblreqClaim\");' class='btn'>Add Record</div>"
-    . "<button formaction='".url_tag("Claims/medicalClaimEntry")."' formmethod='POST' class='btn'>Submit</button>"
-        . "<div class='btn' onclick='delRow(\"tblreqClaim\");'>Delete Row</div>".a_tag("Claims/viewMedicalClaims",""
+    . "<button formaction='".Resources::url("Claims/medicalClaimEntry")."' formmethod='POST' class='btn'>Submit</button>"
+        . "<div class='btn' onclick='delRow(\"tblreqClaim\");'>Delete Row</div>".Resources::a_href("Claims/viewMedicalClaims",""
                 . "<div class='btn' >View</div>")."";
 
 

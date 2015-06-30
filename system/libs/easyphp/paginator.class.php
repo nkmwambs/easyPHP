@@ -18,13 +18,15 @@ class Paginator extends E_model{
             
     public function get_num_records(){   
     $sql = "SELECT * FROM $this->table";
-    $retval = mysql_query($sql);
+    //$retval = mysql_query($sql);
+    $retval = $this->conn->prepare($sql);
+	$retval->execute();
     if(!$retval)
     {
       die('Could not get data: ' . mysql_error());
     }
-
-    $this->_rec_count = mysql_num_rows($retval);
+	$this->_rec_count=$retval->rowCount();
+    //$this->_rec_count = mysql_num_rows($retval);
     return $this->_rec_count;
     }
 
@@ -66,36 +68,36 @@ class Paginator extends E_model{
             {
             $last = $this->_page - 1;
 
-            $bar .= "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/0\">First Page</a> ";
-            $bar .= "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$last\">Previous Page</a> ";
+            $bar .= "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/0\">First Page</a> ";
+            $bar .= "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$last\">Previous Page</a> ";
             if(count($this->_grouped_pages)===1){
                 foreach ($this->_all_pages as $item):
                     $cur_page = $item-1;
-                    $bar .=  "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
+                    $bar .=  "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
                 endforeach;                
             }else{
                 foreach ($this->_grouped_pages[0] as $item):
                     $cur_page = $item-1;
-                    $bar .=  "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
+                    $bar .=  "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
                 endforeach;                 
             }
 
-            $bar .=  "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$this->_num_of_pages\">Last Page</a>";
+            $bar .=  "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$this->_num_of_pages\">Last Page</a>";
     }
     else if($this->_page === 0 )
     {
             if(count($this->_grouped_pages)===1){
                 foreach ($this->_all_pages as $item):
                     $cur_page = $item-1;
-                    $bar .=  "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
+                    $bar .=  "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
                 endforeach;                
             }else{
                 foreach ($this->_grouped_pages[0] as $item):
                     $cur_page = $item-1;
-                    $bar .=  "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
+                    $bar .=  "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$cur_page\">{$item}</a>";
                 endforeach;                 
             }
-            $bar .=  "<a class='nav_button'  href=\"".url_tag($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$this->_num_of_pages\">Last Page</a>";
+            $bar .=  "<a class='nav_button'  href=\"".Resources::url($GLOBALS['Controller'].DS.$GLOBALS['Method'])."/page/$this->_num_of_pages\">Last Page</a>";
     }
    
         $bar .="</div>";

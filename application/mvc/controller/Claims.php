@@ -12,26 +12,27 @@ class Claims_Controller extends E_Controller
 
     }
     
-    public function viewClaims($render=1,$path="welcome/views",$tags=array("All")) {
+    public function viewClaims($render=1,$path="",$tags=array("All")) {
 
     }
     
-    public function viewMedicalClaims(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
+    public function viewMedicalClaims($render=1,$path='',$tags=array("1","2")){
+    	Resources::import('easyphp.paginator');
+        $rec_cond=  $this->_model->where(array(array("where","userid",$_SESSION['ID'],"=")));
+        $recent = $this->_model->getAllRecords( $rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
         $this->limit = 4;
         $this->pagination=new Paginator("claims",$this->limit);
         $this->offset = $this->pagination->set_offset();
         
-        echo "Records #: ".$this->pagination->get_num_records()."<br>";
-        echo "Page No: ".$this->pagination->set_page()."<br>";
-        echo "Offset: ".$this->pagination->set_offset();
+        //echo "Records #: ".$this->pagination->get_num_records()."<br>";
+        //echo "Page No: ".$this->pagination->set_page()."<br>";
+        //echo "Offset: ".$this->pagination->set_offset();
         
         if($_SESSION['userlevel']==='1'){
-            $cond = $this->model->where(array("where"=>array("proNo",$_SESSION['username'],"=")));
+            $cond = $this->model->where(array(array("where","proNo",$_SESSION['username'],"=")));
             $dt = $this->model->getAllRecords($cond,"claims","LIMIT $this->offset,$this->limit");
         }elseif($_SESSION['userlevel']==='2'){
-            $cond = $this->model->where(array("where"=>array("cluster",$_SESSION['cst'],"=")));
+            $cond = $this->model->where(array(array("where","cluster",$_SESSION['cst'],"=")));
             $dt = $this->model->getAllRecords($cond,"claims","LIMIT $this->offset,$this->limit");
         }  else {
             
@@ -39,19 +40,11 @@ class Claims_Controller extends E_Controller
         }
         $pages = $this->pagination->paginate();
         $data = array($dt,$pages);
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
         
     }
-    public function newMedicalClaim(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);   
+    public function newMedicalClaim($render=1,$path='',$tags=array("1")){
+  
     }
     public function getCname() {
         $_cond = $this->model->where(array("where"=> array("childNo",$this->choice[1],"=")));
@@ -74,14 +67,15 @@ class Claims_Controller extends E_Controller
         echo $data;
     }
     
-    function medicalClaimEntry(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
+    function medicalClaimEntry($render=1,$path='',$tags=array("1")){
+        //$rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+        //$recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
+        //$menu = $this->model->getAllRecords("","menu");
+        //$this->load_menu->menu($menu);
         $data=$this->model->insertArray(filter_input_array(INPUT_POST),"claims");
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+        return $data;
+        //$this->template->view("",$data);
+        //$this->template->view("welcome/footer",$recent);
     }
     
     function remarkMedicalClaim(){
@@ -137,7 +131,7 @@ class Claims_Controller extends E_Controller
     }
     
     function postNote(){
-        $frmID = $_SESSION['userid'];
+        $frmID = $_SESSION['ID'];
         $msg = $this->choice[3];
         $tbl = "claims";
         $tIdFld = "rec";
@@ -258,28 +252,13 @@ class Claims_Controller extends E_Controller
         }
 
     }
-    public function newTVSClaim(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);
+    public function newTVSClaim($render=1,$path='',$tags=array("All")){
+        
     }
-   public function newMedicalRequest(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);
+   public function newMedicalRequest($render=1,$path='',$tags=array("All")){
+
     }
-   public function newHVCCPRClaim(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);
+   public function newHVCCPRClaim($render=1,$path='',$tags=array("All")){
+
     }    
 }

@@ -19,14 +19,14 @@ $sess = Resources::session();
     <?php
     //echo $sess->username;
         if($sess->username!=='Guest'){
-            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->username.'<span style="float:right;">&Del;</span>';
+            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->fname.'<span style="float:right;">&Del;</span>';
             echo '<ul>';
             echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/1","Register User",array("onclick"=>"")).'</li><hr>';
             if(isset($_SESSION['adm'])){echo '<li>'.Resources::img("switch.png").' '.Resources::a_href("Welcome/switchUser","Switch User").'</li><hr>';}
             echo "<li>".Resources::img("logout.png")." ".Resources::a_href("Welcome/logout/public/1","Log Out",array())."</li><hr>";
             echo '</ul>';
         }else{
-            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->username.' <span style="float:right;">&Del;</span>';
+            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->fname.' <span style="float:right;">&Del;</span>';
             echo '<ul>';
             echo '<li id="login_link">'. Resources::img("lock.png")." ". Resources::a_href("Welcome/login/public/1","Login").'</li><hr>';
             echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/1","Register User",array("onclick"=>"")).'</li><hr>';
@@ -51,7 +51,7 @@ $sess = Resources::session();
             
             <div id="breadcrump"><?php 
                 if(isset($sess->adm)&&$sess->adm==='1'){echo "<div class='alerts'>The Site is in Offline Mode.</div> ";} 
-                if(isset($sess->adm)&&$sess->adm==='2'&&$sess->adm!=="1"){echo "<div class='alerts'>You are on a Switch Mode (Your user profile is ".$_SESSION['username_backup']." ".Resources::img("user.png",array("id"=>"".$_SESSION['username_backup']."","onclick"=>'switchUser(this);',"style"=>'cursor:pointer;')).")</div>";}
+                //if(isset($sess->adm)&&$sess->adm==='2'&&$sess->adm!=="1"){echo "<div class='alerts'>You are on a Switch Mode (Your user profile is ".$_SESSION['username_backup']." ".Resources::img("user.png",array("id"=>"".$_SESSION['username_backup']."","onclick"=>'switchUser(this);',"style"=>'cursor:pointer;')).")</div>";}
                 ?>
             </div>
             <div id="error"><?php ?></div>

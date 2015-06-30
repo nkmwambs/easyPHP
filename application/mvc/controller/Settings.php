@@ -145,7 +145,7 @@ class Settings_Controller extends E_Controller
      public function confirmUserExist(){
          
      }
-	public function plansHeaderUpload($render=1,$path="",$tags=array("9")){
+	public function plansHeaderUpload($render=1,$path="",$tags=array("3","9")){
 		
 	}
 	public function uploadplansheader(){

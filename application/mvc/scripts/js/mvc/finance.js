@@ -7,9 +7,8 @@ var path = 'http://'+location.hostname+'/easyPHP/';
         }
        
        
-function showContent(el){
-    var icp = el.innerHTML;
-    //alert(icp);
+function showContents(el){
+    var icp = el.innerHTML; 
     var rds = document.getElementsByClassName("rds");
     //alert(rds.length);
     for(var i=0;i<rds.length;i++){
@@ -1226,6 +1225,24 @@ function selectSlip(tym){
         };
 
       xmlhttp.open("GET",path+"mvc/Finance/viewSlip/tym/"+tym+"/public/0",true);      
+      xmlhttp.send();
+}
+
+function selectDisburse(tym){
+		    xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('content').innerHTML=xmlhttp.responseText;
+                //sumEcj();
+                //document.write(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/viewFunds/tym/"+tym+"/public/0",true);      
       xmlhttp.send();
 }
 

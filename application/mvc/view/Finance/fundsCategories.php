@@ -1,3 +1,4 @@
 <?php
-echo "Am Here";
+//echo "Am Here";
+print_r($data);
 ?>

@@ -58,12 +58,14 @@ class E_Controller {
 		
 		
         $url = $this->Con."/".$this->Met;
-        $cond = $this->model->where(array("where"=>array("public",'1',"="),"AND"=>array("url",$url,"=")));
+        $cond = $this->model->where(array(array("where","public",'1',"="),array("AND","url",$url,"=")));
         $rst = $this->model->getAllRecords($cond);
         if(count($rst)===0&&$_SESSION["username"]==="Guest"){
-            if($this->choice[0]!=='public'&&$this->choice[1]!=='1'){
-                header("location:".Resources::url($GLOBALS['app_default_controller']."/".$GLOBALS['app_default_view']));
-            }
+           // if($this->choice[0]!=='public'&&$this->choice[1]!=='1'){
+                //header("location:".Resources::url($GLOBALS['app_default_controller']."/".$GLOBALS['app_default_view']));
+           //$this->dispatch($render=1,$path=$GLOBALS['app_default_controller']."/".$GLOBALS['app_default_view'],"",array("0"));
+			//}
+            
             
         }
 

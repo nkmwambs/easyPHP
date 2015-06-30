@@ -15,7 +15,7 @@ echo "<tr><th>Cluster</th><th>Implementing Church Partners</th></tr>";
 foreach($data as $key=>$value):
     echo "<tr><td>".$key." (".count($data[$key]).")</td><td>";
     foreach ($data[$key] as $icp):
-        echo "<div class='icpDivs' onclick='showContent(this);'>".$icp."</div>";
+        echo "<div class='icpDivs' onclick='showContents(this);'>".$icp."</div>";
     endforeach;
     echo "</td></tr>";
 endforeach;
