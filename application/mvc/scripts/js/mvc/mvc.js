@@ -182,36 +182,22 @@ function delRec(){
 }
 
 function login(){
-        xmlhttp.onreadystatechange=function() {
-            if (xmlhttp.readyState!==4) {
-              document.getElementById('overlay').style.display='block';
-              document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+	//alert("Hello");
+    var frm = document.getElementById('frmLogin');  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-                alert(xmlhttp.responseText);
-                //document.getElementById('content').innerHTML=xmlhttp.responseText;
-          }
+                //alert(xmlhttp.responseText);
+				document.write(xmlhttp.responseText);
+                }
+            
         };
-        //alert(val);
-    xmlhttp.open("GET",path+"mvc/Welcome/login",true);
-    xmlhttp.send();
+                                               
+         xmlhttp.open("POST",path+"/mvc/Welcome/log/public/0",true);
+         xmlhttp.send(frmData);
 }
-/**
-function testChoice(){
-	        xmlhttp.onreadystatechange=function() {
-            if (xmlhttp.readyState!==4) {
-              document.getElementById('overlay').style.display='block';
-              document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
-            }
-            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                document.getElementById('overlay').style.display='none';
-                alert(xmlhttp.responseText);
-                //document.getElementById('content').innerHTML=xmlhttp.responseText;
-          }
-        };
-       var testChoice=document.getElementById('user').value;
-    xmlhttp.open("GET",path+"mvc/Welcome/testChoice/testChoice/"+testChoice+"/public/1",true);
-    xmlhttp.send();
-}
-**/

@@ -906,7 +906,9 @@ function viewPlanSummary(){
       xmlhttp.send();   
 }
 function viewPlanSummaryByPf(icp){
+	//alert(icp);
            var fy=document.getElementById("curFy").value;
+           //alert(fy);
         xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';

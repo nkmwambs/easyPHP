@@ -16,7 +16,7 @@ class Claims_Controller extends E_Controller
 
     }
     
-    public function viewMedicalClaims($render=1,$path='',$tags=array("1","2")){
+    public function viewMedicalClaims($render=1,$path='',$tags=array("1","2","5")){
     	Resources::import('easyphp.paginator');
         $rec_cond=  $this->_model->where(array(array("where","userid",$_SESSION['ID'],"=")));
         $recent = $this->_model->getAllRecords( $rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
@@ -32,7 +32,7 @@ class Claims_Controller extends E_Controller
             $cond = $this->model->where(array(array("where","proNo",$_SESSION['username'],"=")));
             $dt = $this->model->getAllRecords($cond,"claims","LIMIT $this->offset,$this->limit");
         }elseif($_SESSION['userlevel']==='2'){
-            $cond = $this->model->where(array(array("where","cluster",$_SESSION['cst'],"=")));
+            $cond = $this->model->where(array(array("where","cluster",$_SESSION['cname'],"=")));
             $dt = $this->model->getAllRecords($cond,"claims","LIMIT $this->offset,$this->limit");
         }  else {
             
@@ -80,7 +80,7 @@ class Claims_Controller extends E_Controller
     
     function remarkMedicalClaim(){
         if($this->choice[5]>0){
-            $del=img_tag("diskdel.png",array("title"=>"Delete Receipt","style"=>"border:2px red solid;margin:2px;"));
+            $del=Resources::img("diskdel.png",array("title"=>"Delete Receipt","style"=>"border:2px red solid;margin:2px;"));
             $rnd =$this->choice[5];      
         }else{
             $del="";
@@ -90,11 +90,11 @@ class Claims_Controller extends E_Controller
         $cond = $this->model->where(array("where"=>  array("rec",  $this->choice[3],"=")));
         $rlst = $this->model->updateQuery($set,$cond,"claims");
         
-        if($rlst===1&&$this->choice[1]==='0'&&$_SESSION['userlevel']==='2'){echo img_tag("waiting.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Unapproved","id"=>"rmk_".$this->choice[3],"onclick"=>"editRemarks(this,2,$rnd);"))."".img_tag("reject.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Reject","id"=>"rmk_".$this->choice[3]."","onclick"=>"editRemarks(this,1,$rnd);"))."".$del;} 
+        if($rlst===1&&$this->choice[1]==='0'&&$_SESSION['userlevel']==='2'){echo Resources::img("waiting.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Unapproved","id"=>"rmk_".$this->choice[3],"onclick"=>"editRemarks(this,2,$rnd);"))."".Resources::img("reject.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Reject","id"=>"rmk_".$this->choice[3]."","onclick"=>"editRemarks(this,1,$rnd);"))."".$del;} 
 
-        elseif ($rlst===1&&$this->choice[1]==='1') {echo img_tag("unreject.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Approve/ Unreject","id"=>"rmk_".$this->choice[3]."","onclick"=>"editRemarks(this,2,$rnd);"))."".$del;}
+        elseif ($rlst===1&&$this->choice[1]==='1') {echo Resources::img("unreject.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Approve/ Unreject","id"=>"rmk_".$this->choice[3]."","onclick"=>"editRemarks(this,2,$rnd);"))."".$del;}
         
-        elseif ($rlst===1&&$this->choice[1]==='2'&&$_SESSION['userlevel']==='2') {echo img_tag("approved.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Approved","id"=>"rmk_".$this->choice[3],"onclick"=>"editRemarks(this,0,$rnd);"))."".$del;}
+        elseif ($rlst===1&&$this->choice[1]==='2'&&$_SESSION['userlevel']==='2') {echo Resources::img("approved.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Approved","id"=>"rmk_".$this->choice[3],"onclick"=>"editRemarks(this,0,$rnd);"))."".$del;}
         
         elseif ($rlst===1&&$this->choice[1]==='2'&&$_SESSION['userlevel']==='5') {echo "<button style='background-color:red;' onclick='editRemarks(this,4,$rnd);'>Process</button><button style='background-color:pink;' onclick='editRemarks(this,3,$rnd);'>Reject</button>"."".$del;}
         

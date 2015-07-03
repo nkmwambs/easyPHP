@@ -3,7 +3,7 @@ $sess = Resources::session();
 ?>
 <html>
     <head>
-        <title>Toolkit | Compassion Kenya</title>
+        <title><?php echo $sess->fname;?> - Toolkit | Compassion Kenya</title>
         <?php
         //Resources::link_tag(array("coolBlue_template.css","elements.css","designerTables.css","error.css"));
         Resources::link(array("elements.css"));

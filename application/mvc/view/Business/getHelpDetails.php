@@ -1,8 +1,8 @@
 <?php
 $priority =array("Low","Medium","High");
 $state=array("New","In-Progress","Resolved","Closed");
-if($_SESSION['usrlvl']==='14'||$_SESSION['usrlvl']==='15'){$disp="block";}else{$disp="none";}
- echo '<div>'.a_tag("Business/helpdesk",img_tag("doc.png")).' View |</div>';
+if($_SESSION['userlevel']==='14'||$_SESSION['userlevel']==='15'){$disp="block";}else{$disp="none";}
+ echo '<div>'.Resources::a_href("Business/helpdesk",Resources::img("doc.png")).' View |</div>';
 ?>
 <div style="background-color: lightcoral;padding: 10px; border-radius: 8px;color:white;">
 <?php

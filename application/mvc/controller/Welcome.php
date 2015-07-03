@@ -15,12 +15,17 @@ public $_model;
             return $data;
     }
 
-    public function show($render=1,$path="",$tags=array("0")){
+    public function show(){
+    	if(Resources::ie_detect()===1){
 			if(!isset($_SESSION['username'])){
                 $_SESSION['username']="Guest";
                 $_SESSION['userlevel']='0';
 				$_SESSION['ID']='0';
             }
+			$this->dispatch($render=1,$path="show","",$tags=array("0"));
+		}else {
+			$this->dispatch($render=2,$path="browser","",$tags=array("0"));
+		}
          
     }
     public function login() {
@@ -37,12 +42,12 @@ public $_model;
  
 
        
-        $results = $this->_model->getAllRecords($cond,"Users");
+        $results = $this->_model->getAllRecords($cond,"users");
         
         if(is_array($results)&&sizeof($results)>0){
 
 			 users::log_sessions($results);
-            $this->dispatch(1,"show",$_SESSION['fname'],array("0"));
+            $this->dispatch($render=1,$path="show",$data=$_SESSION['fname'],$tags=array("0"));
 
         }  else {
                     $data="";  
@@ -57,10 +62,10 @@ public $_model;
             $_SESSION["username"]="Guest";
             $_SESSION["userlevel"]='0';
 			$_SESSION["ID"]='0';
-            $this->dispatch($render=1,"",$data,array("0"));
+            $this->dispatch($render=1,$path='login',$data,$tags=array("0"));
         }
     }else{
-        $this->dispatch(1,"","",array("0"));
+        $this->dispatch(1,$path='login',$data="",array("0"));
     }
 }
     

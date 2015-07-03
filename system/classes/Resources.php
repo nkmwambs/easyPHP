@@ -14,6 +14,15 @@ class Resources{
 		
 		require_once $fPath;
 	}
+public static function ie_detect()
+{
+	 if ( strpos($_SERVER['HTTP_USER_AGENT'], ' rv:11.0') ){
+        //header( 'Location: http://www.domain.com' ) ;
+        return 1;
+    }else{
+    	return 0;
+    }
+}	 
 	 
 public static function url($url){
     return HOST_NAME.DS."easyPHP/".$GLOBALS['app']."/".$url;
@@ -148,7 +157,7 @@ public static function script($scripts){
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<script src='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['app'].DS.$file."'></script>\n";
+                print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['app'].DS.$file."'></script>\n";
             }
         }
         closedir($dh);
@@ -163,7 +172,7 @@ public static function script($scripts){
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<script src='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['Controller'].DS.$file."'></script>\n";
+                print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['Controller'].DS.$file."'></script>\n";
             }
         }
         closedir($dh);
@@ -176,20 +185,20 @@ public static function script($scripts){
     //Load specified js file in js folders. App level js has high preference
     foreach ($scripts as $value) {
         if(!file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$value)){
-            print "<script src='".PATH.DS."system".DS."scripts".DS."js".DS.$value."'></script>\n";
+            print "<script src='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."js".DS.$value."'></script>\n";
         }  else {
-            print "<script src='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$value."'></script>\n";
+            print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$value."'></script>\n";
         }
     }
     
       //Load single default app level js
     if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$GLOBALS['app'].".js")){
-        print "<script src='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['app'].".js'></script>\n";
+        print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['app'].".js'></script>\n";
     }
     
     //Load single default Controller level js
     if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$GLOBALS['Controller'].".js")){
-        print "<script src='".PATH.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['Controller'].".js'></script>\n";
+        print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['Controller'].".js'></script>\n";
     }
 	$dir = BASE_PATH.DS.'system'.DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS.'scripts'.DS."js";
     
@@ -197,7 +206,7 @@ public static function script($scripts){
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<script src='".PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."scripts".DS."js".DS.$file."'></script>\n";
+                print "<script src='".HOST_NAME.DS.'easyPHP'.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."scripts".DS."js".DS.$file."'></script>\n";
             }
         }
         closedir($dh);

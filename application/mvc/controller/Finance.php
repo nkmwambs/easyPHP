@@ -399,7 +399,7 @@ class Finance_Controller extends E_Controller
         $data[]=$fy;
         return $data;
     }
-    public function viewPlanSummaryByPf($render=1){
+    public function viewPlanSummaryByPf($render=2,$path='',$tags=array("2")){
         $fy = $this->choice[1];
         $icpNo = $this->choice[3];
         //if($_SESSION['userlevel']==="1"){
@@ -569,7 +569,7 @@ class Finance_Controller extends E_Controller
             
     }
 
-    public function disbursement($render=1,$path="",$tags=array("1","3")){
+    public function disbursement($render=1,$path="",$tags=array("1","2","3")){
             
     } 
     public function uploadFundsList(){
