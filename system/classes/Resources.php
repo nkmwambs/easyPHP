@@ -1,7 +1,7 @@
 <?php
 class Resources{
-
-	 public static function import($path){
+	
+public static function import($path){
 		$path_arr = explode(".", $path);
 		$path_str="";
 		foreach($path_arr as $value):
@@ -10,10 +10,22 @@ class Resources{
 
 		if(file_exists(BASE_PATH.DS."system".DS."libs".$path_str.".class.php")){
 			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".class.php";
+		}else{
+			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".php";
 		}
 		
 		require_once $fPath;
 	}
+
+public static function mailing($mailto,$mailfrom,$subject,$msg){
+
+ 	// use wordwrap() if lines are longer than 70 characters
+ 	$msg = wordwrap($msg,70);
+
+ 	// send email
+ 	mail($mailto,$subject,$msg,$mailfrom);
+}
+
 public static function ie_detect()
 {
 	 if ( strpos($_SERVER['HTTP_USER_AGENT'], ' rv:11.0') ){

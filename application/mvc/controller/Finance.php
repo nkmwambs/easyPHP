@@ -633,7 +633,17 @@ class Finance_Controller extends E_Controller
             //echo "You have skipped some cheques!";
         //}
     }
-    
+    public function downloadVoucher($render=2,$path="",$tags=array("All")){
+    	$VNum=  $this->choice[1];
+	        if($_SESSION['userlevel']==="1"){
+	            $icpNo = $_SESSION['username'];
+	        }  elseif ($_SESSION['userlevel']==="2") {
+	            $icpNo = $_SESSION['username_backup'];
+	        }  else {
+	            
+	        }
+   		return $this->_model->showVoucher($VNum,$icpNo);
+    }
     public function postVoucher(){
         //print_r(filter_input_array(INPUT_POST));
         $header = array();

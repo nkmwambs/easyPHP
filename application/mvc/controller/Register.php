@@ -22,15 +22,17 @@ private $_model;
             //endforeach; 
             array_pop($_POST);
 			$arr = $_POST;
-            $cond = $this->_model->where(array(array("where","username",$_POST['username'],"="),array("AND","uname",$_POST['uname'],"=")));
+			//print_r($arr);
+            $cond = $this->_model->where(array(array("where","fname",$arr['fname'],"="),array("OR","uname",$arr['uname'],"=")));
             $rst = $this->_model->getAllRecords($cond,"users");
+			//print_r($rst);
             if(count($rst)===0){
-                
-                echo $this->_model->insertRecord($arr,"users");
+                print(count($rst));
+                //echo $this->_model->insertRecord($arr,"users");
             }  else {
                 echo "The username {$_POST['username']} or email {$_POST['uname']} is already used!";
-            }
-        }
+            }   
+	}
     public function changePwd(){
             //print_r($_POST);
         $encrypt_pwd = md5($_POST['oldPassword']);
@@ -52,4 +54,22 @@ private $_model;
             echo "User with the provided current password is unavailable";
         }
     }    
+public function forgotPass(){
+                $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+                $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
+                $data = $this->_model->getAllRecords("","securityqueries");
+                $menu=$this->model->getAllRecords("","menu");
+		$this->load_menu->menu($menu);
+		$this->template->view("",$data);
+		$this->template->view("Basic/footer",$recent);
+        }
+
+        public function newPassReset(){
+            $pwd=  md5($_POST['password']);
+            $sets = array('password'=>$pwd);
+            $newPwd_cond = $this->_model->where(array("where"=>array("ID",$_SESSION['ID'],"=")));
+            $newPwd_rst = $this->_model->updateQuery($sets,$newPwd_cond,"users");
+            echo $newPwd_rst;
+        }
+
 }
