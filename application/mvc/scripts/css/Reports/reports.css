@@ -1,0 +1,27 @@
+.highlight
+{
+	//background-color:yellow;
+	color:red;
+	font-weight:bold;
+}
+.heading
+{
+	background-color:#C8E3FF; 
+	box-shadow: 5px 5px 5px #888888;
+	font-weight:bold;
+	padding-left:5px;
+}
+#topDiv
+{
+	border:1px outset gray; 
+	min-height:1200px;
+	width:95%;
+	margin-top:80px;
+	margin-left:auto;
+	margin-right:auto;
+	padding:30px 10px 10px 10px;
+	font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+.info{
+	cursor: pointer;
+}
