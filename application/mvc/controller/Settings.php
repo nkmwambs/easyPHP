@@ -146,6 +146,9 @@ class Settings_Controller extends E_Controller
          
      }
 	public function plansHeaderUpload($render=1,$path="",$tags=array("3","9")){
+		$cond  = $this->_model->where(array(array("where","userlevel",1,"=")));
+		$qry=$this->_model->getAllRecords($cond,"users",'ORDER BY fname ASC');
+		return $qry;
 		
 	}
 	public function uploadplansheader(){
@@ -172,23 +175,37 @@ class Settings_Controller extends E_Controller
 		}
         
     }
-	public function viewPlansHeader($render=2,$path="",$tags=array("9")){
+	public function viewPlansHeader($render=2,$path="",$tags=array("3","9")){
 		//print("Hello All Of You");
 		$fy = $this->choice[1];
 		$cond = $this->_model->where(array(array("where","fy",$fy,"=")));
-		$qry = $this->_model->getAllRecords($cond,"plansheader",'ORDER BY icpNo ASC');
+		$qry = $this->_model->getAllRecords($cond,"planheader",'ORDER BY icpNo ASC');
 		return $qry;
 	}
 	public function uploadSchedules(){
 		//print("Jesus!");
 		set_time_limit(3600);
 		$fy=$_POST['fy2'];
+		$icpNo = $_POST['icpNo'];
+		$planType=$_POST['planType'];
 		//print($fy);
-		$cond = $this->_model->where(array(array("where","plansheader.fy",$fy,"=")));
-		$qry = $this->_model->fetchSchedulesforFy($cond);
-		$cnt = count($qry);
-		if($cnt===0){
-			$file = $_FILES['plansschedules']['tmp_name'];
+		//$cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$icpNo,"=")));
+		$cond = $this->_model->where(array(array("where","fy",$fy,"="),array("AND","icpNo",$icpNo,"=")));
+		//$qry = $this->_model->fetchSchedulesforFy($cond);
+		$qry=$this->_model->getAllRecords($cond,"planheader");
+		$planHeaderID=$qry[0]->planHeaderID;
+		
+		$cond_schedules = $this->_model->where(array(array("where","planHeaderID",$planHeaderID,"="),array("AND","planType",$planType,"=")));
+		$qry_schedules = $this->_model->getAllRecords($cond_schedules,"plansschedule");
+		
+		
+		$cnt = count($qry_schedules);
+		if($cnt>0){
+			$this->_model->deleteQuery($cond_schedules,"plansschedule");
+			print("Budget schedules for {$icpNo} for  FY{$fy} had already been uploaded. The previous schedules have been deleted!\n");
+			//print("Budget header not available!");
+		}
+		$file = $_FILES['plansschedules']['tmp_name'];
 			if(empty($file)){
 				print("Browse to Upload a file");	
 			}else{
@@ -197,34 +214,31 @@ class Settings_Controller extends E_Controller
 				$recNum=0;
 				while($data=fgetcsv($handle,1000,",","'")){
 					$recNum++;
-					$rec['planHeaderID']=$data[0];
-					$rec['planType']=$data[1];
-					$rec['AccNo']=$data[2];
-					$rec['details']=$data[3];
-					$rec['qty']=$data[4];
-					$rec['unitCost']=$data[5];
-					$rec['often']=$data[6];
-					$rec['totalCost']=$data[7];
-					$rec['JulAmt']=$data[8];
-					$rec['AugAmt']=$data[9];
-					$rec['SepAmt']=$data[10];
-					$rec['OctAmt']=$data[11];
-					$rec['NovAmt']=$data[12];
-					$rec['DecAmt']=$data[13];
-					$rec['JanAmt']=$data[14];
-					$rec['FebAmt']=$data[15];
-					$rec['MarAmt']=$data[16];
-					$rec['AprAmt']=$data[17];
-					$rec['MayAmt']=$data[18];
-					$rec['JunAmt']=$data[19];
+					$rec['planHeaderID']=$planHeaderID;
+					$rec['planType']=$planType;
+					$rec['AccNo']=$data[0];
+					$rec['details']=$data[1];
+					$rec['qty']=$data[2];
+					$rec['unitCost']=$data[3];
+					$rec['often']=$data[4];
+					$rec['totalCost']=$data[5];
+					$rec['JulAmt']=$data[6];
+					$rec['AugAmt']=$data[7];
+					$rec['SepAmt']=$data[8];
+					$rec['OctAmt']=$data[9];
+					$rec['NovAmt']=$data[10];
+					$rec['DecAmt']=$data[11];
+					$rec['JanAmt']=$data[12];
+					$rec['FebAmt']=$data[13];
+					$rec['MarAmt']=$data[14];
+					$rec['AprAmt']=$data[15];
+					$rec['MayAmt']=$data[16];
+					$rec['JunAmt']=$data[17];
+					$rec['notes']=$data[18];
 					$this->_model->insertRecord($rec,"plansschedule");
 				}
 				print($recNum ." records uploaded successfully!");
 			}
-				
-			
-		}else{
-			print("Mass upload aborted because some budget schedules for FY{$fy} have already been uploaded. Please consider deleting them or updating the records!");
-		}
+
 	}
 }

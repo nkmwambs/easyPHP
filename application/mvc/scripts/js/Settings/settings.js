@@ -72,3 +72,6 @@ function viewSchedulesUploads(elem){
 	alert(elem.parentNode.parentNode.cells[1].innerHTML);
 	var headerID = elem.parentNode.parentNode.cells[1].innerHTML;
 }
+function deleteSchedules(){
+	alert("Hello");
+}

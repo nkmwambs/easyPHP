@@ -4,12 +4,18 @@ class Reports_Controller extends E_Controller
     public $_model;
     public function __construct(){
         parent::__construct();
-        $this->_model=new Reports_Model("recent");
+        $this->_model=new Reports_Model("users");
     }
-    public function viewAll($render=1,$path="",$tags=array("All")){
-        $data = "All Reports!";
-		return $data;
+    public function viewAll($render=1,$path="",$tags=array("3","9")){
+        //$data = "All Reports!";
+		//return $data;
+		return $this->_model->getAllRecords("","queries");
     }
+	public function queryView($render=2,$path='',$tags=array("3","9")){
+		$sql = "SELECT ".$_POST['query'];
+		return $this->_model->queryTables($sql);
+		//print($sql);
+	}
     public function csp($render=1,$path="",$tags=array("All")){
         $data = "CSP Report!";
 		return $data;

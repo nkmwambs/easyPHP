@@ -161,20 +161,20 @@ class Finance_Controller extends E_Controller
            $icp_cond = $this->_model->where(array(array("where","icpNo",$_POST['icpSelector'],"="))); 
         }
         
-        return $icp_arr = $this->_model->getAllRecords($icp_cond,"plansHeader");
+        return $icp_arr = $this->_model->getAllRecords($icp_cond,"planheader");
         
     }
 
         public function getPpbf($render=1){
         if($_SESSION['userlevel']==="1"){ 
             if($this->choice[1]==='1'||$this->choice[1]==='2'){
-                $plan_cond = $this->_model->where(array(array("WHERE","plansheader.icpNo",$_SESSION['username'],"="),array("AND","plansheader.fy",$this->choice[3],"="),array("AND","plansheader.planType",  $this->choice[1],"=")));
+                $plan_cond = $this->_model->where(array(array("WHERE","planheader.icpNo",$_SESSION['username'],"="),array("AND","planheader.fy",$this->choice[3],"="),array("AND","planheader.planType",  $this->choice[1],"=")));
             }
             }elseif ($_SESSION['userlevel']==="2") {
-                $plan_cond = $this->_model->where(array(array("AND","plansheader.planHeaderID",$this->choice[1],"=")));
+                $plan_cond = $this->_model->where(array(array("AND","planheader.planHeaderID",$this->choice[1],"=")));
                 
             }else{
-                $plan_cond = $this->_model->where(array(array("AND","plansheader.planHeaderID",$this->choice[1],"=")));
+                $plan_cond = $this->_model->where(array(array("AND","planheader.planHeaderID",$this->choice[1],"=")));
                 
             }
             $plan =  $this->_model->getPpbfModel($plan_cond);
@@ -201,7 +201,7 @@ class Finance_Controller extends E_Controller
     }
     
     public function searchPlan(){
-                $chk_cond = $this->_model->where(array(array("where","plansheader.icpNo",$_SESSION['username'],"="),array("AND","plansheader.planType",$this->choice[1],"="),array("AND","plansheader.fy",$this->choice[3],"=")));
+                $chk_cond = $this->_model->where(array(array("where","planheader.icpNo",$_SESSION['username'],"="),array("AND","planheader.planType",$this->choice[1],"="),array("AND","planheader.fy",$this->choice[3],"=")));
                 $chk =  $this->_model->getPpbfModel($chk_cond);
                 if(empty($chk)){
                     echo 0;
@@ -225,7 +225,7 @@ class Finance_Controller extends E_Controller
         $fy = $header_arr['fy'];
         $icpNo = $header_arr['icpNo'];
         $chk_header_cond = $this->_model->where(array(array("where","planType",$planType,"="),array("AND","fy",$fy,"="),array("AND","icpNo",$icpNo,"=")));
-        $chk_header_exists = $this->_model->getAllRecords($chk_header_cond,"plansHeader");
+        $chk_header_exists = $this->_model->getAllRecords($chk_header_cond,"planheader");
          
         $approved = $chk_header_exists[0]->approved;
         if($approved==="1"){
@@ -234,12 +234,12 @@ class Finance_Controller extends E_Controller
                 $cur_planid = $chk_header_exists[0]->planHeaderID;
 
                 if(count($chk_header_exists)>0){
-                    $this->_model->deleteQuery($chk_header_cond,"plansHeader");
+                    $this->_model->deleteQuery($chk_header_cond,"planheader");
                 }
-                    //echo $this->_model->insertRecord($header_arr,"plansHeader");
-                    $this->_model->insertRecord($header_arr,"plansHeader");
+                    //echo $this->_model->insertRecord($header_arr,"planheader");
+                    $this->_model->insertRecord($header_arr,"planheader");
 
-                $cur_plan = $this->_model->getAllRecords($chk_header_cond,"plansHeader");
+                $cur_plan = $this->_model->getAllRecords($chk_header_cond,"planheader");
                 //print_r($cur_plan);
                 $new_planid = $cur_plan[0]->planHeaderID; 
 
@@ -265,7 +265,7 @@ class Finance_Controller extends E_Controller
             $approve_set = array("approved"=>"1");
             $msg = "Plan approved Successfully!";
         }
-        $rst = $this->_model->updateQuery($approve_set,$approve_cond,"plansheader");
+        $rst = $this->_model->updateQuery($approve_set,$approve_cond,"planheader");
         if($rst===1){
             echo $msg;
         }  else {
@@ -633,7 +633,7 @@ class Finance_Controller extends E_Controller
             //echo "You have skipped some cheques!";
         //}
     }
-    public function downloadVoucher($render=2,$path="",$tags=array("All")){
+    public function downloadVoucher($render=2,$path='',$tags=array("1")){
     	$VNum=  $this->choice[1];
 	        if($_SESSION['userlevel']==="1"){
 	            $icpNo = $_SESSION['username'];

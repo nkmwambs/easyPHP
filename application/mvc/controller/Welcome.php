@@ -93,27 +93,25 @@ public $_model;
         
         
     }
-    public function switchUser(){
-            $cond="";
+    public function switchUser($render=1,$path="",$tags=array("All")){
+			
             if(!isset($_POST)){
-                $this->dispatch("","",array("9"));
+                 $cond = $this->model->where(array(array("where","username",$this->choice[1],"=")));
             }else{
-                if(isset($_POST['username'])){
-                    $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"=")));
-                }elseif(isset ($this->choice[1])){
-                    $cond = $this->model->where(array("where"=>array("username",  $this->choice[1],"=")));
-                    
-                }
-                    $results = $this->_model->getAllRecords($cond,"Users");
+            	 $cond = $this->model->where(array(array("where","username",$_POST["username"],"=")));
+             }
+			      
+                    $results = $this->_model->getAllRecords($cond,"users");
         
                     if(is_array($results)&&sizeof($results)>0){
                             foreach($results[0] as $key=>$value):
                                 $_SESSION[$key]=$value;
                             endforeach;
                     }
-                    
-                    $this->dispatch("",$_SESSION['fname'],array("9"));
-            }
+
+                    return $_SESSION['fname'];
+
+            
                      
     }
     
@@ -129,43 +127,4 @@ public $_model;
         }
     }
 
-        public function passReset($render=1,$path='',$tags=array("0")){
-            $email = $_POST['email'];
-            $qstn = $_POST['qstn'];
-            $qAns = $_POST['qAns'];
-            $password=  md5($_POST['password']);
-            if($qAns!==""){
-                $reset_cond = $this->_model->where(array("where"=>array("qAns",$qAns,"="),"AND"=>array("securityQstnID",$qstn,"=")));
-                $rst_arr = $this->_model->getAllRecords($reset_cond,"users");
-                if(count($rst_arr)>0){
-                    $ans = 1;
-                }else{
-                    $ans = 0;
-                }
-            }  elseif($password!=="") {
-                $reset_cond = $this->_model->where(array("where"=>array("pwd",$password,"=")));
-                $rst_arr = $this->_model->getAllRecords($reset_cond,"pwdbackup","=");
-                if(count($rst_arr)>0){
-                    $ans = 1;
-                }  else {
-                    $ans = 0;    
-                }
-            }  else {
-                $ans = 0; 
-            }
-            //echo $ans;
-            
-            if($ans===1){
-          //      $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-            //    $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-              //  $menu=$this->model->getAllRecords("","menu");
-		//$this->load_menu->menu($menu);
-		//$this->template->view();
-		//$this->template->view("Basic/footer",$recent);
-            }else{
-                echo $ans;
-            }
-
-        }
-        
 }
