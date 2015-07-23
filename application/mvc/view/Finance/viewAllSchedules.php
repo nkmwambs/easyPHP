@@ -1,4 +1,6 @@
 <?php
+//print_r($data[0]);
+
 echo "<button onclick='massSubmitPlanItems();'>Mass Submit</button><br><br>";
 echo "<form id='frmRq'>";
 echo "<div id='rqMsgDiv' style='display:none'></div>";
@@ -6,7 +8,7 @@ echo "</form>";
 if(!empty($data[0])){
 $tbl_arr = array("JulAmt","AugAmt","SepAmt","OctAmt","NovAmt","DecAmt","JanAmt","FebAmt","MarAmt","AprAmt","MayAmt","JunAmt");
 echo "<table id='tblAllSchedules' style='white-space:nowrap;text-align:right;'>";
-echo "<caption><b>".$_SESSION['fname']."-".$_SESSION['lname']." Budget Schedules<b></caption>";
+echo "<caption><b>".Resources::session()->fname."-".Resources::session()->lname." Budget Schedules<b></caption>";
 foreach($data[0] as $item):
     
     echo "<tr><th colspan='20' style='text-align:left;background-color:lightgrey;'>".$item->AccText." - ".$item->AccName."</th></tr>";
@@ -15,11 +17,12 @@ foreach($data[0] as $item):
     foreach($data[1] as $scheduledItem):
         if($scheduledItem->AccNo===$item->AccNo){
             if($scheduledItem->approved=="0"||$scheduledItem->approved=="3"){
-                echo "<tr><td>".Resources::img("uncheck3.png",array("title"=>"Delete Item","onclick"=>"deleteSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("edit.png",array("title"=>"Edit Record","onclick"=>"editSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("new.png",array("id"=>"newItem_".$scheduledItem->scheduleID,"style"=>"border:1px red solid;cursor:pointer;","onclick"=>"submitNewPlanItem(this);"))."</td>"; 
+                echo "<tr><td>".Resources::img("uncheck3.png",array("title"=>"Delete Item","onclick"=>"deleteSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("edit.png",array("title"=>"Edit Record","onclick"=>"editSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("new.png",array("title"=>"Approval Request","id"=>"newItem_".$scheduledItem->scheduleID,"style"=>"border:1px red solid;cursor:pointer;","onclick"=>"submitNewPlanItem(this);"))." ".Resources::img("mail.png",array("title"=>"Send Update Request","style"=>"cursor:pointer;","id"=>"item_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>"; 
             }elseif ($scheduledItem->approved=="1") {
-                echo "<tr><td>".Resources::img("uncheck3.png",array("title"=>"Delete Item","onclick"=>"deleteSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("edit.png",array("title"=>"Edit Record","onclick"=>"editSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))."</td>";                     
+                echo "<tr><td>".Resources::img("uncheck3.png",array("title"=>"Delete Item","onclick"=>"deleteSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("edit.png",array("title"=>"Edit Record","onclick"=>"editSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("mail.png",array("title"=>"Send Update Request","style"=>"cursor:pointer;","id"=>"item_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                     
             }elseif($scheduledItem->approved=="2"){
-                echo "<tr><td>".Resources::img("mail.png",array("title"=>"Send Update Request","style"=>"cursor:pointer;","id"=>"item_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                    
+                //echo "<tr><td>".Resources::img("mail.png",array("title"=>"Send Update Request","style"=>"cursor:pointer;","id"=>"item_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";
+                echo "<tr><td>".Resources::img("unreject.png")."</td>";                    
             }
             
             echo "<td style='text-align:left;'>".$scheduledItem->details."</td><td>".$scheduledItem->qty."</td><td>".number_format($scheduledItem->unitCost,2)."</td><td>".$scheduledItem->often."</td><td>".number_format($scheduledItem->totalCost,2)."</td><td>".number_format($scheduledItem->validate,2)."</td><td>".number_format($scheduledItem->JulAmt,2)."</td><td>".number_format($scheduledItem->AugAmt,2)."</td><td>".number_format($scheduledItem->SepAmt,2)."</td><td>".number_format($scheduledItem->OctAmt)."</td><td>".number_format($scheduledItem->NovAmt,2)."</td><td>".number_format($scheduledItem->DecAmt,2)."</td><td>".number_format($scheduledItem->JanAmt,2)."</td><td>".number_format($scheduledItem->FebAmt,2)."</td><td>".number_format($scheduledItem->MarAmt,2)."</td><td>".number_format($scheduledItem->AprAmt)."</td><td>".number_format($scheduledItem->MayAmt,2)."</td><td>".number_format($scheduledItem->JunAmt,2)."</td>";
@@ -54,4 +57,5 @@ echo "</table>";
  else {
      echo "<b>No budget schedules present for this selected period</b>";
 }
+
 ?>

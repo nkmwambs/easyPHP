@@ -1,6 +1,7 @@
 <?php
 echo "<h4>External Links</h4>";
-print_r($data);
+echo "<a href='http://www.compassionkenya.com/mwalimu' target='__blank'>Learning Management System</a>"; 
+//print_r($data);
 
 //echo "<ul>";
 //foreach($data as $key=>$vals):

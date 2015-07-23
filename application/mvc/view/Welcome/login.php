@@ -1,6 +1,3 @@
-<div id="overlay">
-
-</div>
 <div>
   
     <table id="log">
@@ -17,4 +14,3 @@
     </table>
     
 </div>
-<?php

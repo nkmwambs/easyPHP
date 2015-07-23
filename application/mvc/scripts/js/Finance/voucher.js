@@ -6,6 +6,7 @@ var path = 'http://'+location.hostname+'/easyPHP/';
                 var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
 function addRow(tableID) {
+	//alert("Hello");
     var voucherType = document.getElementById("VTypeMain").value;
     if(voucherType!=="#"){
         var VType=document.cookie="VType="+voucherType;
@@ -20,7 +21,12 @@ function addRow(tableID) {
     }
     //alert(voucherType);
     xmlhttp.onreadystatechange=function() {
+   	if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            } 	
     if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+    	document.getElementById('overlay').style.display='none';
         //alert(xmlhttp.responseText);
         var obj = JSON.parse(xmlhttp.responseText);
         
@@ -83,47 +89,46 @@ function addRow(tableID) {
 			var element3 = document.createElement("input");
 			element3.type = "text";
 			element3.name = "unit[]";
-                        element3.id = "unit"+rowCount;
-                        element3.onkeyup=function(){
-                                                        var x = this.value;
-                                                        var y = document.getElementById('qty'+rowCount).value;
-                                                        document.getElementById('cost'+rowCount).value= x*y;  
+            element3.id = "unit"+rowCount;
+            element3.onkeyup=function(){
+            		                    var x = this.value;
+                                        var y = document.getElementById('qty'+rowCount).value;
+                                        document.getElementById('cost'+rowCount).value= x*y;  
+                                                       
+                                        var sum = 0;
+                                         $('.cost').each(function(){
+                    	                      sum += parseFloat(this.value);
+                                           });
+                                        document.getElementById('totals').value=accounting.formatMoney(sum, { symbol: "Kes.",  format: "%v %s" });                                                             
                                                         
-                                                        var sum = 0;
-                                                        $('.cost').each(function(){
-                                                                   sum += parseFloat(this.value);
-                                                        });
-                                                        document.getElementById('totals').value=accounting.formatMoney(sum, { symbol: "Kes.",  format: "%v %s" });                                                             
-                                                        
-                                                    };
+                                       };
                         //element4.value="unit"+rowCount;
-                        element3.style.width = '80%';
-                        element3.className="unit";
-                        element3.onmousemove='add()';
+           	element3.style.width = '80%';
+          	element3.className="unit";
+            element3.onmousemove='add()';
 			cell3.appendChild(element3);  
                         
 			var cell4 = row.insertCell(4);
 			var element4 = document.createElement("input");
 			element4.type = "text";
 			element4.name = "cost[]";
-                        element4.id = "cost"+rowCount;
-                        element4.className="cost";
-                        element4.style.width = '80%';
-                        element4.readOnly = 'true';
+            element4.id = "cost"+rowCount;
+            element4.className="cost";
+            element4.style.width = '80%';
+            element4.readOnly = 'true';
 			cell4.appendChild(element4);                         
 
 			var cell5 = row.insertCell(5);
 			var x = document.createElement("select");
 			x.name ="acc[]";
-                        x.className = 'accNos';
-                        x.style.width = '95%';
+            x.className = 'accNos';
+            x.style.width = '95%';         
+            	var option1 = document.createElement("option");
+				option1.text = "Select ...";
+				option1.value = "";
+            	x.add(option1,x[0]);
                         
-                        var option1 = document.createElement("option");
-			option1.text = "Select ...";
-			option1.value = "";
-                        x.add(option1,x[0]);
-                        
-                        for (i=1;i<obj.length;i++){
+                        for (i=0;i<obj.length;i++){
                         var option = document.createElement("option");
                         if(obj[i].AccTextCIVA!==null&&obj[i].open==="1"){
                             option.text = obj[i].AccNoCIVA;
@@ -179,7 +184,7 @@ function addRow(tableID) {
 }
 
 function chqIntel(str){
-        document.getElementById('CHQ').style.backgroundColor='white';
+  document.getElementById('CHQ').style.backgroundColor='white';
         xmlhttp.onreadystatechange=function() {
           if (xmlhttp.readyState===4 && xmlhttp.status===200) {
            //alert(xmlhttp.responseText);
@@ -196,9 +201,10 @@ function chqIntel(str){
                     }
           }
         };
-        
+    if(str!=="0"){
         xmlhttp.open("GET",path+"system/index.php?url=mvc/Finance/chqIntel/chq/"+str,true);
         xmlhttp.send();
+     }
 }
 function delRow(tableID) {
                        //alert("Hello!");
@@ -280,10 +286,11 @@ function postVoucher(){
                
                //var vnum=parseInt(document.getElementById("VNumber").value)+1;
                
-               document.getElementById("myform").reset();
-               alert(xmlhttp.responseText);
+               //document.getElementById("myform").reset();
+               //alert(xmlhttp.responseText);
                //alert(vnum);
-               location.reload();
+               //location.reload();
+               document.getElementById("content").innerHTML=xmlhttp.responseText;
                 
             }
         };

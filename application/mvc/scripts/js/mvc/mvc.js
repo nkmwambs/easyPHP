@@ -5,6 +5,8 @@ var path = 'http://'+location.hostname+'/easyPHP/';
                   } else { // code for IE6, IE5
             xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
+        
+ 	      
 
 function setAttributes(el, attrs) {
   for(var key in attrs) {
@@ -131,15 +133,15 @@ function switchUser(el){
                 location.reload();
             }
         };
-        if(el.tagName==="BUTTON"){
+       // if(el.tagName==="BUTTON"){
             var frm=document.getElementById("frmSwitch");
             var frmData = new FormData(frm);    
             xmlhttp.open("POST",path+"/mvc/Welcome/switchUser/public/0",true);
             xmlhttp.send(frmData); 
-        }else{
-            xmlhttp.open("GET",path+"/mvc/Welcome/switchUser/username/"+el.id,true);
-            xmlhttp.send();             
-        }
+        //}else{
+            //xmlhttp.open("GET",path+"/mvc/Welcome/switchUser/username/"+el.id,true);
+            //xmlhttp.send();             
+        //}
     
 }
 

@@ -8,6 +8,8 @@ var path = 'http://'+location.hostname+'/easyPHP/';
 
 
 function sumEcj(){
+	//alert("Hello");
+	
     if(document.getElementById("ecj")){
         //Expense and Income Totals
         var tbl = document.getElementById("ecj");
@@ -137,6 +139,12 @@ function sumEcj(){
                tbl.rows[n].cells[4].innerHTML="<button onclick='changeBalState('"+tbl.rows[n].cells[1].innerHTML+"',1,this);'>Unlock</button>"; 
             }
         }
-    }    
+    } 
+    //Format opening balances
+	$bcOpBal = document.getElementById('balBcBf').innerHTML;
+	document.getElementById('balBcBf').innerHTML = accounting.formatMoney($bcOpBal,{symbol:"",format:"v% s%"});   
+
+	$pcOpBal = document.getElementById('balPcBf').innerHTML;
+	document.getElementById('balPcBf').innerHTML = accounting.formatMoney($pcOpBal,{symbol:"",format:"v% s%"});
 }
 

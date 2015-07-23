@@ -2,7 +2,18 @@
 class Settings_Model extends E_Model
 {
 	public function fetchSchedulesforFy($cond){
-		$sql = "SELECT * FROM plansheader RIGHT JOIN plansschedule ON plansheader.planHeaderID=plansschedule.planHeaderID $cond";
+		$sql = "SELECT * FROM planheader RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID $cond";
+		$qry = $this->conn->prepare($sql);
+		$qrys->execute();
+		$rst=array();
+		while($row=$qry->fetch(PDO::FETCH_OBJ)){
+			$rst[]=$row;
+		}
+		return $rst;;
+		
+	}
+		public function scheduleCount($cond){
+		$sql = "SELECT  planHeaderID,count(`planHeaderID`) as planID FROM plansschedule";
 		$qry = $this->conn->prepare($sql);
 		$qry->execute();
 		$rst=array();

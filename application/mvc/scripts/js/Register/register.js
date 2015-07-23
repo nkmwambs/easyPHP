@@ -31,7 +31,7 @@ function submitUser(frmid){
         }else if(passmatch===0){
             document.getElementById('register_error').innerHTML= "Cannot submit, Passwords are not matching";
         }else{
-         xmlhttp.open("POST",path+"/mvc/Register/submitUser/public/0",true);
+         xmlhttp.open("POST",path+"/mvc/Register/submitUser/public/1",true);
          xmlhttp.send(frmData);
      }
 }

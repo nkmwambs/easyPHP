@@ -126,5 +126,7 @@ public $_model;
              print_r($search);
         }
     }
-
+public function passwordReset($render=1,$path='',$tags=array("0","All")){ 
+	
+}
 }

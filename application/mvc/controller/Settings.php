@@ -175,8 +175,48 @@ class Settings_Controller extends E_Controller
 		}
         
     }
+	public function uploadfundsbalances($render=1,$path='',$tags=array("All")){
+		//return "Hello";
+		$cond_icps = $this->_model->where(array(array("where","userlevel",1,"=")));
+		$icps_qry = $this->_model->getAllRecords($cond_icps,"users");
+		return $icps_qry;
+	}
+	public function massFundsUpload(){
+		$closureDate = $_POST['closureDate'];
+		$file = $_FILES['fundsCsv']['tmp_name'];
+		$handle = fopen($file, "r");
+				$rec=array();
+				$rec_body=array();
+				$recNum=0;
+
+				$this->_model->deleteQuery("","opfundsbalheader");
+				$this->_model->deleteQuery("","opfundsbal");					
+				
+				while($data=fgetcsv($handle,1000,",","'")){
+						$rec['icpNo']=$data[0];
+						$rec['totalBal']=$data[8];
+						$rec['closureDate']=$closureDate;
+						$rec['allowEdit']=1;
+						$rec['systemOpening']=1;
+						$this->_model->insertRecord($rec,"opfundsbalheader");
+						$hd_cond = $this->_model->where(array(array("where","icpNo",$data[0],"=")));
+						$hd=$this->_model->getAllRecords($hd_cond,"opfundsbalheader");
+						if(count($hd>0)){
+							$acc = array("100","200","300","330","351","410","510");
+							for ($i=1; $i <8 ; $i++) { 								
+								$rec_body['balHdID']=$hd[0]->balHdID;
+								$rec_body['funds']=$acc[$i-1];
+								$rec_body['Amount']=$data[$i];
+								$this->_model->insertRecord($rec_body,"opfundsbal");
+							}
+							
+						}					
+					}
+				print_r("Upload successful!");
+				//print_r($rec_body);
+		
+	}
 	public function viewPlansHeader($render=2,$path="",$tags=array("3","9")){
-		//print("Hello All Of You");
 		$fy = $this->choice[1];
 		$cond = $this->_model->where(array(array("where","fy",$fy,"=")));
 		$qry = $this->_model->getAllRecords($cond,"planheader",'ORDER BY icpNo ASC');
@@ -237,6 +277,8 @@ class Settings_Controller extends E_Controller
 					$rec['notes']=$data[18];
 					$this->_model->insertRecord($rec,"plansschedule");
 				}
+				$del_cond = $this->_model->where(array(array("where","details","","="),array("OR","totalCost",0,"=")));
+				$del = $this->_model->deleteQuery($del_cond,"plansschedule");
 				print($recNum ." records uploaded successfully!");
 			}
 

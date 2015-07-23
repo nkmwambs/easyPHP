@@ -352,7 +352,7 @@ public function fundsPerICP($cst){
     return $rst;
 }
 public function accountsForMfr($cond){
-    $s = "SELECT * FROM accounts RIGHT JOIN voucher_body ON accounts.AccNo=voucher_body.AccNo $cond ORDER BY accounts.AccGrp DESC, accounts.AccNo ASC,  accounts.prg DESC";
+    $s = "SELECT accounts.AccNo,voucher_body.Cost FROM accounts RIGHT JOIN voucher_body ON accounts.AccNo=voucher_body.AccNo $cond ORDER BY accounts.AccGrp DESC, accounts.AccNo ASC,  accounts.prg DESC";
     //$q = mysql_query($s);
     $q=$this->conn->prepare($s);
 	$q->execute();
@@ -363,7 +363,7 @@ public function accountsForMfr($cond){
     return $rst;
 }
 public function balFundsBf($cond){
-    $s="SELECT * FROM opfundsbalheader LEFT JOIN opfundsbal ON opfundsbalheader.balHdID=opfundsbal.balHdID $cond";
+    $s="SELECT opfundsbal.funds,opfundsbal.amount FROM opfundsbal LEFT JOIN opfundsbalheader ON opfundsbal.balHdID=opfundsbalheader.balHdID $cond";
     //$q=  mysql_query($s);
     $q=$this->conn->prepare($s);
 	$q->execute();
@@ -388,7 +388,7 @@ public function getSchedule($cond){
     return $rst;
 }
 public function getScheduleWithAcNames($cond){
-    $s="SELECT * FROM planheader LEFT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID LEFT JOIN accounts ON plansschedule.AccNo=accounts.AccNo $cond";
+    $s="SELECT * FROM plansschedule LEFT JOIN planheader ON plansschedule.planHeaderID=planheader.planHeaderID LEFT JOIN accounts ON plansschedule.AccNo=accounts.AccNo $cond ORDER BY plansschedule.AccNo ASC";
     //$q =  mysql_query($s);
     $q=$this->conn->prepare($s);
     $q->execute();
@@ -457,6 +457,55 @@ public function countNewSchedules($cond){
 public function viewFundsBal($cond){
     $s = "SELECT  opfundsbalheader.closureDate, opfundsbal.funds,opfundsbalheader.icpNo,opfundsbal.amount FROM opfundsbal LEFT JOIN opfundsbalheader ON opfundsbal.balHdID=opfundsbalheader.balHdID $cond";
     //$q =  mysql_query($s);
+    $q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+        $rst[]=$row;
+    }
+    return $rst;	
+}
+public function maxMfrDate($cond){
+	$sql = "SELECT MAX(closureDate) AS lastClosureDate FROM opfundsbalheader $cond";
+	$q=$this->conn->prepare($sql);
+	$q->execute();
+	$rst = $q->fetch(PDO::FETCH_OBJ);
+	return $rst->lastClosureDate;
+}
+public function maxMfrID($cond){
+	$sql = "SELECT MAX(balHdID) AS lastID FROM opfundsbalheader $cond";
+	$q=$this->conn->prepare($sql);
+	$q->execute();
+	$rst = $q->fetch(PDO::FETCH_OBJ);
+	return $rst->lastID;
+}
+public function getMaxVoucherID($cond){
+	$sql = "SELECT MAX(bID) AS maxID FROM voucher_body $cond";
+	$q=$this->conn->prepare($sql);
+	$q->execute();
+	$rst = $q->fetch(PDO::FETCH_OBJ);
+	return $rst->maxID;
+}
+
+public function get_todate_expenses($cond){
+    $s = "SELECT  voucher_body.AccNo,voucher_body.Cost FROM voucher_body LEFT JOIN voucher_header ON voucher_body.hID=voucher_header.hID $cond";
+    $q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+        $rst[]=$row;
+    }
+    return $rst;	
+}
+
+public function get_todate_budget($cond,$month){
+    $s = "SELECT plansschedule.AccNo,";
+	if($month==="7"){
+		$s .= " sum(plansschedule.JulAmt) as Cost "; 
+	}elseif($month==="8"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)) as Cost "; 
+	}
+   	$s.= " FROM plansschedule LEFT JOIN planheader ON plansschedule.planHeaderID=planheader.planHeaderID $cond GROUP BY plansschedule.AccNo";
     $q=$this->conn->prepare($s);
 	$q->execute();
     $rst=array();

@@ -9,6 +9,7 @@ label{
      margin-top:-30px;
      padding: 3px;
      font-size: 10pt;
+     white-space: nowrap;
 }
 #sec_child{
     font-size: 10pt;
@@ -145,9 +146,7 @@ label{
 .alerts{
     color: red;
 }
-#btnUserSearch{
-    display:none;
-}
+
 #tbltoolkitusers{
     background-color: wheat;
 }
@@ -158,7 +157,7 @@ label{
 	background-color: yellow;
 	color:red;
 }
-.switchElem{
-    float: left;
+.Totals{
+	font-weight: bold;
+	text-align:right;
 }
-

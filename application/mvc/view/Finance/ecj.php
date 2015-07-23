@@ -104,7 +104,7 @@ if(isset($data[4])){
         
         </tr><!-- End Row 6 -->
         
-        <tr><th>&nbsp;</th><th>&nbsp;</th><th>Bank & Cash</th><th colspan="2">Balance Brought Forward</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;"><?php echo $data[2];?></th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;"><?php echo $data[3];?></th>
+        <tr><th>&nbsp;</th><th>&nbsp;</th><th>Bank & Cash</th><th colspan="2">Balance Brought Forward</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;" id='balBcBf'><?php echo $data[2];?></th><th>&nbsp;</th><th>&nbsp;</th><th style="background-color: honeydew;" id='balPcBf'><?php echo $data[3];?></th>
            
             <?php 
                 if(!empty($dis_arr)){echo "<th colspan='".count($data[0])."'>&nbsp;</th>";}

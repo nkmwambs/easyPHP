@@ -1,6 +1,6 @@
 <?php
 class Resources{
-	
+
 public static function import($path){
 		$path_arr = explode(".", $path);
 		$path_str="";
@@ -16,6 +16,22 @@ public static function import($path){
 		
 		require_once $fPath;
 	}
+public static function includes($path){
+	//if(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".DS.$url)){
+		//	include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".DS.$url.".php";
+		//}
+		$path_arr = explode(".", $path);
+		$path_str="";
+		foreach($path_arr as $value):
+			$path_str.=DIRECTORY_SEPARATOR.$value;
+		endforeach;
+
+		if(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".$path_str.".php")){
+			$fPath = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".$path_str.".php";
+		}
+		
+		require_once $fPath;
+}
 
 public static function mailing($mailto,$mailfrom,$subject,$msg){
 
@@ -24,11 +40,12 @@ public static function mailing($mailto,$mailfrom,$subject,$msg){
 
  	// send email
  	mail($mailto,$subject,$msg,$mailfrom);
-}
-
+}	 
 public static function ie_detect()
 {
-	 if ( strpos($_SERVER['HTTP_USER_AGENT'], ' rv:11.0') ){
+	$x=1;
+	//strpos($_SERVER['HTTP_USER_AGENT'], ' rv:11.0')
+	 if ($x===1){
         //header( 'Location: http://www.domain.com' ) ;
         return 1;
     }else{

@@ -1,5 +1,5 @@
 <?php
-$content.= Resources::import("mpdf.mpdf");
+echo Resources::import("mpdf.mpdf");
 //require_once('library/mpdf.php'); 
 $mpdf = new mPDF(); 
 	//$content="<html><head><title>Voucher Download</title>";
@@ -41,6 +41,7 @@ $mpdf = new mPDF();
     $content.= "<tr><td colspan='3' align='left' style='padding-left:25px;'>Date:</td><td colspan='2' align='left'>Date:</td></tr>";
     $content.= "</table>";
 	//$content.= "</body></html>";
+ob_end_clean();
 $mpdf->WriteHTML($content); 
 
 $mpdf->Output(); 

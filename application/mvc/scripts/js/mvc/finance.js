@@ -339,7 +339,7 @@ function addScheduleRow(){
     //Check Box
     var cell1 =newRw.insertCell(1);
     var desc = document.createElement("input");
-    setAttributes(desc,{"type":"text","name":"details[]","id":"desc"+rws});
+    setAttributes(desc,{"type":"text","name":"details[]","class":"plansDetails","id":"desc"+rws});
     desc.onkeyup=function(){
         document.getElementById("notes"+rws).innerHTML="Not Approved";
         document.getElementById("approved"+rws).value=0;
@@ -434,7 +434,7 @@ function addScheduleRow(){
     //Total Cost Column
     var cell5 = newRw.insertCell(5);
     var totalCost = document.createElement("input");
-    setAttributes(totalCost,{"type":"text","name":"totalCost[]","class":"totalCost","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"totalCost"+rws});
+    setAttributes(totalCost,{"type":"text","name":"totalCost[]","class":"itemTotals","class":"totalCost","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"totalCost"+rws});
     cell5.appendChild(totalCost); 
     
     //Validation
@@ -518,7 +518,28 @@ function addScheduleRow(){
 }
 
 function postSchedule(frmid){
-    if(document.getElementById("acTotal").value==="0"){
+	var detailRows = document.getElementsByClassName('plansDetails');
+	for(var i=0;i<detailRows.length;i++){
+		if(detailRows.item(i).value===""){
+			alert("One or More Details fields are empty!");
+			detailRows.item(i).style.backgroundColor='red';
+			exit;
+		}else{
+			detailRows.item(i).style.backgroundColor='white';
+		}
+	}
+	var TotalRows = document.getElementsByClassName('itemTotals');
+	for(var k=0;k<TotalRows.length;k++){
+		if(TotalRows.item(j).value===0){
+			alert("One or More Total Cost fields are empty!");
+			TotalRows.item(k).style.backgroundColor='red';
+			exit;
+		}else{
+			TotalRows.item(k).style.backgroundColor='white';
+		}
+	}
+	
+    if(document.getElementById("acTotal").value==="0.00"||document.getElementById("acTotal").value===""){
         alert("The Schedule is empty!");
     }else{
       var frm = document.getElementById(frmid);
@@ -531,11 +552,17 @@ function postSchedule(frmid){
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
                 alert(xmlhttp.responseText);
-                frm.reset();
+                //frm.reset();
             }
-        };                                
+        }; 
+       if(document.getElementById('AccNo').value===""){
+       	alert('Choose an Account to Proceed!');
+       	document.getElementById('AccNo').style.backgroundColor='red';
+       }else{                             
          xmlhttp.open("POST",path+"/mvc/Finance/postSchedule/public/0",true);
-         xmlhttp.send(frmData);  
+        
+         xmlhttp.send(frmData);
+         }  
     }
     
 }

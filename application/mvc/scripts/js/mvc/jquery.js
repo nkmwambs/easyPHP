@@ -9,4 +9,6 @@
                 $("#cjCashOpBal").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true}); 
                 $("#bsCashOpBalDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true}); 
                 $("#osDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true}); 
+                $("#closureDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
+				$("#statementDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
 		});

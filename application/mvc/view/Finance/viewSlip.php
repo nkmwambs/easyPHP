@@ -12,14 +12,11 @@ if(isset($data[1])){
 	echo "<button onclick='selectSlip(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectSlip(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectSlip(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
     
 if(empty($data[0])){
-
 	if(isset($data[1])){
 		print("<br><br><div id='error_div'>Disbursement Slip for ".date('F-Y',$data[1])." is unavailable!</div><br>");
 	}else{
 		print("<br><br><div id='error_div'>Disbursement Slip for ".date('F-Y')." is unavailable!</div><br>");
 	}
-
-
 }else{
 		//echo Resources::img("print.png",array("onclick"=>' printData("divSlipPrint")'))." ".Resources::img("previous.png")."".Resources::img("next.png");
 		echo Resources::img("print.png",array("onclick"=>' printData("divSlipPrint")'));
