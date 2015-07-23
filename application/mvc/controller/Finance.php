@@ -680,14 +680,13 @@ class Finance_Controller extends E_Controller
 			
 			ksort($actual_month_exp);
 			foreach ($exp_acc as $value) {
-				$accs[$value->AccNo]=array(
-					"text"=>$value->AccText,
-					"item"=>$value->AccName,
-					"cur"=>$actual_month_exp[$value->AccNo],
-					"accum"=>$todate_exp[$value->AccNo],
-					"bud"=>$todate_plan[$value->AccNo],
-					"var"=>$todate_plan[$value->AccNo]-$todate_exp[$value->AccNo],
-					"varPer"=>(($todate_plan[$value->AccNo]-$todate_exp[$value->AccNo])/$todate_plan[$value->AccNo])*100,
+				$accs[$value->AccNo]['details']=array($value->AccText,$value->AccName);
+				$accs[$value->AccNo]['figures']=array(
+					//"cur"=>$actual_month_exp[$value->AccNo],
+					//"accum"=>$todate_exp[$value->AccNo],
+					//"bud"=>$todate_plan[$value->AccNo],
+					//"var"=>$todate_plan[$value->AccNo]-$todate_exp[$value->AccNo],
+					//"varPer"=>(($todate_plan[$value->AccNo]-$todate_exp[$value->AccNo])/$todate_plan[$value->AccNo])*100,
 				);
 			}
 			
@@ -702,7 +701,7 @@ class Finance_Controller extends E_Controller
 			$data[]=$month_dep_in_transit;
 			$data[]=$month_oc;
 			$data[]=$accs;
-			//$data[]=$todate_budget_cond;
+			$data[]=$month_exp;
 			//$data[]=$todate_plan;
 
             return $data;
@@ -1018,17 +1017,20 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 	        }
    		return $this->_model->showVoucher($VNum,$icpNo);
     }
-    public function postVoucher($render=2,$path='',$tags=array("1")){
-        //print_r(filter_input_array(INPUT_POST));
+    public function postVoucher(){
+        //return $_POST;
+        
         $header = array();
         for($i=0;$i<8;$i++){
             $header[]=  array_shift($_POST);
         }
         $header[]=array_pop($_POST);
-        $fy = Resources::func(get_financial_year,array(date("Y-m-d")));
+        $fy = Resources::func("get_financial_year",array(date("Y-m-d")));
         $tm = time();
         $chqState =0;
         
+		//print_r($header);
+		
         $fld_header_arr = array("icpNo","TDate","Fy","VNumber","Payee","Address","VType","ChqNo","ChqState","TDescription","totals","unixStmp");
         $header_one = array_splice($header,0,2);
         $header_two = array_splice($header,0,5);
@@ -1037,14 +1039,16 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
         array_push($header_one,$fy);
         $new_header = array_merge($header_one, $header_two,$header);
         $qry_array = array_combine($fld_header_arr, $new_header);
-        //print_r($qry_array);
+        
         $qry_array['totals']=  str_replace(",","",$qry_array['totals']);
-        $this->_model->insertRecord($qry_array,"voucher_header");
+		echo $this->_model->insertRecord($qry_array,"voucher_header");
+        //print_r($qry_array);
         
-        $hID_cond=  $this->_model->where(array("where"=>array("VNumber",$qry_array['VNumber'],"="),"AND"=>array("icpNo",$qry_array['icpNo'],"=")));
+        $hID_cond=$this->_model->where(array(array("where","VNumber",$qry_array['VNumber'],"="),array("AND","icpNo",$qry_array['icpNo'],"=")));
         $hID_rst = $this->_model->getAllRecords($hID_cond,"voucher_header");
+		
+		//print_r($hID_rst);
         
-        //print_r($_POST);
         $body_raw =array();
         foreach($_POST as $val):
             $cnt_rows = count($val);
@@ -1065,10 +1069,11 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
         foreach($body as $value):
             $this->_model->insertRecord($value,"voucher_body");
         endforeach;
-		            $mth = date('m');
-                    $icp = $_SESSION['username'];
-                    return $data = $this->_model->getMonthByNumber($mth,$icp);
+		            //$mth = date('m');
+                    //$icp = $_SESSION['username'];
+                    //return $data = $this->_model->getMonthByNumber($mth,$icp);
         
+		
     }
     public function showVoucher($render=1,$path="",$tags=array("1")){       
         $VNum=  $this->choice[1];

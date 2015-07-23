@@ -1,8 +1,9 @@
 <?php
 ?>
 
-<button id="btnAddRow" onclick="addRow('bodyTable')">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button>Reset</button>");?>
-<form id="myform" method='POST' action=''>
+<button id="btnAddRow" onclick="addRow('bodyTable');">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
+<br><br><div id='info_div'></div>
+<form id="myform" method='POST'>
             <input type="hidden" value="<?php echo $_SESSION['username']; ?>" id="KENo" name="KENo"/>
             
             <table id='tblVch' style="width: 100%;">

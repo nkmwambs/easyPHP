@@ -1,6 +1,6 @@
 <?php
 echo "<div id='mfrView'>";
-//print($data[9]);
+print_r($data[9]);
 //print_r($data[10]);
 
 if(isset($data[1])){
@@ -74,6 +74,7 @@ echo "<tr><td colspan='4'>";
     echo "<table id='transTbl' style='white-space:nowrap;'>";
         echo "<tr><th colspan='3'>C: DEPOSIT IN TRANSIT ".Resources::a_href("Finance/mfr",Resources::img("plus.png",array('title'=>'validate')))."</th></tr>";
         echo "<tr><th>Action</th><th>DATE</th><th>DETAILS</th><th>AMOUNT</th></tr>";
+        $sum_dep_in_transit=0;
         foreach($data[6] as $value){
         	echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value->VNumber}","onclick"=>'clearDepInTransit("'.$value->hID.'",this);'))."</td><td>".$value->TDate."</td><td>".substr($value->TDescription,0,12)."</td><td>".$value->totals."</td></tr>";
         	$sum_dep_in_transit+=$value->totals; 
@@ -84,6 +85,7 @@ echo "</td><td colspan='5'>";
     echo "<table style='white-space:nowrap;' id='ocTbl'>";
         echo "<tr><th colspan='3'>D: OUSTANDING (UNPRESENTED) CHEQUES ".Resources::a_href("Finance/mfr",Resources::img("plus.png",array('title'=>'validate')))."</th></tr>";
         echo "<tr><th>Action</th><th>DATE</th><td>CHEQUE No.</th><th>DETAILS</th><th>AMOUNT</th></tr>";
+        $sum_oc=0;
         foreach ($data[7] as $value) {
             echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value->VNumber}","onclick"=>'clearDepInTransit("'.$value->hID.'",this);'))."</td><td>".$value->TDate."</td><td>".$value->ChqNo."</td><td>".substr($value->TDescription,0,12)."</td><td>".$value->totals."</td></tr>";
         	$sum_oc+=$value->totals;

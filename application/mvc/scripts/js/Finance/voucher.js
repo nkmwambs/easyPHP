@@ -283,20 +283,20 @@ function postVoucher(){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-               
-               //var vnum=parseInt(document.getElementById("VNumber").value)+1;
-               
-               //document.getElementById("myform").reset();
                //alert(xmlhttp.responseText);
-               //alert(vnum);
-               //location.reload();
-               document.getElementById("content").innerHTML=xmlhttp.responseText;
+               document.getElementById('info_div').id='error_div';
+               document.getElementById('error_div').innerHTML=xmlhttp.responseText+": Reset to Submit New Record";
+               //document.getElementById("content").innerHTML=xmlhttp.responseText;
                 
             }
         };
-                                               
-         xmlhttp.open("POST",path+"/mvc/Finance/postVoucher",true);
-         xmlhttp.send(frmData);
+         if(document.getElementById('error_div')){
+         	document.getElementById('error_div').innerHTML='Reset to add a New Voucher!';
+         	document.getElementById('resetBtn').style.backgroundColor='red';
+         }else{                                     
+	         xmlhttp.open("POST",path+"/mvc/Finance/postVoucher",true);
+	         xmlhttp.send(frmData);
+         }
 
 } 
 function showContent(el){
