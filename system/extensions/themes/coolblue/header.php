@@ -35,7 +35,7 @@ $sess = Resources::session();
         ?> 
     </ul>
         <div id="container">
-            <div id="header" class="cntr"><?php //echo Resources::img("petty.gif",array("width"=>"80px","heigth"=>"90px","title"=>"Petty","style"=>"margin-top:10px;border:5px solid black;")); ?><div><?php echo Resources::img("logo.png",  array("style"=>"position:absolute;top:0px;left:0px;width:18%;heigth:24%;")); ?></div><div id='logo'><div style="position: absolute;top: 0px;display: inline-block;width:700px;left: 230px;"><h4>Compassion Kenya - Toolkit</h4></div></div></div>
+            <div id="header" class="cntr"><div><?php echo Resources::img("logo.png",  array("style"=>"position:absolute;top:0px;left:0px;width:18%;heigth:24%;")); ?></div><div id='logo'><div style="position: absolute;top: 0px;display: inline-block;width:700px;left: 230px;"><h4>Compassion Kenya - Toolkit</h4></div></div></div>
             
             <div id="hdr-menu">
                 <ul id="list-menu">

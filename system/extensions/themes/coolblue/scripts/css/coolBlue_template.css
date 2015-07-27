@@ -69,25 +69,7 @@ a:active{
 .cntr{
     text-align: center;
 }
-#content{
-	position:absolute;
-	left:270px;
-    min-width: 58%;
-    max-width: 58%;
-    overflow-x: auto;
-    
-}
-#footer{
-    min-width: 100%;
-    float: left;
-    background-color:#336699;
-    color:white;
-    height: 80px;
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    bottom: -200px;
-}
+
 .mid{
     min-height: 350px;
     padding: 10px;
@@ -131,6 +113,25 @@ a:active{
     text-align: left;
     padding-bottom: 10px;
 }
+#content{
+	position:absolute;
+	left:270px;
+    min-width: 58%;
+    max-width: 58%;
+    overflow-x: auto;
+    
+}
+#footer{
+    min-width: 100%;
+    float: left;
+    background-color:#336699;
+    color:white;
+    height: 80px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    bottom: -200px;
+}
 #lt-bar{
     position:absolute;
     left:0px;
@@ -143,9 +144,8 @@ a:active{
     padding-top: 0px;
 }
 #rt-bar{
-    right: 10px;
-    position: absolute;
-    right: 10px;
+    position: relative;
+    float: right;
 }
 .side-bar>li:hover{
    font-weight: bold;

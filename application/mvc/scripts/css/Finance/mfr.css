@@ -1,6 +1,19 @@
 #tblMfr tr,#tblCiva tr{
-    background-color:aliceblue;
+    
+}
+#tblMfr caption{
+	font-weight:bold;
+	font-family:"Book Antiqua";
+	margin-bottom:20px;
 }
 #tblCiva{
     white-space: nowrap;
 }
+#tblMfr,#tblCiva,.subTbl{
+	border-radius: 5px;
+	background-color:#99FFCC;
+	font-size: 11pt;
+}
+.subTbl{
+	
+} 

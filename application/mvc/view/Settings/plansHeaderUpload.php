@@ -1,5 +1,5 @@
 <?php
-//print_r($data);
+print_r($data);
 echo "<fieldset style='width:250px;float:left;'>";
 echo "<legend>Budget Headers</legend>";
 echo "<form  enctype='multipart/form-data' method='POST' name='frmPlansHeader' id='frmPlansHeader'>";

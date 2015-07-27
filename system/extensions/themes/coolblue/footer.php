@@ -1,4 +1,7 @@
-            </div>            
+                       
+           </div> 
+                        
+			</div>  
             <div id="rt-bar" class="mid">
                 <div id="lt-block"><div id="hdr-lft">Recent Items</div><br>
                     <div id="cnt-lt">
@@ -22,9 +25,7 @@
                 </div>
                 
             </div><br>
-
-            
-        </div>   
+             
         <!--<div id="footer" class="cntr"><h8>Compassion Kenya Toolkit 2.0 &copy; 2015</h8></div>-->
     </body>
 </html>

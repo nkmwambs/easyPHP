@@ -352,24 +352,24 @@ public function fundsPerICP($cst){
     return $rst;
 }
 public function accountsForMfr($cond){
-    $s = "SELECT accounts.AccNo,voucher_body.Cost FROM accounts RIGHT JOIN voucher_body ON accounts.AccNo=voucher_body.AccNo $cond ORDER BY accounts.AccGrp DESC, accounts.AccNo ASC,  accounts.prg DESC";
+    $s = "SELECT accounts.AccNo,sum(voucher_body.Cost) as Amount FROM accounts RIGHT JOIN voucher_body ON accounts.AccNo=voucher_body.AccNo $cond GROUP BY accounts.AccNo ORDER BY accounts.AccGrp DESC, accounts.AccNo ASC,  accounts.prg DESC";
     //$q = mysql_query($s);
     $q=$this->conn->prepare($s);
 	$q->execute();
     $rst = array();
-    while($rows=  $q->fetch(PDO::FETCH_OBJ)){
+    while($rows=  $q->fetch(PDO::FETCH_ASSOC)){
         $rst[]=$rows;
     }
     return $rst;
 }
 public function balFundsBf($cond){
-    $s="SELECT opfundsbal.funds,opfundsbal.amount FROM opfundsbal LEFT JOIN opfundsbalheader ON opfundsbal.balHdID=opfundsbalheader.balHdID $cond";
+    $s="SELECT opfundsbal.funds as AccNo,opfundsbal.amount as Amount FROM opfundsbal LEFT JOIN opfundsbalheader ON opfundsbal.balHdID=opfundsbalheader.balHdID $cond";
     //$q=  mysql_query($s);
     $q=$this->conn->prepare($s);
 	$q->execute();
     $rst =array();
     //$obj = new stdClass();
-    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+    while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
         $rst[]=$row;
     }
     //$rst[]=$obj;
@@ -488,7 +488,7 @@ public function getMaxVoucherID($cond){
 }
 
 public function get_todate_expenses($cond){
-    $s = "SELECT  voucher_body.AccNo,voucher_body.Cost FROM voucher_body LEFT JOIN voucher_header ON voucher_body.hID=voucher_header.hID $cond";
+    $s = "SELECT  voucher_body.AccNo,sum(voucher_body.Cost) as Cost FROM voucher_body LEFT JOIN voucher_header ON voucher_body.hID=voucher_header.hID $cond GROUP BY voucher_body.AccNo";
     $q=$this->conn->prepare($s);
 	$q->execute();
     $rst=array();
@@ -504,6 +504,26 @@ public function get_todate_budget($cond,$month){
 		$s .= " sum(plansschedule.JulAmt) as Cost "; 
 	}elseif($month==="8"){
 		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)) as Cost "; 
+	}elseif($month==="9"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)) as Cost "; 
+	}elseif($month==="10"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)) as Cost "; 
+	}elseif($month==="11"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)) as Cost "; 
+	}elseif($month==="12"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)+sum(plansschedule.DecAmt)) as Cost "; 
+	}elseif($month==="1"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)+sum(plansschedule.DecAmt)+sum(plansschedule.JanAmt)) as Cost "; 
+	}elseif($month==="2"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)+sum(plansschedule.DecAmt)+sum(plansschedule.JanAmt)+sum(plansschedule.FebAmt)) as Cost "; 
+	}elseif($month==="3"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)+sum(plansschedule.DecAmt)+sum(plansschedule.JanAmt)+sum(plansschedule.FebAmt)+sum(plansschedule.MarAmt)) as Cost "; 
+	}elseif($month==="4"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)+sum(plansschedule.DecAmt)+sum(plansschedule.JanAmt)+sum(plansschedule.FebAmt)+sum(plansschedule.MarAmt)+sum(plansschedule.AprAmt)) as Cost "; 
+	}elseif($month==="5"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)+sum(plansschedule.DecAmt)+sum(plansschedule.JanAmt)+sum(plansschedule.FebAmt)+sum(plansschedule.MarAmt)+sum(plansschedule.AprAmt)+sum(plansschedule.MayAmt)) as Cost "; 
+	}elseif($month==="6"){
+		$s .= " (sum(plansschedule.JulAmt)+sum(plansschedule.AugAmt)+sum(plansschedule.SepAmt)+sum(plansschedule.OctAmt)+sum(plansschedule.NovAmt)+sum(plansschedule.DecAmt)+sum(plansschedule.JanAmt)+sum(plansschedule.FebAmt)+sum(plansschedule.MarAmt)+sum(plansschedule.AprAmt)+sum(plansschedule.MayAmt)+sum(plansschedule.JunAmt)) as Cost "; 
 	}
    	$s.= " FROM plansschedule LEFT JOIN planheader ON plansschedule.planHeaderID=planheader.planHeaderID $cond GROUP BY plansschedule.AccNo";
     $q=$this->conn->prepare($s);

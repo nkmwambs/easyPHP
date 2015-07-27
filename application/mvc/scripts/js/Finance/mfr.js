@@ -28,8 +28,27 @@ function submitMfr(frmid){
                 alert(xmlhttp.responseText);
             }
         };
-        xmlhttp.open("POST",path+"/mvc/Finance/submitMfr/public/0",true);                                     
-        xmlhttp.send(frmData);
+        var recon = document.getElementById("reconTxt").value;
+        var varExplain=document.getElementsByClassName('varExplain');
+        var cntEmpty=0;
+        
+        for(var i=0;i<varExplain.length;i++){
+        	if(varExplain.item(i).innerHTML===""){
+        		cntEmpty++;
+        		varExplain.item(i).style.backgroundColor='red';
+        	}else{
+        		varExplain.item(i).style.backgroundColor='white';
+        	}
+        }
+        
+        if(recon==='0'){
+        	alert("Error in Report Reconciliation. Report not submitted!");
+        }else if(cntEmpty>0){
+        	alert(cntEmpty+ " mandatory fields empty!");
+        }else{
+        	xmlhttp.open("POST",path+"/mvc/Finance/submitMfr/public/0",true);                                     
+        	xmlhttp.send(frmData);
+        }
 }
 function selectMFR(val){
 	//alert(val);
@@ -48,7 +67,7 @@ function selectMFR(val){
       xmlhttp.send();
 }
 
-function clearDepInTransit(rid,elem){
+function clearDepInTransit(rid,source,type,elem){
 	//alert(rid);
 	var tbl = elem.parentNode.parentNode.parentNode;
 	var rwIndex = elem.parentNode.parentNode.rowIndex;
@@ -68,17 +87,17 @@ function clearDepInTransit(rid,elem){
                     t.removeChild(t.childNodes[0]); 
                     a.innerHTML='Undo';
                     a.onclick=function(){
-                    	stateRestore(rid);
+                    	stateRestore(rid,source,type);
                     };
                     t.appendChild(a);                  
                     
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Finance/changeState/rid/"+rid,true);      
+      xmlhttp.open("GET",path+"mvc/Finance/changeState/rid/"+rid+"/source/"+source+"/type/"+type,true);      
       xmlhttp.send();
 }
-function stateRestore(rid){
+function stateRestore(rid,source,type){
 	//alert(rid);
 	      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
@@ -92,14 +111,15 @@ function stateRestore(rid){
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Finance/undochangeState/rid/"+rid,true);      
+      xmlhttp.open("GET",path+"mvc/Finance/undochangeState/rid/"+rid+"/source/"+source+"/type/"+type,true);      
       xmlhttp.send();
 }
 function updateBankBal(){
 	var trans=parseFloat(document.getElementById('depTrans').innerHTML);
 	var oc=parseFloat(document.getElementById('oc').innerHTML);
 	var stmt = parseFloat(document.getElementById('statementAmount').value);
-	//var cashBal = parseFloat(document.getElementById('cashBal').value); 
+	var bankBal = parseFloat(document.getElementById('bankTxt').value);
+	var validate = document.getElementById('bankReconValidation');
 	if(document.getElementById('depTrans').innerHTML===""){
 		document.getElementById('depTrans').innerHTML=0;
 		trans=0;
@@ -108,10 +128,55 @@ function updateBankBal(){
 		document.getElementById('oc').innerHTML=0;
 		oc=0;
 	}	
-	//if(document.getElementById('statementAmount').value){
-		//document.getElementById('statementAmount').value=0;
-		//stmt=0;
-	//}
-		document.getElementById('adjBank').value=stmt+trans-oc;
+	var adj=stmt+trans-oc;
+	if(adj){
+		document.getElementById('adjBank').innerHTML=adj;
+	}else{
+		document.getElementById('adjBank').innerHTML=0;
+	}
+			
+	var adjBank=document.getElementById('adjBank').innerHTML;
+	var val_rst = bankBal-adjBank;
+	if(val_rst){
+		validate.innerHTML=val_rst;
+	}else{
+		validate.innerHTML=0;	
+	}
+	
+	if(validate.innerHTML!=="0"||validate.innerHTML===""){
+		validate.style.backgroundColor='red';
+	}else{
+		validate.style.backgroundColor='green';
+	}
+	
+	var recon = document.getElementById('recon');
+	var cashValidate=document.getElementById('cashValidate');
+	var reconTxt=document.getElementById('reconTxt');
+	
+	if(parseFloat(validate.innerHTML)!==0||parseFloat(cashValidate.innerHTML)!==0){
+		recon.innerHTML=0;
+		reconTxt.value=0;
+	}else{
+		recon.innerHTML=1;
+		reconTxt.value=1;
+	}
+	
+}
 
+function validateMFR (rid) {
+  //alert(rid);
+  	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    alert(xmlhttp.responseText);                 
+                    
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/validateMFR/rid/"+rid,true);      
+      xmlhttp.send();
 }

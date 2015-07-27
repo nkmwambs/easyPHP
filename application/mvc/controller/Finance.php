@@ -73,10 +73,10 @@ class Finance_Controller extends E_Controller
     public function ecj(){
 
             if(isset($this->choice[1])){
-            	$d=date('Y-m-t',strtotime("-1 month",$this->choice[1]));
+            	$d=date('Y-m-t',strtotime("last day of previous month",$this->choice[1]));
             	$v_month =date('m',$this->choice[1]);
 			}else{
-				$d=date('Y-m-t',strtotime("-1 month"));
+				$d=date('Y-m-t',strtotime("last day of previous month"));
 				$v_month=date('m');
 			}		
 					
@@ -528,392 +528,1037 @@ class Finance_Controller extends E_Controller
 	        $year=date("Y");
 			$month=date("m");
 			$fullDate=date("Y-m-d");     
-
+			
 			$acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-	        $balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('-1 month',strtotime($fullDate))),"=")));
+			$acc = $this->_model->accountsForMfr($acc_cond);//An array of current month transactions
 			
-			$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
+			$balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('last day of previous month',strtotime($fullDate))),"=")));
+			$balBf = $this->_model->balFundsBf($balBf_cond);//An array of opening funds balances per month
 			
-			$bc_end_bal_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime("-1 month")),"="),array("AND","accNo","BC","="),array("AND","icpNo",Resources::session()->fname,"=")));
-			$pc_end_bal_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime("-1 month")),"="),array("AND","accNo","PC","="),array("AND","icpNo",Resources::session()->fname,"=")));
-			
-			$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			
-			$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","AccNo",2000,"="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			
-			$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
-			$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
-			
-            $exp_acc_cond = $this->_model->where(array(array("where","AccGrp",0,"="),array("AND","prg","2","="),array("AND","Active",1,"=")));
-			
-            $acc = $this->_model->accountsForMfr($acc_cond);//An array of current month transactions
-            $balBf = $this->_model->balFundsBf($balBf_cond);//An array of opening funds balances per month
-            $chk_end_bal_qry = $this->_model->balFundsBf($chk_end_bal_cond);// Used to calculate submit state
-            
-            $bc_end_bal=$this->_model->getAllRecords($bc_end_bal_cond,"cashbal");//Previous month Closing Bank Balance
-			$pc_end_bal=$this->_model->getAllRecords($pc_end_bal_cond,"cashbal");//Previous month Closing Petty Cash Balance
-			
-			$month_bank_inc=$this->_model->getAllRecords($month_bank_inc_cond,"voucher_body");
-			$month_bank_exp=$this->_model->getAllRecords($month_bank_exp_cond,"voucher_body");
-			
-			$month_pc_inc=$this->_model->getAllRecords($month_pc_inc_cond,"voucher_body");
-			$month_pc_exp=$this->_model->getAllRecords($month_pc_exp_cond,"voucher_body");
-			
-			$month_dep_in_transit=$this->_model->getAllRecords($month_dep_in_transit_cond,"voucher_header");			
-			$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
-			
-			$exp_acc = $this->_model->getAllRecords($exp_acc_cond,"accounts");
-			
-			$maxID_cond=$this->_model->where(array(array("where","Month(TDate)",$month,"="),array("AND","Year(TDate)",$year,"=")));
-			$maxID = $this->_model->getMaxVoucherID($maxID_cond);
-			$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",Resources::session()->fname,"="),array("AND","voucher_header.Fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));
-			
-			$year_todate_exp=$this->_model->get_todate_expenses($year_todate_exp_cond);
-			
-			
-			$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"=")));
-			
-			$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
-			$sum_month_inc=0;
-			$sum_month_exp=0;
-			$sum_month_pc_inc=0;
-			$sum_month_pc_exp=0;
-			foreach ($month_bank_inc as $value) {
-				$sum_month_inc+=$value->Cost;
-			}
-			foreach ($month_bank_exp as $value) {
-				$sum_month_exp+=$value->Cost;
+			//An array whose keys are accounts and values are opening balances for the month
+			$refined_balbf=array();
+			foreach($balBf as $value){
+				$refined_balbf[$value['AccNo']]=$value['Amount'];
 			}
 			
-			foreach ($month_pc_inc as $value) {
-				$sum_month_pc_inc+=$value->Cost;
-			}
-			foreach ($month_pc_exp as $value) {
-				$sum_month_pc_exp+=$value->Cost;
-			}			
-				$bc_bal=0;
-				$pc_bal=0;
-			if(isset($bc_end_bal)&&count($bc_end_bal)>0){
-				$bc_bal = $bc_end_bal[0]->amount+$sum_month_inc-$sum_month_exp;
-				$pc_bal = $pc_end_bal[0]->amount+$sum_month_pc_inc-$sum_month_pc_exp;
+			//An array whose keys are accounts and values are  transacted amounts for the month
+			$refined_acc=array();
+			foreach($acc as $value){
+				$refined_acc[$value['AccNo']]=$value['Amount'];
 			}
 			
-			$tot_cash= $bc_bal+$pc_bal;
+					
+			//Extract unique keys from the refined arrays 
+			$refined_acc_keys=array_keys($refined_acc);
+			$refined_balbf_keys=array_keys($refined_balbf);
+			$merge_keys = array_unique(array_merge($refined_acc_keys,$refined_balbf_keys));
 			
-            if(empty($chk_end_bal_qry)){
-            	$state = 0;
-            }else{
-            	$state=1;
-            }
-			
-			
-			$acc_arr = array();
-			for ($i=0; $i < count($balBf); $i++) { 
-				$acc_arr[$balBf[$i]->funds]=array(
-				"bf"=>$balBf[$i]->amount,
-				"inc"=>0,
-				"exp"=>0,
-				"end"=>0
-				);
-			}
-
-			for ($i=0; $i < count($acc); $i++) {
-				if(!array_key_exists($acc[$i]->AccNo, $acc_arr)) {
-						if($acc[$i]->AccNo>99&&$acc[$i]->AccNo<1000){
-							$inc += $acc[$i]->Cost;
-						}else{
-							$inc=0;
-							if($acc[$i]->AccNo<100){
-								$acc_arr[100]['exp']+=$acc[$i]->Cost;
-							}else{
-								$acc_arr[$acc[$i]->AccNo-1000]['exp']+=$acc[$i]->Cost;
-							}
-						}
-						if($acc[$i]->AccNo>99&&$acc[$i]->AccNo<1000){
-							$acc_arr[$acc[$i]->AccNo]=array(
-							"bf"=>0,
-							"inc"=>$inc,
-							"exp"=>0,
-							"end"=>0
-							);
-						}
-					}else{
-						$acc_arr[$acc[$i]->AccNo]['inc']+=$acc[$i]->Cost;
-					}
-			}
-			
-			foreach ($acc_arr as $key => $value) {
-				$acc_arr[$key]['end']=$acc_arr[$key]['bf']+$acc_arr[$key]['inc']-$acc_arr[$key]['exp'];
-			}
-			ksort($acc_arr);
-			
-			
-			$month_exp = array_merge($month_pc_exp,$month_bank_exp);
-
-			$actual_month_exp=array();
-			foreach ($month_exp as  $value) {
-				if(array_key_exists($value->AccNo,$actual_month_exp)){
-					$actual_month_exp[$value->AccNo]+=$value->Cost;
-				}else{
-					$actual_month_exp[$value->AccNo]=$value->Cost;
-				}	
-			}
-			
-			//$year_todate_bank_exp
-			$todate_exp=array();
-			foreach ($year_todate_exp as $value) {
-				if(array_key_exists($value->AccNo,$todate_exp)){
-					$todate_exp[$value->AccNo]+=$value->Cost;
-				}else{
-					$todate_exp[$value->AccNo]=$value->Cost;
+			//Get sum of all transactions per account
+			$sum_acc=array();
+			foreach($merge_keys as $value){
+				$sum_acc[$value]=0;
+				if(array_key_exists($value, $refined_acc)){
+					$sum_acc[$value]+=$refined_acc[$value];//$sum_balbf_acc
 				}
 			}
-			ksort($todate_exp);
+			ksort($sum_acc);// Sort in transactions in in ascending accounts order - A Very important array
 			
-			$todate_plan=array();
-			foreach($todate_budget as $value){
-				$todate_plan[$value->AccNo]=$value->Cost;
-			}
-			ksort($todate_plan);
-			
-			ksort($actual_month_exp);
-			foreach ($exp_acc as $value) {
-				$accs[$value->AccNo]['details']=array($value->AccText,$value->AccName);
-				$accs[$value->AccNo]['figures']=array(
-					//"cur"=>$actual_month_exp[$value->AccNo],
-					//"accum"=>$todate_exp[$value->AccNo],
-					//"bud"=>$todate_plan[$value->AccNo],
-					//"var"=>$todate_plan[$value->AccNo]-$todate_exp[$value->AccNo],
-					//"varPer"=>(($todate_plan[$value->AccNo]-$todate_exp[$value->AccNo])/$todate_plan[$value->AccNo])*100,
-				);
+			//Support expenses totals
+			$support_exp_for_month = 0;
+			foreach($sum_acc as $key=>$value){
+				if($key<80 || $key===90){
+					$support_exp_for_month+=$value;
+				}
 			}
 			
-			
-			
-            $data[]=$state;
-			$data[]=time();
-			$data[]=$bc_bal;
-			$data[]=$pc_bal;
-			$data[]=$acc_arr;
-			$data[]=$tot_cash;
-			$data[]=$month_dep_in_transit;
-			$data[]=$month_oc;
-			$data[]=$accs;
-			$data[]=$month_exp;
-			//$data[]=$todate_plan;
+			//CSP Grant Expenses
+			$csp_exp_for_month = 0;
+			foreach($sum_acc as $key=>$value){
+				if($key>79&&$key<90){
+					$csp_exp_for_month+=$value;
+				}
+			}			
 
-            return $data;
+			//None Support and None CSP Expenses array
+			$none_support_csp_exp=array();
+			foreach ($sum_acc as $key => $value) {
+				if($key>1000&&$key<2000){
+					$k=$key-1000;
+					$none_support_csp_exp[$k]=$value;
+				}
+			}
+			
+			//All Incomes array
+			$all_inc=array();
+			foreach ($sum_acc as $key => $value) {
+				if($key>=100&&$key<1000){
+					$all_inc[$key]=$value;
+				}
+			}	
+					
+			
+			//All Expenses Array
+			$all_exp = array();
+			$all_exp['100']=$support_exp_for_month;
+			$all_exp['351']=$csp_exp_for_month;
+			foreach($none_support_csp_exp as $key=>$value){
+				$all_exp[$key]=$value;
+			}
+			
+			//get unique keys reponding to R accounts
+			$unique_acc_as_rev=array();
+			foreach($merge_keys as $value){
+				if($value>1000&&$value<2000){
+					$unique_acc_as_rev[]=$value-1000;	
+				}elseif($value>=100&&$value<1000){
+					$unique_acc_as_rev[]=$value;
+				}
+				
+			}
+			
+			//Add zero values to missing elements  
+ 			foreach($all_inc as $key=>$value){
+				if(!array_key_exists($key, $refined_balbf)){
+					$refined_balbf[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+				if(!array_key_exists($key, $all_exp)){
+					$all_exp[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+			}
+			
+			foreach($all_exp as $key=>$value){
+				if(!array_key_exists($key, $refined_balbf)){
+					$refined_balbf[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+				if(!array_key_exists($key, $all_inc)){
+					$all_inc[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+			}
+			
+			//End Balance Array
+			$end_bal=array();
+			foreach($unique_acc_as_rev as $value){
+				$opBal=0;
+				$fndInc=0;
+				$fndExp=0;
+				if(isset($refined_balbf[$value])){
+					$opBal=$refined_balbf[$value];
+				}
+				if(isset($all_inc[$value])){
+					$fndInc=$all_inc[$value];
+				}
+				if(isset($all_exp[$value])){
+					$fndExp=$all_exp[$value];
+				}
+				$bal=$opBal+$fndInc-$fndExp;
+				$end_bal[$value]=$bal;
+			}
+		
+			ksort($refined_balbf);
+			
+			
+			/**
+			 * Cash and Banks Balances
+			 */
+			
+		//Opening Bank Balances		 //date("t/m/Y", strtotime("last month"));
+		$bc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","BC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$bc_end_bal=$this->_model->getAllRecords($bc_end_bal_cond,"cashbal");//Previous month Closing Bank Balance
+		if(!empty($bc_end_bal)){
+			$bcBalBf=$bc_end_bal[0]->amount;
+		}else{
+			$bcBalBf=0;
+		}
+			
+		
+		//Opening PC Balances		
+		$pc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","PC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$pc_end_bal=$this->_model->getAllRecords($pc_end_bal_cond,"cashbal");//Previous month Closing Petty Cash Balance
+		if(!empty($pc_end_bal)){
+			$pcBalBf=$pc_end_bal[0]->amount;
+		}else{
+			$pcBalBf=0;
+		}
+			
+		
+		//All Bank Incomes for the month
+		$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_inc=$this->_model->getAllRecords($month_bank_inc_cond,"voucher_body");
+		$bank_inc=0;
+		foreach ($month_bank_inc as $value) {
+				$bank_inc+=$value->Cost;
+		}
+		
+		//All Bank Expenses for the month
+		$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_exp=$this->_model->getAllRecords($month_bank_exp_cond,"voucher_body");
+		$bank_exp=0;
+		foreach ($month_bank_exp as $value) {
+				$bank_exp+=$value->Cost;
+			}
+		
+		//All PC Income for the month
+		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","AccNo",2000,"="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_inc=$this->_model->getAllRecords($month_pc_inc_cond,"voucher_body");
+		$pc_inc=0;
+		foreach ($month_pc_inc as $value) {
+				$pc_inc+=$value->Cost;
+			}
+		
+		//All PC Expenses for the month
+		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_exp=$this->_model->getAllRecords($month_pc_exp_cond,"voucher_body");
+		$pc_exp=0;
+		foreach ($month_pc_exp as $value) {
+				$pc_exp+=$value->Cost;
+			}
+		
+		//Bank and PC Closing Balances
+		$close_bank_balance = $bcBalBf+$bank_inc-$bank_exp;
+		$close_pc_balance=$pcBalBf+$pc_exp+$pc_inc-$pc_exp;
+		
+		//Deposit in Transit
+		$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
+		$month_dep_in_transit=$this->_model->getAllRecords($month_dep_in_transit_cond,"voucher_header");
+		
+		//Oustanding Cheques
+		$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
+		$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
+		
+		//All Expense Accounts
+		$exp_acc_cond = $this->_model->where(array(array("where","AccGrp",0,"="),array("AND","Active",1,"=")));
+		$acc_details = $this->_model->getAllRecords($exp_acc_cond,"accounts");
+		$accs=array();
+		foreach ($acc_details as $value) {
+				$accs[$value->AccNo]=array($value->AccText,$value->AccName,$value->prg);
+			}
+		
+		//Months Expenses per Account
+		$exp_per_acc=array();
+		foreach($refined_acc as $key=>$value){
+			if($key<100||$key>1000&&$key<2000){
+				$exp_per_acc[$key]=$value;
+			}
+		}
+		
+		//Maximum Transaction ID
+		//$month_by_num = array(7,8,9,10,11,12,1,2,3,4,5,6);
+		$maxID_cond=$this->_model->where(array(array("where","Month(TDate)",$month,"<="),array("AND","Year(TDate)",$year,"=")));
+		$maxID = $this->_model->getMaxVoucherID($maxID_cond);
+		
+		//Expenses to date
+		$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",Resources::session()->fname,"="),array("AND","voucher_header.Fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));	
+		$year_todate_exp=$this->_model->get_todate_expenses($year_todate_exp_cond);
+		$exp_to_date=array();
+		foreach($year_todate_exp as $value){
+			$key=$value->AccNo;
+			if($key<100||$key>1000&&$key<2000){
+				$exp_to_date[$key]=$value->Cost;
+			}
+		}
+		
+		
+		//Accounts Details and Expense Records
+		foreach($accs as $key=>$value){
+			if(array_key_exists($key, $exp_per_acc)){
+				$accs[$key]['Exp']=$exp_per_acc[$key];
+			}else{
+				$accs[$key]['Exp']=0;	
+			}
+		}
+		
+		//Accounts Details and Expenses to Date Records
+		foreach($accs as $key=>$value){
+			if(array_key_exists($key, $exp_to_date)){
+				$accs[$key]['ExpToDate']=$exp_to_date[$key];
+			}else{
+				$accs[$key]['ExpToDate']=0;
+			}
+			
+		}
+		
+		//Budget To Date
+		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"=")));
+		$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
+		$budget_to_date=array();
+		foreach($todate_budget as $value){
+			$budget_to_date[$value->AccNo]=$value->Cost;
+		}
+		
+		//Accounts Details and Budget to Date Records
+		foreach($accs as $key=>$value){
+			if(array_key_exists($key, $budget_to_date)){
+				$accs[$key]['BudToDate']=$budget_to_date[$key];
+			}else{
+				$accs[$key]['BudToDate']=0;
+			}
+			
+		}
+		
+		//Account Details and Variance Records
+		foreach($accs as $key=>$value){
+			$accs[$key]['var']=$accs[$key]['BudToDate']-$accs[$key]['ExpToDate'];
+			if($accs[$key]['BudToDate']!==0){	
+				$accs[$key]['varPer']=@($accs[$key]['var']/$accs[$key]['BudToDate'])*100;
+			}else{
+				$accs[$key]['varPer']=0;
+			}
+		}
+			
+		//Find Variance Explanation Statements
+		$variance_explanation_cond=$this->_model->where(array(array("where","reportMonth",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$variance_explanation=$this->_model->getAllRecords($variance_explanation_cond,"varjustify");
+		$varJustify=array();
+		foreach($variance_explanation as $value){
+			$varJustify[$value->AccNo]=$value->Details;
+		}
+		
+		//Variance -/+ 10%
+		$var_to_explain=array();
+		foreach($accs as $key=>$value){
+			
+			if($value['varPer']>10 || $value['varPer']<-10){
+				if(count($varJustify)>0){
+					$value['notes']=$varJustify[$key];
+				}
+				$var_to_explain[$key]=$value;
+			}
+		}
+		
+		//Monthly Parameters -- Begin
+		$param=array();
+			//Calculate AFC	
+			$afc=0;
+			if($end_bal[100]!==0||$all_inc[100]!==0){
+				$afc=$end_bal[100]/$all_inc[100];
+			}
+				
+			
+			//Calculate Budget Variance
+			$sum_var = 0;
+			foreach($accs as $key=>$value){
+				if($key<100){
+					$sum_var+=$value['var'];	
+				}
+				
+			}
+			$sum_bud_to_date=0;
+			foreach ($accs as $value) {
+				$sum_bud_to_date+=$value['BudToDate'];
+			}
+		$obv=($sum_var/$sum_bud_to_date)*100;
+		
+		//Calculate Survival Ratio
+		$sum_500_inc=0;
+		foreach($all_inc as $key=>$value){
+			if($key>500&&$key<600){
+				$sum_500_inc+=$all_inc[$key];
+			}
+		}
+		$sr=0;
+		if($sum_500_inc!==0||$all_inc[100]!==0){
+			$sr = ($sum_500_inc/$all_inc[100])*100;	
+		}
+		
+		
+		//Calculate Operating Ratio
+		$sum_admin_exp =0;
+		foreach($accs as $key=>$value){
+			if($key===65||$key===70||$key===74||$key===75||$key===86||$key===87||$key===88){
+				$sum_admin_exp+=$value['ExpToDate'];
+			}
+		}
+		$or=0;
+		if($sum_admin_exp!==0||$all_exp[100]!==0){
+			$or=($sum_admin_exp/$all_exp[100])*100;
+		}
+		
+		$param=array();		
+		$param['afc']=$afc;
+		$param['obv']=$obv;
+		$param['sr']=$sr;
+		$param['pcb']=$close_pc_balance;
+		$param['or']=$or;
+		$param['r']=0;
+		//Monthly Parameters -- End
+		
+		
+		//Reconstruct Outstanding Array
+		$reconstruct_oc =array();
+				//Add Current voucher_body Cheques to reconstruct_oc array
+				$cnt=0;
+				foreach($month_oc as $value){
+					$reconstruct_oc[$cnt]['rId']=$value->hID;
+					$reconstruct_oc[$cnt]['ChqNo']=$value->ChqNo;
+					$reconstruct_oc[$cnt]['TDate']=$value->TDate;
+					$reconstruct_oc[$cnt]['VNumber']=$value->VNumber;
+					$reconstruct_oc[$cnt]['Details']=$value->TDescription;
+					$reconstruct_oc[$cnt]['Amount']=$value->totals;
+					$reconstruct_oc[$cnt]['source']=2;
+					$cnt++;
+				}
+				
+				//Add B/F Cheques to reconstruct_oc array
+				$bf_oc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","chqState",0,"=")));
+				$bf_oc = $this->_model->getAllRecords($bf_oc_cond,"oschqbf");
+				$cnt=count($reconstruct_oc);
+				foreach($bf_oc as $value){
+					$reconstruct_oc[$cnt]['rId']=$value->osBfID;
+					$reconstruct_oc[$cnt]['ChqNo']=$value->chqNo;
+					$reconstruct_oc[$cnt]['TDate']=$value->chqDate;
+					$reconstruct_oc[$cnt]['VNumber']=$value->VNumber;
+					$reconstruct_oc[$cnt]['Details']=$value->Details;
+					$reconstruct_oc[$cnt]['Amount']=$value->amount;
+					$reconstruct_oc[$cnt]['source']=1;
+					$cnt++;
+				}
+		
+		
+		
+		//Reconstruct Deposit in Transit
+		$reconstruct_dep_in_transit =array();
+				//Add Current voucher_body Cash Received to reconstruct_oc array
+				$ct=0;
+				foreach($month_dep_in_transit as $value){
+					$reconstruct_dep_in_transit[$ct]['rId']=$value->hID;
+					$reconstruct_dep_in_transit[$ct]['ChqNo']=$value->ChqNo;
+					$reconstruct_dep_in_transit[$ct]['TDate']=$value->TDate;
+					$reconstruct_dep_in_transit[$ct]['VNumber']=$value->VNumber;
+					$reconstruct_dep_in_transit[$ct]['Details']=$value->TDescription;
+					$reconstruct_dep_in_transit[$ct]['Amount']=$value->totals;
+					$reconstruct_dep_in_transit[$ct]['source']=2;
+					$ct++;
+				}
+				
+				//Add B/F Cash Received to reconstruct_oc array
+				$bf_dep_in_transit_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","TState",0,"=")));
+				$bf_dep_in_transit = $this->_model->getAllRecords($bf_dep_in_transit_cond,"transitfundsbf");
+				$ct=count($reconstruct_dep_in_transit);
+				foreach($bf_dep_in_transit as $value){
+					$reconstruct_dep_in_transit[$ct]['rId']=$value->transitBfID;
+					$reconstruct_dep_in_transit[$ct]['TDate']=$value->TDate;
+					$reconstruct_dep_in_transit[$ct]['VNumber']=$value->VNumber;
+					$reconstruct_dep_in_transit[$ct]['Details']=$value->Details;
+					$reconstruct_dep_in_transit[$ct]['Amount']=$value->amount;
+					$reconstruct_dep_in_transit[$ct]['source']=1;
+					$ct++;
+				}		
+		
+		//MFR State
+		//$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
+		//$chk_end_bal_qry = $this->_model->balFundsBf($chk_end_bal_cond);// Used to calculate submit state
+		$chk_state_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","closureDate",date('Y-m-t',strtotime($fullDate)),"="))); 
+		$chk_state=$this->_model->getAllRecords($chk_state_cond,"opfundsbalheader");
+		$state=0;
+		$mfrClosureFundsID=0;
+		if(empty($chk_state)){
+            	$state = 0;
+         }elseif($chk_state[0]->allowEdit==='1'){
+            	$state=1;
+				$mfrClosureFundsID=$chk_state[0]->balHdID;
+         }else{
+         		$state=2;
+				$mfrClosureFundsID=$chk_state[0]->balHdID;
+         }
+		 
+		 
+				
+		//Find Bank Statement Date
+		$bs_date_check_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));		
+		$bs_date_check=$this->_model->getAllRecords($bs_date_check_cond,"statementbal");
+		$statementDate = "";
+		$statementAmount=0;
+		if($state!==0){
+			$statementDate=$bs_date_check[0]->statementDate;
+			$statementAmount=$bs_date_check[0]->amount;
+			
+		}
+				
+
+		
+		
+				
+		$data=array();
+		$data['balbf'] = $refined_balbf;
+		$data['inc']=$all_inc;
+		$data['exp']=$all_exp;
+		$data['bal']=$end_bal;
+		$data['bank']=$close_bank_balance;
+		$data['pc']=$close_pc_balance;
+		$data['transit']=$reconstruct_dep_in_transit;
+		$data['oc']=$reconstruct_oc;
+		$data['expenses']=$accs;
+		$data['varExplain']=$var_to_explain;
+		$data['param']=$param;
+		$data['state']=$state;
+		$data['stateID']=$mfrClosureFundsID;
+		$data['statementDate']=$statementDate;
+		$data['statementAmount']=$statementAmount;
+		$data['varJustify']=$varJustify;
+		$data['time']=time();
+		$data['test']="";
+		
+		
+		return $data;
+			
     }
+public function validateMFR(){
+	//print("Hello ".$this->choice[1]);
+	$validateMFR_cond = $this->_model->where(array(array("where","balHdID",$this->choice[1],"=")));
+	$sets = array("allowEdit"=>0);
+	$validateMFR=$this->_model->updateQuery($sets,$validateMFR_cond,"opfundsbalheader");
+	print($validateMFR);
+}
 public function changeState(){
-	$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
-	$sets = array("ChqState"=>1);
-	$this->_model->updateQuery($sets,$cond,"voucher_header");
+	if($this->choice[3]===2){
+		$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
+		$sets = array("ChqState"=>1);
+		$this->_model->updateQuery($sets,$cond,"voucher_header");
+	}elseif($this->choice[5]==="dep"){
+		$cond = $this->_model->where(array(array("where","transitBfID",$this->choice[1],"=")));
+		$sets = array("TState"=>1);
+		$this->_model->updateQuery($sets,$cond,"transitfundsbf");		
+	}elseif($this->choice[5]==="oc"){
+		$cond = $this->_model->where(array(array("where","osBfID",$this->choice[1],"=")));
+		$sets = array("chqState"=>1);
+		$this->_model->updateQuery($sets,$cond,"oschqbf");		
+	}
 }
 public function undochangeState(){
-	$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
-	$sets = array("ChqState"=>0);
-	$this->_model->updateQuery($sets,$cond,"voucher_header");	
+	if($this->choice[3]===2){
+		$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
+		$sets = array("ChqState"=>0);
+		$this->_model->updateQuery($sets,$cond,"voucher_header");
+	}elseif($this->choice[5]==="dep"){
+		$cond = $this->_model->where(array(array("where","transitBfID",$this->choice[1],"=")));
+		$sets = array("TState"=>0);
+		$this->_model->updateQuery($sets,$cond,"transitfundsbf");		
+	}elseif($this->choice[5]==="oc"){
+		$cond = $this->_model->where(array(array("where","osBfID",$this->choice[1],"=")));
+		$sets = array("chqState"=>0);
+		$this->_model->updateQuery($sets,$cond,"oschqbf");		
+	}	
 }
 public function mfrNav($render=2,$path="",$tags=array("1")){
-    		//if(isset($this->choice[1])){
-    			$year=date("Y",$this->choice[1]);
-				$month=date("m",$this->choice[1]);
-				$fullDate=date("Y-m-d",$this->choice[1]);
-    		//}else{
-	          //  $year=date("Y");
-			//	$month=date("m");
-				//$fullDate=date("Y-m-d");     
-			//}
+			$year=date("Y",$this->choice[1]);
+			$month=date("m",$this->choice[1]);
+			$fullDate=date("Y-m-d",$this->choice[1]);
+	
+	
 			$acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-	        $balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('-1 month',strtotime($fullDate))),"=")));
+			$acc = $this->_model->accountsForMfr($acc_cond);//An array of current month transactions
 			
-			$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
+			$balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('last day of previous month',strtotime($fullDate))),"=")));
+			$balBf = $this->_model->balFundsBf($balBf_cond);//An array of opening funds balances per month
 			
-			$bc_end_bal_cond = $this->_model->where(array(array("where",month,date("Y-m-t",strtotime("-1 month")),"="),array("AND","accNo","BC","="),array("AND","icpNo",Resources::session()->fname,"=")));
-			$pc_end_bal_cond = $this->_model->where(array(array("where",month,date("Y-m-t",strtotime("-1 month")),"="),array("AND","accNo","PC","="),array("AND","icpNo",Resources::session()->fname,"=")));
-			
-			$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			
-			$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","AccNo",2000,"="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			
-			$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
-			$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
-			
-            $exp_acc_cond = $this->_model->where(array(array("where","AccGrp",0,"="),array("AND","prg","2","="),array("AND","Active",1,"=")));
-			
-            $acc = $this->_model->accountsForMfr($acc_cond);//An array of current month transactions
-            $balBf = $this->_model->balFundsBf($balBf_cond);//An array of opening funds balances per month
-            $chk_end_bal_qry = $this->_model->balFundsBf($chk_end_bal_cond);// Used to calculate submit state
-            
-            $bc_end_bal=$this->_model->getAllRecords($bc_end_bal_cond,"cashbal");//Previous month Closing Bank Balance
-			$pc_end_bal=$this->_model->getAllRecords($pc_end_bal_cond,"cashbal");//Previous month Closing Petty Cash Balance
-			
-			$month_bank_inc=$this->_model->getAllRecords($month_bank_inc_cond,"voucher_body");
-			$month_bank_exp=$this->_model->getAllRecords($month_bank_exp_cond,"voucher_body");
-			
-			$month_pc_inc=$this->_model->getAllRecords($month_pc_inc_cond,"voucher_body");
-			$month_pc_exp=$this->_model->getAllRecords($month_pc_exp_cond,"voucher_body");
-			
-			$month_dep_in_transit=$this->_model->getAllRecords($month_dep_in_transit_cond,"voucher_header");			
-			$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
-			
-			$exp_acc = $this->_model->getAllRecords($exp_acc_cond,"accounts");
-			
-			$maxID_cond=$this->_model->where(array(array("where","Month(TDate)",$month,"="),array("AND","Year(TDate)",$year,"=")));
-			$maxID = $this->_model->getMaxVoucherID($cond);
-			$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",Resources::session()->fname,"="),array("AND","voucher_header.Fy",Resources::func(get_financial_year,array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));
-			
-			$year_todate_exp=$this->_model->get_todate_expenses($year_todate_exp_cond);
-			
-			
-			$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func(get_financial_year,array($fullDate)),"=")));
-			
-			$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
-			
-			foreach ($month_bank_inc as $value) {
-				$sum_month_inc+=$value->Cost;
-			}
-			foreach ($month_bank_exp as $value) {
-				$sum_month_exp+=$value->Cost;
+			//An array whose keys are accounts and values are opening balances for the month
+			$refined_balbf=array();
+			foreach($balBf as $value){
+				$refined_balbf[$value['AccNo']]=$value['Amount'];
 			}
 			
-			foreach ($month_pc_inc as $value) {
-				$sum_month_pc_inc+=$value->Cost;
-			}
-			foreach ($month_pc_exp as $value) {
-				$sum_month_pc_exp+=$value->Cost;
-			}			
-			
-			
-			$bc_bal = $bc_end_bal[0]->amount+$sum_month_inc-$sum_month_exp;
-			$pc_bal = $pc_end_bal[0]->amount+$sum_month_pc_inc-$sum_month_pc_exp;
-			$tot_cash= $bc_bal+$pc_bal;
-			
-            if(empty($chk_end_bal_qry)){
-            	$state = 0;
-            }else{
-            	$state=1;
-            }
-			
-			
-			$acc_arr = array();
-			for ($i=0; $i < count($balBf); $i++) { 
-				$acc_arr[$balBf[$i]->funds]=array(
-				"bf"=>$balBf[$i]->amount,
-				"inc"=>0,
-				"exp"=>0,
-				"end"=>0
-				);
-			}
-
-			for ($i=0; $i < count($acc); $i++) {
-				if(!array_key_exists($acc[$i]->AccNo, $acc_arr)) {
-						if($acc[$i]->AccNo>99&&$acc[$i]->AccNo<1000){
-							$inc += $acc[$i]->Cost;
-						}else{
-							$inc=0;
-							if($acc[$i]->AccNo<100){
-								$acc_arr[100]['exp']+=$acc[$i]->Cost;
-							}else{
-								$acc_arr[$acc[$i]->AccNo-1000]['exp']+=$acc[$i]->Cost;
-							}
-						}
-						if($acc[$i]->AccNo>99&&$acc[$i]->AccNo<1000){
-							$acc_arr[$acc[$i]->AccNo]=array(
-							"bf"=>0,
-							"inc"=>$inc,
-							"exp"=>0,
-							"end"=>0
-							);
-						}
-					}else{
-						$acc_arr[$acc[$i]->AccNo]['inc']+=$acc[$i]->Cost;
-					}
+			//An array whose keys are accounts and values are  transacted amounts for the month
+			$refined_acc=array();
+			foreach($acc as $value){
+				$refined_acc[$value['AccNo']]=$value['Amount'];
 			}
 			
-			foreach ($acc_arr as $key => $value) {
-				$acc_arr[$key]['end']=$acc_arr[$key]['bf']+$acc_arr[$key]['inc']-$acc_arr[$key]['exp'];
-			}
-			ksort($acc_arr);
+					
+			//Extract unique keys from the refined arrays 
+			$refined_acc_keys=array_keys($refined_acc);
+			$refined_balbf_keys=array_keys($refined_balbf);
+			$merge_keys = array_unique(array_merge($refined_acc_keys,$refined_balbf_keys));
 			
-			
-			$month_exp = array_merge($month_pc_exp,$month_bank_exp);
-
-			$actual_month_exp=array();
-			foreach ($month_exp as  $value) {
-				if(array_key_exists($value->AccNo,$actual_month_exp)){
-					$actual_month_exp[$value->AccNo]+=$value->Cost;
-				}else{
-					$actual_month_exp[$value->AccNo]=$value->Cost;
-				}	
-			}
-			
-			//$year_todate_bank_exp
-			$todate_exp=array();
-			foreach ($year_todate_exp as $value) {
-				if(array_key_exists($value->AccNo,$todate_exp)){
-					$todate_exp[$value->AccNo]+=$value->Cost;
-				}else{
-					$todate_exp[$value->AccNo]=$value->Cost;
+			//Get sum of all transactions per account
+			$sum_acc=array();
+			foreach($merge_keys as $value){
+				$sum_acc[$value]=0;
+				if(array_key_exists($value, $refined_acc)){
+					$sum_acc[$value]+=$refined_acc[$value];//$sum_balbf_acc
 				}
 			}
-			ksort($todate_exp);
+			ksort($sum_acc);// Sort in transactions in in ascending accounts order - A Very important array
 			
-			$todate_plan=array();
-			foreach($todate_budget as $value){
-				$todate_plan[$value->AccNo]=$value->Cost;
-			}
-			ksort($todate_plan);
-			
-			ksort($actual_month_exp);
-			foreach ($exp_acc as $value) {
-				$accs[$value->AccNo]=array(
-					"text"=>$value->AccText,
-					"item"=>$value->AccName,
-					"cur"=>$actual_month_exp[$value->AccNo],
-					"accum"=>$todate_exp[$value->AccNo],
-					"bud"=>$todate_plan[$value->AccNo],
-					"var"=>$todate_plan[$value->AccNo]-$todate_exp[$value->AccNo],
-					"varPer"=>(($todate_plan[$value->AccNo]-$todate_exp[$value->AccNo])/$todate_plan[$value->AccNo])*100,
-				);
+			//Support expenses totals
+			$support_exp_for_month = 0;
+			foreach($sum_acc as $key=>$value){
+				if($key<80 || $key===90){
+					$support_exp_for_month+=$value;
+				}
 			}
 			
-			
-			
-            $data[]=$state;
-			$data[]=time();
-			$data[]=$bc_bal;
-			$data[]=$pc_bal;
-			$data[]=$acc_arr;
-			$data[]=$tot_cash;
-			$data[]=$month_dep_in_transit;
-			$data[]=$month_oc;
-			$data[]=$accs;
-			//$data[]=$todate_budget_cond;
-			//$data[]=$todate_plan;
+			//CSP Grant Expenses
+			$csp_exp_for_month = 0;
+			foreach($sum_acc as $key=>$value){
+				if($key>79&&$key<90){
+					$csp_exp_for_month+=$value;
+				}
+			}			
 
-            return $data;
+			//None Support and None CSP Expenses array
+			$none_support_csp_exp=array();
+			foreach ($sum_acc as $key => $value) {
+				if($key>1000&&$key<2000){
+					$k=$key-1000;
+					$none_support_csp_exp[$k]=$value;
+				}
+			}
+			
+			//All Incomes array
+			$all_inc=array();
+			foreach ($sum_acc as $key => $value) {
+				if($key>=100&&$key<1000){
+					$all_inc[$key]=$value;
+				}
+			}	
+					
+			
+			//All Expenses Array
+			$all_exp = array();
+			$all_exp['100']=$support_exp_for_month;
+			$all_exp['351']=$csp_exp_for_month;
+			foreach($none_support_csp_exp as $key=>$value){
+				$all_exp[$key]=$value;
+			}
+			
+			//get unique keys reponding to R accounts
+			$unique_acc_as_rev=array();
+			foreach($merge_keys as $value){
+				if($value>1000&&$value<2000){
+					$unique_acc_as_rev[]=$value-1000;	
+				}elseif($value>=100&&$value<1000){
+					$unique_acc_as_rev[]=$value;
+				}
+				
+			}
+			
+			//Add zero values to missing elements  
+ 			foreach($all_inc as $key=>$value){
+				if(!array_key_exists($key, $refined_balbf)){
+					$refined_balbf[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+				if(!array_key_exists($key, $all_exp)){
+					$all_exp[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+			}
+			
+			foreach($all_exp as $key=>$value){
+				if(!array_key_exists($key, $refined_balbf)){
+					$refined_balbf[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+				if(!array_key_exists($key, $all_inc)){
+					$all_inc[$key]=0;
+					$unique_acc_as_rev[]=$key;
+				}
+			}
+			
+			//End Balance Array
+			$end_bal=array();
+			foreach($unique_acc_as_rev as $value){
+				$opBal=0;
+				$fndInc=0;
+				$fndExp=0;
+				if(isset($refined_balbf[$value])){
+					$opBal=$refined_balbf[$value];
+				}
+				if(isset($all_inc[$value])){
+					$fndInc=$all_inc[$value];
+				}
+				if(isset($all_exp[$value])){
+					$fndExp=$all_exp[$value];
+				}
+				$bal=$opBal+$fndInc-$fndExp;
+				$end_bal[$value]=$bal;
+			}
+		
+			ksort($refined_balbf);
+			
+			
+			/**
+			 * Cash and Banks Balances
+			 */
+			
+		//Opening Bank Balances		 //date("t/m/Y", strtotime("last month"));
+		$bc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","BC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$bc_end_bal=$this->_model->getAllRecords($bc_end_bal_cond,"cashbal");//Previous month Closing Bank Balance
+		if(!empty($bc_end_bal)){
+			$bcBalBf=$bc_end_bal[0]->amount;
+		}else{
+			$bcBalBf=0;
+		}
+			
+		
+		//Opening PC Balances		
+		$pc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","PC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$pc_end_bal=$this->_model->getAllRecords($pc_end_bal_cond,"cashbal");//Previous month Closing Petty Cash Balance
+		if(!empty($pc_end_bal)){
+			$pcBalBf=$pc_end_bal[0]->amount;
+		}else{
+			$pcBalBf=0;
+		}
+			
+		
+		//All Bank Incomes for the month
+		$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_inc=$this->_model->getAllRecords($month_bank_inc_cond,"voucher_body");
+		$bank_inc=0;
+		foreach ($month_bank_inc as $value) {
+				$bank_inc+=$value->Cost;
+		}
+		
+		//All Bank Expenses for the month
+		$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_exp=$this->_model->getAllRecords($month_bank_exp_cond,"voucher_body");
+		$bank_exp=0;
+		foreach ($month_bank_exp as $value) {
+				$bank_exp+=$value->Cost;
+			}
+		
+		//All PC Income for the month
+		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","AccNo",2000,"="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_inc=$this->_model->getAllRecords($month_pc_inc_cond,"voucher_body");
+		$pc_inc=0;
+		foreach ($month_pc_inc as $value) {
+				$pc_inc+=$value->Cost;
+			}
+		
+		//All PC Expenses for the month
+		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_exp=$this->_model->getAllRecords($month_pc_exp_cond,"voucher_body");
+		$pc_exp=0;
+		foreach ($month_pc_exp as $value) {
+				$pc_exp+=$value->Cost;
+			}
+		
+		//Bank and PC Closing Balances
+		$close_bank_balance = 0;
+		$close_pc_balance=0;
+		if($bank_exp!==0&&$pc_exp!==0){
+			$close_bank_balance = $bcBalBf+$bank_inc-$bank_exp;
+			$close_pc_balance=$pcBalBf+$pc_exp+$pc_inc-$pc_exp;
+		}
+		
+		//Deposit in Transit
+		$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
+		$month_dep_in_transit=$this->_model->getAllRecords($month_dep_in_transit_cond,"voucher_header");
+		
+		//Oustanding Cheques
+		$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
+		$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
+		
+		//All Expense Accounts
+		$exp_acc_cond = $this->_model->where(array(array("where","AccGrp",0,"="),array("AND","Active",1,"=")));
+		$acc_details = $this->_model->getAllRecords($exp_acc_cond,"accounts");
+		$accs=array();
+		foreach ($acc_details as $value) {
+				$accs[$value->AccNo]=array($value->AccText,$value->AccName,$value->prg);
+			}
+		
+		//Months Expenses per Account
+		$exp_per_acc=array();
+		foreach($refined_acc as $key=>$value){
+			if($key<100||$key>1000&&$key<2000){
+				$exp_per_acc[$key]=$value;
+			}
+		}
+		
+		//Maximum Transaction ID
+		//$month_by_num = array(7,8,9,10,11,12,1,2,3,4,5,6);
+		$maxID_cond=$this->_model->where(array(array("where","Month(TDate)",$month,"<="),array("AND","Year(TDate)",$year,"=")));
+		$maxID = $this->_model->getMaxVoucherID($maxID_cond);
+		
+		//Expenses to date
+		$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",Resources::session()->fname,"="),array("AND","voucher_header.Fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));	
+		$year_todate_exp=$this->_model->get_todate_expenses($year_todate_exp_cond);
+		$exp_to_date=array();
+		foreach($year_todate_exp as $value){
+			$key=$value->AccNo;
+			if($key<100||$key>1000&&$key<2000){
+				$exp_to_date[$key]=$value->Cost;
+			}
+		}
+		
+		
+		//Accounts Details and Expense Records
+		foreach($accs as $key=>$value){
+			if(array_key_exists($key, $exp_per_acc)){
+				$accs[$key]['Exp']=$exp_per_acc[$key];
+			}else{
+				$accs[$key]['Exp']=0;	
+			}
+		}
+		
+		//Accounts Details and Expenses to Date Records
+		foreach($accs as $key=>$value){
+			if(array_key_exists($key, $exp_to_date)){
+				$accs[$key]['ExpToDate']=$exp_to_date[$key];
+			}else{
+				$accs[$key]['ExpToDate']=0;
+			}
+			
+		}
+		
+		//Budget To Date
+		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"=")));
+		$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
+		$budget_to_date=array();
+		foreach($todate_budget as $value){
+			$budget_to_date[$value->AccNo]=$value->Cost;
+		}
+		
+		//Accounts Details and Budget to Date Records
+		foreach($accs as $key=>$value){
+			if(array_key_exists($key, $budget_to_date)){
+				$accs[$key]['BudToDate']=$budget_to_date[$key];
+			}else{
+				$accs[$key]['BudToDate']=0;
+			}
+			
+		}
+		
+		//Account Details and Variance Records
+		foreach($accs as $key=>$value){
+			$accs[$key]['var']=$accs[$key]['BudToDate']-$accs[$key]['ExpToDate'];
+			if($accs[$key]['BudToDate']!==0){	
+				$accs[$key]['varPer']=@($accs[$key]['var']/$accs[$key]['BudToDate'])*100;
+			}else{
+				$accs[$key]['varPer']=0;
+			}
+		}
+			
+		//Find Variance Explanation Statements
+		$variance_explanation_cond=$this->_model->where(array(array("where","reportMonth",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$variance_explanation=$this->_model->getAllRecords($variance_explanation_cond,"varjustify");
+		$varJustify=array();
+		foreach($variance_explanation as $value){
+			$varJustify[$value->AccNo]=$value->Details;
+		}
+		
+		//Variance -/+ 10%
+		$var_to_explain=array();
+		foreach($accs as $key=>$value){
+			
+			if($value['varPer']>10 || $value['varPer']<-10){
+				if(count($varJustify)>0){
+					$value['notes']=$varJustify[$key];
+				}
+				$var_to_explain[$key]=$value;
+			}
+		}
+		
+		//Monthly Parameters -- Begin
+		$param=array();
+			//Calculate AFC	
+			$afc=0;
+			if($end_bal[100]!==0||$all_inc[100]!==0){
+				$afc=@($end_bal[100]/$all_inc[100]);
+			}
+				
+			
+			//Calculate Budget Variance
+			$sum_var = 0;
+			foreach($accs as $key=>$value){
+				if($key<100){
+					$sum_var+=$value['var'];	
+				}
+				
+			}
+			$sum_bud_to_date=0;
+			foreach ($accs as $value) {
+				$sum_bud_to_date+=$value['BudToDate'];
+			}
+		$obv=0;
+		if($sum_var!==0||$sum_bud_to_date!==0){
+			$obv=@($sum_var/$sum_bud_to_date)*100;	
+		}
+		
+		//Calculate Survival Ratio
+		$sum_500_inc=0;
+		foreach($all_inc as $key=>$value){
+			if($key>500&&$key<600){
+				$sum_500_inc+=$all_inc[$key];
+			}
+		}
+		$sr=0;
+		if($sum_500_inc!==0||$all_inc[100]!==0){
+			$sr = @($sum_500_inc/$all_inc[100])*100;	
+		}
+		
+		
+		//Calculate Operating Ratio
+		$sum_admin_exp =0;
+		foreach($accs as $key=>$value){
+			if($key===65||$key===70||$key===74||$key===75||$key===86||$key===87||$key===88){
+				$sum_admin_exp+=$value['ExpToDate'];
+			}
+		}
+		$or=0;
+		if($sum_admin_exp!==0||$all_exp[100]!==0){
+			$or=@($sum_admin_exp/$all_exp[100])*100;
+		}
+		
+		$param=array();		
+		$param['afc']=$afc;
+		$param['obv']=$obv;
+		$param['sr']=$sr;
+		$param['pcb']=$close_pc_balance;
+		$param['or']=$or;
+		$param['r']=0;
+		//Monthly Parameters -- End
+		
+		
+		//Reconstruct Outstanding Array
+		$reconstruct_oc =array();
+				//Add Current voucher_body Cheques to reconstruct_oc array
+				$cnt=0;
+				foreach($month_oc as $value){
+					$reconstruct_oc[$cnt]['rId']=$value->hID;
+					$reconstruct_oc[$cnt]['ChqNo']=$value->ChqNo;
+					$reconstruct_oc[$cnt]['TDate']=$value->TDate;
+					$reconstruct_oc[$cnt]['VNumber']=$value->VNumber;
+					$reconstruct_oc[$cnt]['Details']=$value->TDescription;
+					$reconstruct_oc[$cnt]['Amount']=$value->totals;
+					$reconstruct_oc[$cnt]['source']=2;
+					$cnt++;
+				}
+				
+				//Add B/F Cheques to reconstruct_oc array
+				$bf_oc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","chqState",0,"=")));
+				$bf_oc = $this->_model->getAllRecords($bf_oc_cond,"oschqbf");
+				$cnt=count($reconstruct_oc);
+				foreach($bf_oc as $value){
+					$reconstruct_oc[$cnt]['rId']=$value->osBfID;
+					$reconstruct_oc[$cnt]['ChqNo']=$value->chqNo;
+					$reconstruct_oc[$cnt]['TDate']=$value->chqDate;
+					$reconstruct_oc[$cnt]['VNumber']=$value->VNumber;
+					$reconstruct_oc[$cnt]['Details']=$value->Details;
+					$reconstruct_oc[$cnt]['Amount']=$value->amount;
+					$reconstruct_oc[$cnt]['source']=1;
+					$cnt++;
+				}
+		
+		
+		
+		//Reconstruct Deposit in Transit
+		$reconstruct_dep_in_transit =array();
+				//Add Current voucher_body Cash Received to reconstruct_oc array
+				$ct=0;
+				foreach($month_dep_in_transit as $value){
+					$reconstruct_dep_in_transit[$ct]['rId']=$value->hID;
+					$reconstruct_dep_in_transit[$ct]['ChqNo']=$value->ChqNo;
+					$reconstruct_dep_in_transit[$ct]['TDate']=$value->TDate;
+					$reconstruct_dep_in_transit[$ct]['VNumber']=$value->VNumber;
+					$reconstruct_dep_in_transit[$ct]['Details']=$value->TDescription;
+					$reconstruct_dep_in_transit[$ct]['Amount']=$value->totals;
+					$reconstruct_dep_in_transit[$ct]['source']=2;
+					$ct++;
+				}
+				
+				//Add B/F Cash Received to reconstruct_oc array
+				$bf_dep_in_transit_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","TState",0,"=")));
+				$bf_dep_in_transit = $this->_model->getAllRecords($bf_dep_in_transit_cond,"transitfundsbf");
+				$ct=count($reconstruct_dep_in_transit);
+				foreach($bf_dep_in_transit as $value){
+					$reconstruct_dep_in_transit[$ct]['rId']=$value->transitBfID;
+					$reconstruct_dep_in_transit[$ct]['TDate']=$value->TDate;
+					$reconstruct_dep_in_transit[$ct]['VNumber']=$value->VNumber;
+					$reconstruct_dep_in_transit[$ct]['Details']=$value->Details;
+					$reconstruct_dep_in_transit[$ct]['Amount']=$value->amount;
+					$reconstruct_dep_in_transit[$ct]['source']=1;
+					$ct++;
+				}		
+		
+		//MFR State
+		//$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
+		//$chk_end_bal_qry = $this->_model->balFundsBf($chk_end_bal_cond);// Used to calculate submit state
+		$chk_state_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","closureDate",date('Y-m-t',strtotime($fullDate)),"="))); 
+		$chk_state=$this->_model->getAllRecords($chk_state_cond,"opfundsbalheader");
+		$state=0;
+		$mfrClosureFundsID=0;
+		$sysOpen=0;
+		if(empty($chk_state)){
+            	$state = 0;
+         }elseif($chk_state[0]->allowEdit==='1'){
+            	$state=1;
+				$mfrClosureFundsID=$chk_state[0]->balHdID;
+				$sysOpen = $chk_state[0]->systemOpening;
+         }else{
+         		$state=2;
+				$mfrClosureFundsID=$chk_state[0]->balHdID;
+				$sysOpen = $chk_state[0]->systemOpening;
+         }
+		 
+		 
+				
+		//Find Bank Statement Date
+		$bs_date_check_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));		
+		$bs_date_check=$this->_model->getAllRecords($bs_date_check_cond,"statementbal");
+		$statementDate = "";
+		$statementAmount=0;
+		if($state!==0){
+			$statementDate=$bs_date_check[0]->statementDate;
+			$statementAmount=$bs_date_check[0]->amount;
+			
+		}
+				
+
+		
+		
+				
+		$data=array();
+		if($sysOpen===0){
+		$data['balbf'] = $refined_balbf;
+		$data['inc']=$all_inc;
+		$data['exp']=$all_exp;
+		$data['bal']=$end_bal;
+		$data['bank']=$close_bank_balance;
+		$data['pc']=$close_pc_balance;
+		$data['transit']=$reconstruct_dep_in_transit;
+		$data['oc']=$reconstruct_oc;
+		$data['expenses']=$accs;
+		$data['varExplain']=$var_to_explain;
+		$data['param']=$param;
+		$data['state']=$state;
+		$data['stateID']=$mfrClosureFundsID;
+		$data['statementDate']=$statementDate;
+		$data['statementAmount']=$statementAmount;
+		$data['varJustify']=$varJustify;
+		$data['time']=$this->choice[1];
+		$data['test']="";
+		}		
+		
+		return $data;
+    		
     }
     public function submitMfr(){
-    	$cond_last_mfr=$this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
-    	$maxMfrDate = $this->_model->maxMfrDate($cond_last_mfr);
-		$curClosuredate=date("Y-m-t",strtotime("+1 month",strtotime($maxMfrDate)));
-    	/**
+    	 /**
 		 * ICP should not close a report:
 		 * a) Before the end of the month
 		 * b) Where there is no previous report closure
 		 * c) Bank reconciliation is incorrect
 		 */
-    	if(strtotime($curClosuredate)>strtotime($_POST['curDate'])){
-				print("Reporting dealine is not yet or Invalid report!");
+		 $file=$_FILES['fileBs']['tmp_name'];
+		 $_POST['file']=$file;
+		 //print_r($_POST);
+		$cond_last_mfr=$this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$maxMfrDate = $this->_model->maxMfrDate($cond_last_mfr);
+		$curClosuredate=date("Y-m-t",strtotime("+1 month",strtotime($maxMfrDate)));
+		//print($curClosuredate);
+		if(strtotime($curClosuredate)>strtotime($_POST['curDate'])){
+				print("Reporting dealine is not yet!");
 		}elseif(strtotime($curClosuredate)<strtotime($_POST['curDate'])){
 				print("You have previous unsubmitted report(s)!");
+		}elseif(date("d")==="06"&&!Resources::session()->userlevel_backup===1){
+				print("Submission time elapsed!");
 		}else{
-		
+			//Fund Balance Header
 			$balHd=array();
 	    	$balHd['icpNo']=Resources::session()->fname;
 			$balHd['totalBal']=array_sum($_POST['endFunds']);
@@ -922,20 +1567,51 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			$balHd['systemOpening']=1;
 			$this->_model->insertRecord($balHd,"opfundsbalheader");
 			
+			//Fund Balance Body
 			$balHdID= $this->_model->maxMfrID($cond_last_mfr);
 			$funds_body = array();
 			foreach ($_POST['endFunds'] as $key => $value) {
-				$funds_body['balHdID']=$balHdID;
-				$funds_body['funds']=$key;
-				$funds_body['amount']=$value;
-				$this->_model->insertRecord($funds_body,"opfundsbal");
+				$funds_body['balHdID'][]=$balHdID;
+				$funds_body['funds'][]=$key;
+				$funds_body['amount'][]=$value;
+				//$this->_model->insertRecord($funds_body,"opfundsbal");
 			}
-			print("Submit Complete!");	
-
-		}	
-
-		
-		
+			$this->_model->insertArray($funds_body,"opfundsbal");
+			
+			//Closing Cash Balance
+			$closeCashBal = array();
+			$closeCashBal['month'][]=date("Y-m-t",strtotime($_POST['curDate']));
+			$closeCashBal['month'][]=date("Y-m-t",strtotime($_POST['curDate']));
+			$closeCashBal['icpNo'][]=Resources::session()->fname;
+			$closeCashBal['icpNo'][]=Resources::session()->fname;
+			$closeCashBal['AccNo'][]="BC";
+			$closeCashBal['AccNo'][]="PC";
+			$closeCashBal['amount'][]=$_POST['bankTxt'];
+			$closeCashBal['amount'][]=$_POST['pcbTxt'];
+			$this->model->insertArray($closeCashBal,"cashbal");
+			
+			//Closing Statement Record
+			$closeBs=array();
+			$closeBs['month']=date("Y-m-t",strtotime($_POST['curDate']));
+			$closeBs['statementDate']=$_POST['statementDate'];
+			$closeBs['icpNo']=Resources::session()->fname;
+			$closeBs['amount']=$_POST['statementAmount'];
+			$this->_model->insertRecord($closeBs,"statementbal");
+			
+			//Variance Explanation Records
+			$varianceExplain =array();
+			foreach($_POST['explain'] as $key=>$value){
+				$varianceExplain['icpNo'][]=Resources::session()->fname;
+				$varianceExplain['AccNo'][]=$key;
+				$varianceExplain['Details'][]=$_POST['explain'][$key];
+				$varianceExplain['reportMonth'][]=date("Y-m-t",strtotime($_POST['curDate']));
+			}
+			$this->_model->insertArray($varianceExplain,"varjustify");
+			
+			
+			print("Report submitted Successfully!");
+			
+		}
     }
     public function statements($render=1,$path="",$tags=array("1")){
             return $data = "View Bank Statements";
@@ -965,7 +1641,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
     	if(isset($this->choice[1])){
     		//$this->dispatch($render=2,'fundsCategories',$data,array("2","3"));
     	}else{
-    		$cond = $this->_model->where(array(array("where","Month",date('Y-m-01',strtotime('-1 month')),"=")));
+    		$cond = $this->_model->where(array(array("where","Month",date('Y-m-01',strtotime('last day of previous month')),"=")));
 			$qry = $this->_model->getAllRecords($cond,"fundsschedule","LIMIT 0,10");
     		$this->dispatch($render=1,'fundsCategories',$qry,array("2","3"));
     	}
