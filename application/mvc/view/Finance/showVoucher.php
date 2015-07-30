@@ -3,9 +3,10 @@
 echo Resources::img("print.png",array("title"=>"Print","onclick"=>'printData("tblVoucher");'))." ".Resources::a_href("finance/downloadVoucher/VNum/".$data[0]->VNumber,Resources::img("download.png",array("title"=>"Download")),array("target"=>"__blank"));
     echo "<table id='tblVoucher' border='1'>";
     echo "<tr><th colspan='5'>COMPASSION ASSISTED PROJECT</th></tr>";
-    echo "<tr><th colspan='5'>".$data[0]->icpNo." - ".$_SESSION['lname_backup']."<br>Payment Voucher</th></tr>";
+    echo "<tr><th colspan='5'>".$data[0]->icpNo." - ".$_SESSION['lname']."<br>Payment Voucher</th></tr>";
     echo "<tr><th colspan='3' align='left' style='padding-left:25px;'>Date: ".$data[0]->TDate."</th><th colspan='2' align='left'>Voucher Number: ".$data[0]->VNumber."</th></tr>";
-    echo "<tr><th colspan='3' align='left' style='padding-left:25px;'>Voucher Type: ".$data[0]->VType."</th><th colspan='3' align='left'>Cheque Number: ".$data[0]->ChqNo."</th></tr>";
+    $rwChq=explode("-",$data[0]->ChqNo);
+    echo "<tr><th colspan='3' align='left' style='padding-left:25px;'>Voucher Type: ".$data[0]->VType."</th><th colspan='3' align='left'>Cheque Number: ".$rwChq[0]."</th></tr>";
     echo "<tr><th colspan='1' align='left' style='padding-left:25px;'>Description:</th><td colspan='5' align='left'>".$data[0]->TDescription."</td></tr>";
     echo "<tr><th style='padding-left:25px;'>Quantity</th><th>Details</th><th>Unit Cost</th><th>Cost</th><th>Account</th></tr>";
    

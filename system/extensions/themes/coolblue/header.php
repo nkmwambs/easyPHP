@@ -29,7 +29,7 @@ $sess = Resources::session();
             echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->fname.' <span style="float:right;">&Del;</span>';
             echo '<ul>';
             echo '<li id="login_link">'. Resources::img("lock.png")." ". Resources::a_href("Welcome/login/public/1","Login").'</li><hr>';
-            echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/0","Register User",array("onclick"=>"")).'</li><hr>';
+            //echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/0","Register User",array("onclick"=>"")).'</li><hr>';
             echo '</ul>';
         }
         ?> 

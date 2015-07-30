@@ -21,7 +21,20 @@ class Resource_Controller extends E_Controller
     }   
         
     public function faqs($render=1,$path="",$tags=array("0")){
-        return $rec ="Faqs";
+    	if(isset($this->choice[1])){
+        	if ($this->choice[1]== "chatheartbeat") { $this->_model->chatHeartbeat(); } 
+			if ($this->choice[1] == "sendchat") { $this->_model->sendChat(); } 
+			if ($this->choice[1] == "closechat") { $this->_model->closeChat(); } 
+			if ($this->choice[1] == "startchatsession") { $this->_model->startChatSession(); } 
+			}
+			
+			if (!isset($_SESSION['chatHistory'])) {
+				$_SESSION['chatHistory'] = array();	
+			}
+			
+			if (!isset($_SESSION['openChatBoxes'])) {
+				$_SESSION['openChatBoxes'] = array();	
+			}
     }
 
     public function materials($render=1,$path="",$tags=array("0")){

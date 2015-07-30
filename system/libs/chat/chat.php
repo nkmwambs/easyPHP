@@ -1,9 +1,51 @@
 <?php
-class Resource_Model extends E_Model
-{
-    function chatHeartbeat() {
+
+/*
+
+Copyright (c) 2009 Anant Garg (anantgarg.com | inscripts.com)
+
+This script may be used for non-commercial purposes only. For any
+commercial purposes, please contact the author at 
+anant.garg@inscripts.com
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+define ('DBPATH','localhost');
+define ('DBUSER','root');
+define ('DBPASS','password');
+define ('DBNAME','chat');
+
+session_start();
+
+global $dbh;
+$dbh = mysql_connect(DBPATH,DBUSER,DBPASS);
+mysql_selectdb(DBNAME,$dbh);
+
+if ($_GET['action'] == "chatheartbeat") { chatHeartbeat(); } 
+if ($_GET['action'] == "sendchat") { sendChat(); } 
+if ($_GET['action'] == "closechat") { closeChat(); } 
+if ($_GET['action'] == "startchatsession") { startChatSession(); } 
+
+if (!isset($_SESSION['chatHistory'])) {
+	$_SESSION['chatHistory'] = array();	
+}
+
+if (!isset($_SESSION['openChatBoxes'])) {
+	$_SESSION['openChatBoxes'] = array();	
+}
+
+function chatHeartbeat() {
 	
-	$sql = "select * from chatting where (chatchatting.to = '".mysql_real_escape_string($_SESSION['username'])."' AND recd = 0) order by id ASC";
+	$sql = "select * from chat where (chat.to = '".mysql_real_escape_string($_SESSION['username'])."' AND recd = 0) order by id ASC";
 	$query = mysql_query($sql);
 	$items = '';
 
@@ -74,7 +116,7 @@ EOD;
 	}
 }
 
-	$sql = "update chatting set recd = 1 where chatting.to = '".mysql_real_escape_string($_SESSION['username'])."' and recd = 0";
+	$sql = "update chat set recd = 1 where chat.to = '".mysql_real_escape_string($_SESSION['username'])."' and recd = 0";
 	$query = mysql_query($sql);
 
 	if ($items != '') {
@@ -116,11 +158,19 @@ function startChatSession() {
 		$items = substr($items, 0, -1);
 	}
 
+header('Content-type: application/json');
+?>
+{
+		"username": "<?php echo $_SESSION['username'];?>",
+		"items": [
+			<?php echo $items;?>
+        ]
+}
 
-$rs = array("username"=>$_SESSION['username'],"items"=>$items);
+<?php
 
-return json_encode($rs);
-	//exit(0);
+
+	exit(0);
 }
 
 function sendChat() {
@@ -147,7 +197,7 @@ EOD;
 
 	unset($_SESSION['tsChatBoxes'][$_POST['to']]);
 
-	$sql = "insert into chatting (chatting.from,chatting.to,message,sent) values ('".mysql_real_escape_string($from)."', '".mysql_real_escape_string($to)."','".mysql_real_escape_string($message)."',NOW())";
+	$sql = "insert into chat (chat.from,chat.to,message,sent) values ('".mysql_real_escape_string($from)."', '".mysql_real_escape_string($to)."','".mysql_real_escape_string($message)."',NOW())";
 	$query = mysql_query($sql);
 	echo "1";
 	exit(0);
@@ -167,5 +217,4 @@ function sanitize($text) {
 	$text = str_replace("\r\n","\n",$text);
 	$text = str_replace("\n","<br>",$text);
 	return $text;
-}
 }

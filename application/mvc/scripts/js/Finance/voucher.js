@@ -60,6 +60,7 @@ function addRow(tableID) {
 			var element1 = document.createElement("input");
 			element1.type = "text";
 			element1.name = "qty[]";
+			element1.setAttribute("class","qty accNos");
                         element1.id="qty"+rowCount;
                         element1.onkeyup=function(){
                                                         var x=this.value;
@@ -74,15 +75,16 @@ function addRow(tableID) {
                                                                                                               
                                                     };
                         element1.style.width = '80%';
-                        element1.className='qty';
+                        //element1.className='qty accNos';
 			cell1.appendChild(element1);
                         
 			var cell2 = row.insertCell(2);
 			var element2 = document.createElement("input");
 			element2.type = "text";
 			element2.name = "desc[]";
-                        element2.className="desc";
-                        element2.style.width = '97%';
+            //element2.className="desc";
+            element2.setAttribute("class","desc accNos");
+            element2.style.width = '97%';
 			cell2.appendChild(element2);  
                         
 			var cell3 = row.insertCell(3);
@@ -104,7 +106,8 @@ function addRow(tableID) {
                                        };
                         //element4.value="unit"+rowCount;
            	element3.style.width = '80%';
-          	element3.className="unit";
+          	//element3.className="unit";
+          	element3.setAttribute("class","unit accNos");
             element3.onmousemove='add()';
 			cell3.appendChild(element3);  
                         
@@ -113,7 +116,8 @@ function addRow(tableID) {
 			element4.type = "text";
 			element4.name = "cost[]";
             element4.id = "cost"+rowCount;
-            element4.className="cost";
+            //element4.className="cost";
+            element4.setAttribute("class","cost accNos");
             element4.style.width = '80%';
             element4.readOnly = 'true';
 			cell4.appendChild(element4);                         
@@ -121,7 +125,8 @@ function addRow(tableID) {
 			var cell5 = row.insertCell(5);
 			var x = document.createElement("select");
 			x.name ="acc[]";
-            x.className = 'accNos';
+            //x.className = 'accNos';
+            x.setAttribute('class','accNos acSelect');
             x.style.width = '95%';         
             	var option1 = document.createElement("option");
 				option1.text = "Select ...";
@@ -145,6 +150,7 @@ function addRow(tableID) {
                         x.onchange=function(){
                           //alert("Hello!");  
                           document.getElementById("civaCode"+rowCount).value=obj[this.selectedIndex].civaID;
+                          check_pc_other_ac_mix(this);
                         };
                         cell5.appendChild(x);
                         
@@ -183,11 +189,30 @@ function addRow(tableID) {
         xmlhttp.send();                       
 }
 
+function check_pc_other_ac_mix(elem){
+	var val = elem.value;
+	var acSelect = document.getElementsByClassName('acSelect');
+	var cntOther=0;
+	var cntPc=0;
+	for(var i=0;i<acSelect.length;i++){
+		if(acSelect.item(i).value!=='2000'||acSelect.item(i).value!=='2001'&&document.getElementById('VTypeMain').value==='CHQ'){
+			cntOther++;
+		}
+		if(acSelect.item(i).value==='2000'||acSelect.item(i).value==='2001'){
+			cntPc++;
+		}
+		
+	}
+	if(cntOther!==0&&cntPc!==0){
+		alert("Error Occurred! PC deposit can't be transacted with other Expense transactions");
+		elem.lastChild.setAttribute("selected",'selected');
+	}
+}
+
 function chqIntel(str){
   document.getElementById('CHQ').style.backgroundColor='white';
         xmlhttp.onreadystatechange=function() {
           if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-           //alert(xmlhttp.responseText);
                 var txt = xmlhttp.responseText;
                 var res = txt.match(/cheque/g);
                 if(res.length>0){
@@ -201,6 +226,7 @@ function chqIntel(str){
                     }
           }
         };
+        
     if(str!=="0"){
         xmlhttp.open("GET",path+"system/index.php?url=mvc/Finance/chqIntel/chq/"+str,true);
         xmlhttp.send();
@@ -246,9 +272,17 @@ function postVoucher(){
            var x = document.forms["myform"]["Payee"];
                     var y = document.forms["myform"]["TDescription"];
                     var accs = document.getElementsByClassName("accNos");
+                    var cost = document.getElementsByClassName('cost');
+                    for(var s=0;s<cost.length;s++){
+                    	if(isNaN(cost.item(s).value)){
+                    		alert("Enter only numeric values");
+                    		cost.item(s).style.backgroundColor='red';
+                    		return false;
+                    	}
+                    }
                     for(var i = 0; i < accs.length; i++)
                     {
-                          if(accs.item(i).value==='#'){
+                          if(accs.item(i).value===''){
                            accs.item(i).style.backgroundColor='red';
                            alert("Please select a valid account number!");
                            return false;
@@ -537,4 +571,11 @@ function btnVoucherView(){
     //btnAddRow,#btnPostVch{
     document.getElementById("btnAddRow").style.display='block';
     document.getElementById("btnPostVch").style.display='block';
+    if(document.getElementById('VTypeMain').value==='CHQ'){
+    	document.getElementById('CHQ').style.display='block';
+    	document.getElementById('ChqNoText').style.display='block';
+    }else{
+    	document.getElementById('CHQ').style.display='none';
+    	document.getElementById('ChqNoText').style.display='none';
+    }
 }

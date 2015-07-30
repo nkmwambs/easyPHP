@@ -43,7 +43,7 @@
                             <option value="CR">Cash Received</option>
                         </select>
                     </td>
-                    <td><b>Cheque Number:</b></td><td><input type="text" id="CHQ" name="ChqNo" onblur="chqIntel(this.value);" style="width:95%;"/></td>
+                    <td id='ChqNoText' style="display:none;"><b>Cheque Number:</b></td><td><input type="text" id="CHQ" name="ChqNo" onblur="chqIntel(this.value);" style="width:95%;display:none;"/></td>
                 </tr>
                 <tr><td colspan="4"><div id="errMsg" style="color:red;"></div></td></tr>
                 <tr>

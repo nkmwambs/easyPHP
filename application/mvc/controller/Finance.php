@@ -702,12 +702,12 @@ class Finance_Controller extends E_Controller
 			}
 		
 		//All PC Income for the month
-		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","AccNo",2000,"="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-		$month_pc_inc=$this->_model->getAllRecords($month_pc_inc_cond,"voucher_body");
-		$pc_inc=0;
-		foreach ($month_pc_inc as $value) {
-				$pc_inc+=$value->Cost;
-			}
+		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_inc=$this->_model->monthPcIncome($month_pc_inc_cond);
+		$pc_inc=$month_pc_inc;
+		//foreach ($month_pc_inc as $value) {
+			//	$pc_inc+=$value->Cost;
+			//}
 		
 		//All PC Expenses for the month
 		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
@@ -719,7 +719,7 @@ class Finance_Controller extends E_Controller
 		
 		//Bank and PC Closing Balances
 		$close_bank_balance = $bcBalBf+$bank_inc-$bank_exp;
-		$close_pc_balance=$pcBalBf+$pc_exp+$pc_inc-$pc_exp;
+		$close_pc_balance=$pcBalBf+$pc_inc-$pc_exp;
 		
 		//Deposit in Transit
 		$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
@@ -1014,7 +1014,7 @@ public function validateMFR(){
 	print($validateMFR);
 }
 public function changeState(){
-	if($this->choice[3]===2){
+	if($this->choice[3]==='2'){
 		$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
 		$sets = array("ChqState"=>1);
 		$this->_model->updateQuery($sets,$cond,"voucher_header");
@@ -1029,7 +1029,7 @@ public function changeState(){
 	}
 }
 public function undochangeState(){
-	if($this->choice[3]===2){
+	if($this->choice[3]==='2'){
 		$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
 		$sets = array("ChqState"=>0);
 		$this->_model->updateQuery($sets,$cond,"voucher_header");
@@ -1222,12 +1222,9 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			}
 		
 		//All PC Income for the month
-		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","AccNo",2000,"="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-		$month_pc_inc=$this->_model->getAllRecords($month_pc_inc_cond,"voucher_body");
-		$pc_inc=0;
-		foreach ($month_pc_inc as $value) {
-				$pc_inc+=$value->Cost;
-			}
+		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_inc=$this->_model->monthPcIncome($month_pc_inc_cond);
+		$pc_inc=$month_pc_inc;
 		
 		//All PC Expenses for the month
 		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
@@ -1656,7 +1653,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
     public function viewSlip(){
     	if(isset($this->choice[1])){
     		//echo date('Y-m-d',$this->choice[1]);
-    		$funds_cond = $this->_model->where(array(array("where","KENumber",Resources::session()->fname,"="),array("AND","Month",date('Y-m-d',$this->choice[1]),"=")));
+    		$funds_cond = $this->_model->where(array(array("where","KENumber",Resources::session()->fname,"="),array("AND","Month",date('Y-m-01',$this->choice[1]),"=")));
             //$funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
             
             $data[] = $this->_model->getAllRecords($funds_cond,"fundsschedule");
@@ -1673,9 +1670,19 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
     }
 
     public function chqIntel(){
-        $icp = $_SESSION['username'];
+        //$icp = $_SESSION['fname'];
+		$icp=Resources::session()->fname;
         $chq = $this->choice[1];
-        $rs = $this->_model->chqIntel($icp,$chq);
+		
+		//Get Bank Bank Code
+		$bank_code=0;
+		$bank_code_cond = $this->_model->where(array(array("where","icpNo",$icp,"=")));
+		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails");
+		if(count($bank_code_qry)>0){
+			$bank_code=$bank_code_qry[0]->bankID;
+		}
+			
+        $rs = $this->_model->chqIntel($icp,$chq,$bank_code);
         if($rs>0){
             echo "The cheque number ".$chq." has already been used!";
         }  //else {
@@ -1694,8 +1701,6 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
    		return $this->_model->showVoucher($VNum,$icpNo);
     }
     public function postVoucher(){
-        //return $_POST;
-        
         $header = array();
         for($i=0;$i<8;$i++){
             $header[]=  array_shift($_POST);
@@ -1705,6 +1710,17 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
         $tm = time();
         $chqState =0;
         
+		//Get Bank Bank Code
+		$bank_code=0;
+		$bank_code_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails");
+		if(count($bank_code_qry)>0){
+			$bank_code=$bank_code_qry[0]->bankID;
+		}
+			
+		
+		$rwChqNo=$header[6];
+		$header[6]=$rwChqNo."-".$bank_code;
 		//print_r($header);
 		
         $fld_header_arr = array("icpNo","TDate","Fy","VNumber","Payee","Address","VType","ChqNo","ChqState","TDescription","totals","unixStmp");

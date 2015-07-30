@@ -1,5 +1,5 @@
 <?php 
-//print($data[2]);
+//print_r($data);
 echo "<br>";
 if(isset($data[4])){
 	$curSelect=date('F-Y',$data[4]);
@@ -116,12 +116,13 @@ if(isset($data[4])){
     <tbody>
         <?php
             foreach($data[1] as $arr):
-                echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>{$arr->ChqNo}</td>";
+				$rwChq=explode("-",$arr->ChqNo);
+                echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
                 //Bank Deposit
                 if($arr->VType==="CR"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
                 if($arr->VType==="CHQ"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
                 echo "<td>&nbsp;</td>";
-                if($arr->VType==="CHQ"&&isset($arr->Ac2000)){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
+                if($arr->VType==="CHQ"&&(isset($arr->Ac2000)||isset($arr->Ac2001))){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
                 if($arr->VType==="PC"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
                 echo "<td>&nbsp;</td>";//1st 12 cells
                 

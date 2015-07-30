@@ -141,7 +141,7 @@ public function where($cond){
             foreach($arr as $val_arr):
                 $str.="(";
                 foreach($val_arr as $elem):
-                    $str.="'".$elem."',";
+                    $str.="'".addslashes($elem)."',";
 
                 endforeach;
                 $str .="),";
@@ -180,7 +180,7 @@ public function where($cond){
             
             $values = "(";
             foreach ($values_arr as $k => $v) {
-                $values .="'".$v."',";
+                $values .="'".addslashes($v)."',";
             }
             $values.= ")";
             

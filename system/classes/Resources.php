@@ -16,11 +16,11 @@ public static function import($path){
 		
 		require_once $fPath;
 	}
-public static function includes($path){
+public static function includes($path,$separator="."){
 	//if(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".DS.$url)){
 		//	include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".DS.$url.".php";
 		//}
-		$path_arr = explode(".", $path);
+		$path_arr = explode($separator, $path);
 		$path_str="";
 		foreach($path_arr as $value):
 			$path_str.=DIRECTORY_SEPARATOR.$value;

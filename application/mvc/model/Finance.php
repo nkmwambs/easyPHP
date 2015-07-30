@@ -29,21 +29,14 @@ class Finance_Model extends E_Model
             return 0;
         }
     }
-    public function chqIntel($icp,$chq){
+    public function chqIntel($icp,$chq,$bankID){
         if($chq!==""){    
-         //   $num_skipped = $this->chk_skipped_chq($icp,$chq);
-        //if($num_skipped===0){
-            $s = "SELECT * FROM voucher_header WHERE icpNo='".$icp."' AND ChqNo=".$chq;
-            //$q = mysql_query($s);
-            //$num = mysql_num_rows($q);
+            $s = "SELECT * FROM voucher_header WHERE icpNo='".$icp."' AND ChqNo='".$chq."-".$bankID."'";
             $q=$this->conn->prepare($s);
 			$q->execute();
 			$num=$q->rowCount();
             return $num;
-        } // else {
-           // return "x";
-        //}
-      //}
+        } 
     }
     
     public function maxVoucher(){
@@ -112,7 +105,7 @@ class Finance_Model extends E_Model
     }
     
     public function showVoucher($VNumber,$icpNo){
-        $getSql = "SELECT * FROM voucher_body INNER JOIN voucher_header ON voucher_body.hID=voucher_header.hID WHERE voucher_body.VNumber= ".$VNumber." AND               voucher_body.icpNo= '".$icpNo."' ORDER BY voucher_body.AccNo DESC";
+        $getSql = "SELECT * FROM voucher_body INNER JOIN voucher_header ON voucher_body.hID=voucher_header.hID WHERE voucher_body.VNumber= ".$VNumber." AND voucher_body.icpNo= '".$icpNo."' ORDER BY voucher_body.AccNo DESC";
         //$getQry = mysql_query($getSql);
         $getQry = $this->conn->prepare($getSql);
 		$getQry->execute();
@@ -533,6 +526,14 @@ public function get_todate_budget($cond,$month){
         $rst[]=$row;
     }
     return $rst;	
+}
+
+public function monthPcIncome($cond){
+	$sql = "SELECT SUM(Cost) as Cost FROM voucher_body $cond AND AccNo IN (2000,2001)";
+	$q=$this->conn->prepare($sql);
+	$q->execute();
+	$rst = $q->fetch(PDO::FETCH_OBJ);
+	return $rst->Cost;	
 }
 
 }

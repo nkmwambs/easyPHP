@@ -203,3 +203,4 @@ function login(){
          xmlhttp.open("POST",path+"/mvc/Welcome/log/public/0",true);
          xmlhttp.send(frmData);
 }
+
