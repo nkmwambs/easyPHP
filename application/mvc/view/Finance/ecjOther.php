@@ -39,7 +39,7 @@
     
     //print_r($get_num);
 
-    echo img_tag("print.png",array("onclick"=>'printData("ecj");',"title"=>"Print","id"=>"printecj"));
+    echo Resources::img("print.png",array("onclick"=>'printData("ecj");',"title"=>"Print","id"=>"printecj"));
 ?>
 
 <table id="ecj" border='1'>

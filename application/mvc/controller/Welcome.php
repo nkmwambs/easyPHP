@@ -30,9 +30,6 @@ public $_model;
     }
     public function login() {
         if(isset($_POST)&&!empty($_POST)){
-       // $cond = $this->model->where(array("where"=>array("username",trim(filter_input(INPUT_POST,"username")),"="),
-         //   "AND"=>  array("password",filter_input(INPUT_POST,"password"),"=")));
-
                   $cond = $this->_model->where(array(
          									array("where","username",$_POST['username'],"="),
          									array("AND","password",$_POST["password"],"="),
@@ -50,22 +47,16 @@ public $_model;
             $this->dispatch($render=1,$path="show",$data=$_SESSION['fname'],$tags=array("0"));
 
         }  else {
-                    $data="";  
-                    if(!isset($_SESSION['cnt'])){
-                        $_SESSION['cnt']=0;
-                    }else{
-                        $_SESSION['cnt']++;
-                        $data = "Log in Error : Empty or wrong Username or Password!";
-
-                    }
-           
+			
+           $data = "Log in Error : Empty or wrong Username or Password!";
             $_SESSION["username"]="Guest";
             $_SESSION["userlevel"]='0';
 			$_SESSION["ID"]='0';
             $this->dispatch($render=1,$path='login',$data,$tags=array("0"));
         }
     }else{
-        $this->dispatch(1,$path='login',$data="",array("0"));
+    	//$data = "Log in Error : Empty or wrong Username or Password!";
+        $this->dispatch($render=1,$path='login',$data='',array("0"));
     }
 }
     

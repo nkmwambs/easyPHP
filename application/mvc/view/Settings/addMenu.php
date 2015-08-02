@@ -1,7 +1,7 @@
 <?php
 
 ?>
-<form method="post" action="<?php echo url_tag('Settings/getMenu');?>">
+<form method="post" action="<?php echo Resources::url('Settings/getMenu');?>">
 <table>
     <tr><th colspan=2"">Add Menu Items</th></tr>
     <tr><th>Self ID</th><td><input style="width:375px;" type="text" name="selfID" placeholder="Hint: controller (Top Menu) or method_controller (Navigation)"/></td></tr>

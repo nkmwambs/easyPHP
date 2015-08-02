@@ -205,3 +205,45 @@ function viewPpbfOther(el){
        xmlhttp.open("GET",path+"system/index.php?url=mvc/Finance/getPpbf/planid/"+planid+"/&rnd="+Math.random(),true);
        xmlhttp.send(); 
 }
+function approveSchedule(rid,elem){
+	//alert(elem);
+      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    //alert(xmlhttp.responseText);
+                    if(xmlhttp.responseText==='1'){
+                    	alert("Approval Successfully!");
+                    }
+                    elem.parentNode.parentNode.style.backgroundColor='green';
+                    elem.parentNode.innerHTML='<img id="" src= "'+path+'/system/images/unreject.png"/><img id="" onclick="reverseApproval('+rid+',this);" src= "'+path+'/system/images/reset.png"/>';
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/approveSchedule/rid/"+rid,true);      
+      xmlhttp.send();
+}
+function reverseApproval(rid,elem){
+      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    //alert(xmlhttp.responseText);
+                    if(xmlhttp.responseText==='1'){
+                    	alert("Item Disapproved!");
+                    }
+                    elem.parentNode.parentNode.style.backgroundColor='red';
+                    elem.parentNode.innerHTML='<img id="" onclick="approveSchedule('+rid+',this);" src= "'+path+'/system/images/approved.png"/><img id="" onclick="approveSchedule('+rid+',this);" src= "'+path+'/system/images/disapprove.png"/>';
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Finance/reverseApproval/rid/"+rid,true);      
+      xmlhttp.send();
+	
+}

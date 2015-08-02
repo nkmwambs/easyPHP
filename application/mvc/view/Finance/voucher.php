@@ -1,4 +1,9 @@
 <?php
+if(is_array($data)){
+	print_r($data['test']);
+}else{
+	print($data['test']);
+}
 ?>
 
 <button id="btnAddRow" onclick="addRow('bodyTable');">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
@@ -14,17 +19,26 @@
 
                 <tr>
                     <?php 
-                        if ($data<=9){
-                    ?>
-               
-                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."0".($data)+1; ?>' readonly="readOnly"/></td>
-                    <?php
-                   }else{
-                        ?>
-                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."".($data)+1; ?>' readonly="readOnly"/></td>
- 
-                    <?php
-                   }
+                    if($data['date_flag']==='0'){
+		                  if ($data['months']<=9){
+		                    ?>
+		               
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."0".($data['months'])+1; ?>' readonly="readOnly"/></td>
+		                    <?php
+		                   }else{
+		                        ?>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."".($data['months'])+1; ?>' readonly="readOnly"/></td>
+		 
+		                    <?php
+		                   }
+		              }else{
+		              		
+							?>
+		               
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class='dateSelector' onchange="calcVNumber();" name="TDate" style="width:95%;" value="" readonly="readOnly"/><input type='hidden' id="previousDate" value="<?php echo $data['maxRec']['TDate'];?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='' readonly="readOnly"/><input type="hidden" id="prevVNumber" value="<?php echo $data['maxRec']['VNumber'];?>"/></td>
+		                    <?php
+  	
+		              } 
                     ?>
                 </tr>
                 <tr>

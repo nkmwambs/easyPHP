@@ -1,17 +1,5 @@
-<?php
 
-?>
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Add Users</title>
-        <?php 
-            link_tag(array("main.css","button.css")); 
-            script_tag(array("js.js"));
-        ?>
-    </head>
-    <body>
-        <form method="POST" action="<?php echo url_tag("Settings/addUser"); ?>">
+        <form method="POST" action="<?php echo Resources::url("Settings/addUser"); ?>">
             <table>
                 <thead><tr><th colspan="2" align="center" onclick="show();">New User</th></tr></thead>
                 <tbody>
@@ -27,5 +15,3 @@
             </table>    
         </form>
         
-    </body>
-</html>

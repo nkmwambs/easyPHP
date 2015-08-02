@@ -192,19 +192,23 @@ function addRow(tableID) {
 function check_pc_other_ac_mix(elem){
 	var val = elem.value;
 	var acSelect = document.getElementsByClassName('acSelect');
-	var cntOther=0;
+	var cntAll=0;
 	var cntPc=0;
 	for(var i=0;i<acSelect.length;i++){
-		if(acSelect.item(i).value!=='2000'||acSelect.item(i).value!=='2001'&&document.getElementById('VTypeMain').value==='CHQ'){
-			cntOther++;
-		}
+		cntAll++;
 		if(acSelect.item(i).value==='2000'||acSelect.item(i).value==='2001'){
 			cntPc++;
 		}
+		//if(acSelect.item(i).value!=='2000'||acSelect.item(i).value!=='2001'&&document.getElementById('VTypeMain').value==='CHQ'){
+			//cntOther++;
+		//}
+
 		
 	}
-	if(cntOther!==0&&cntPc!==0){
+	var rst=cntAll-cntPc;
+	if(rst!==0&&cntPc!==0){
 		alert("Error Occurred! PC deposit can't be transacted with other Expense transactions");
+		//alert(cntOther+"-"+cntPc);
 		elem.lastChild.setAttribute("selected",'selected');
 	}
 }
@@ -578,4 +582,51 @@ function btnVoucherView(){
     	document.getElementById('CHQ').style.display='none';
     	document.getElementById('ChqNoText').style.display='none';
     }
+}
+
+function calcVNumber(){
+	//alert("Hello");
+	var selectedDate = document.getElementById('TDate').value;
+	var selectedDateEpoch=new Date(selectedDate);
+	var selectedSTMP=selectedDateEpoch.getTime();
+	
+	var curMonth= selectedDate.substr(5,2);
+	
+	var prevDate = document.getElementById('previousDate').value;
+	var prevDateEpoch=new Date(prevDate);
+	var prevSTMP=prevDateEpoch.getTime();
+	
+	var prevVNumber= document.getElementById('prevVNumber').value;
+	var fy=prevVNumber.substr(0,2);
+	var month=prevVNumber.substr(2,2);
+	var VNumber = prevVNumber.substr(4);
+	var rawNextVNumber=parseInt(VNumber)+1;
+	var nextVNumber=rawNextVNumber;
+	if(rawNextVNumber<10){
+		nextVNumber='0'+rawNextVNumber;
+	}
+	var curVNumber=fy+month+nextVNumber;
+	
+	
+	if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)!==parseInt(month)){
+		//error_div
+		//alert("Error");
+		document.getElementById('info_div').setAttribute("id","error_div");
+		document.getElementById('error_div').innerHTML='Error <img id="" src= "'+path+'/system/images/error.png"/><br> Date not allowed! The next allowable date should equal to and beyond '+prevDate+" and a date in Month "+month+". To Proceed to the next month dates, please consider submitting month "+month+" Report";
+		document.getElementById('TDate').value="";
+		document.getElementById('VNumber').value="";
+		document.getElementById('TDate').style.backgroundColor='red';
+		document.getElementById('VNumber').style.backgroundColor='red';
+	}else{
+		//alert("Ok");
+		document.getElementById('TDate').style.backgroundColor='white';
+		document.getElementById('VNumber').style.backgroundColor='white';
+		if(document.getElementById('error_div')){
+			document.getElementById('error_div').innerHTML="";
+			document.getElementById('error_div').setAttribute("id","info_div");	
+		}
+		
+		document.getElementById('VNumber').value=curVNumber;
+	}
+	
 }

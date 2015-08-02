@@ -125,8 +125,8 @@ echo "</td></tr>";
 echo "<tr><th colspan='9'>1.3.3. BANK RECONCILIATION</th></tr>";
 echo "<tr><td colspan='2'>&nbsp;</td><td colspan='1'>&nbsp;</td><td colspan='3'>BANK ACCOUNT 1</td><td colspan='3'>BANK ACCOUNT 2</td></tr>";
 if($data['state']===0){
-	echo "<tr><td style='width:10px;'>A.</td><td colspan='2'>Date On the Bank Statement</td><td colspan='3'><input class='varExplain' type='text' name='statementDate' id='statementDate' value='".$data['statementDate']."' readonly/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
-	echo "<tr><td style='width:10px;'>B.</td><td colspan='2'>Balance Per Bank Statement</td><td colspan='3'><input class='varExplain' type='text' id='statementAmount'  value='".$data['statementAmount']."'  name='statementAmount' onkeyup='updateBankBal();'/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+	echo "<tr><td style='width:10px;'>A.</td><td colspan='2'>Date On the Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' name='statementDate' id='statementDate' value='".$data['statementDate']."' readonly/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+	echo "<tr><td style='width:10px;'>B.</td><td colspan='2'>Balance Per Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' id='statementAmount'  value='".$data['statementAmount']."'  name='statementAmount' onkeyup='updateBankBal();'/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>C.</td><td colspan='2'><b>Plus:</b> Deposit In Transit</td><td colspan='3' id='depTrans'>".$sum_dep_in_transit."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>D.</td><td colspan='2'><b>Less: </b>Oustanding Cheques</td><td colspan='3' id='oc'>".$sum_oc."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>B+C-D.</td><td colspan='2'><b>ADJUSTED BANK BALANCE TOTAL</b></td><td colspan='3' id='adjBank' class='Totals'></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
@@ -217,9 +217,12 @@ echo "</table>";
 echo "</tr>";
 
 //Bank Statement Upload
+if($data['state']===0){
+	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file' id='fileBs' name='fileBs'/></td></tr>";
+}else{
+	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";	
+}
 
-echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file' id='fileBs' name='fileBs'/></td></tr>";
-//echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";
 //echo "<tr><td colspan='9'>&nbsp;</td></tr>";
 echo "</table>";
 echo "</form>";

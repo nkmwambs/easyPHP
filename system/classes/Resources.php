@@ -1,6 +1,7 @@
 <?php
 class Resources{
 
+
 public static function import($path){
 		$path_arr = explode(".", $path);
 		$path_str="";

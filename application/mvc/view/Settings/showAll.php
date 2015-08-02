@@ -11,7 +11,7 @@
                 . "<td id='".$value_arr->mnID."_".$value_arr->selfID."_selfID' ondblclick='editMenu(this);' onchange='removeInput(this);'>".$value_arr->selfID."</td>"
                 . "<td id='".$value_arr->mnID."_".$value_arr->selfTitle."_selfTitle' ondblclick='editMenu(this);' onchange='removeInput(this);'>".$value_arr->selfTitle."</td>"
                 . "<td id='".$value_arr->mnID."_".$value_arr->url."_url' ondblclick='editMenu(this);' onchange='removeInput(this);'>".$value_arr->url."</td>"
-                . "<td id='".$value_arr->mnID."_".$value_arr->usrlvl."_usrlvl' ondblclick='editMenu(this);' onchange='removeInput(this);'>".$value_arr->usrlvl."</td>"
+                . "<td id='".$value_arr->mnID."_".$value_arr->userlevel."_usrlvl' ondblclick='editMenu(this);' onchange='removeInput(this);'>".$value_arr->userlevel."</td>"
                 . "<td id='".$value_arr->mnID."_".$value_arr->todate."_todate' ondblclick='editMenu(this);' onchange='removeInput(this);'>".$value_arr->todate."</td>"
                 . "<td id='".$value_arr->mnID."_".$value_arr->reoccur."_reoccur' ondblclick='editMenu(this);' onchange='removeInput(this);'>".$value_arr->reoccur."</td>"
                 . "</tr>";

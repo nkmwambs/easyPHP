@@ -30,6 +30,7 @@ function submitMfr(frmid){
         };
         var recon = document.getElementById("reconTxt").value;
         var varExplain=document.getElementsByClassName('varExplain');
+        var statementFlds=document.getElementsByClassName('statementFlds');
         var cntEmpty=0;
         
         for(var i=0;i<varExplain.length;i++){
@@ -38,6 +39,14 @@ function submitMfr(frmid){
         		varExplain.item(i).style.backgroundColor='red';
         	}else{
         		varExplain.item(i).style.backgroundColor='white';
+        	}
+        }
+        for(var i=0;i<statementFlds.length;i++){
+        	if(statementFlds.item(i).value===""||statementFlds.item(i).value===0){
+        		cntEmpty++;
+        		statementFlds.item(i).style.backgroundColor='red';
+        	}else{
+        		statementFlds.item(i).style.backgroundColor='white';
         	}
         }
         
@@ -130,13 +139,13 @@ function updateBankBal(){
 	}	
 	var adj=stmt+trans-oc;
 	if(adj){
-		document.getElementById('adjBank').innerHTML=adj;
+		document.getElementById('adjBank').innerHTML=adj.toFixed(2);
 	}else{
 		document.getElementById('adjBank').innerHTML=0;
 	}
 			
-	var adjBank=document.getElementById('adjBank').innerHTML;
-	var val_rst = bankBal-adjBank;
+	var adjBank=parseFloat(document.getElementById('adjBank').innerHTML);
+	var val_rst = bankBal-adjBank.toFixed(2);
 	if(val_rst){
 		validate.innerHTML=val_rst;
 	}else{

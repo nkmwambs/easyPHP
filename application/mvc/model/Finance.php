@@ -48,8 +48,43 @@ class Finance_Model extends E_Model
 		$ob = $q->fetch(PDO::FETCH_OBJ);
         return $maxID = $ob->vID;
     }
-
-        public function postVoucherBody($arr,$acc){
+public function maxICPVoucher($cond){
+	    $s = "SELECT Max(hID) as vID FROM voucher_header $cond";
+        $q = $this->conn->prepare($s);
+		$q->execute();
+		$rst=array();
+        if($q){
+        $ob = $q->fetch(PDO::FETCH_OBJ);
+        $maxID = $ob->vID;
+		
+		$sql = "SELECT * FROM voucher_header WHERE hID=$maxID";
+		$getQry = $this->conn->prepare($sql);
+		$getQry->execute();
+        while ($row = $getQry->fetch(PDO::FETCH_OBJ)) {
+            $rst[]=$row;
+        }
+		}
+        return $rst;
+}
+public function maxCloseBal($cond){
+	    $s = "SELECT Max(balHdID) as balHdID FROM opfundsbalheader $cond";
+        $q = $this->conn->prepare($s);
+		$q->execute();
+		$rst=array();
+        if($q){
+        $ob = $q->fetch(PDO::FETCH_OBJ);
+        $maxID = $ob->balHdID;
+		
+		$sql = "SELECT * FROM opfundsbalheader WHERE balHdID=$maxID";
+		$getQry = $this->conn->prepare($sql);
+		$getQry->execute();
+        while ($row = $getQry->fetch(PDO::FETCH_OBJ)) {
+            $rst[]=$row;
+        }
+		}
+        return $rst;	
+}
+public function postVoucherBody($arr,$acc){
         
         if ($acc > 0) {
             $insertArr = array();

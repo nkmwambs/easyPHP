@@ -14,7 +14,7 @@ class Settings_Controller extends E_Controller
     
    // Users Methods
     
-   public function userslist(){
+   public function userslist($render=1,$path='',$tags=array("9")){
         $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
         $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
         if(empty($this->choice)){
@@ -25,25 +25,14 @@ class Settings_Controller extends E_Controller
                 "AND"=>array("cname",'%'.$this->choice[3].'%',"LIKE")));
         }
         $data = $this->model->getAllRecords($cond,"Users");
-        //Set menu Top Menu Items
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        
-        //Call views
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);
+		return $data;
     }
     
-    public function newUser(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);  
+    public function newUser($render=1,$path='',$tags=array("9")){
+ 
     }
     
-    public function addUser(){
+    public function addUser($render=1,$path='',$tags=array("9")){
         $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
         $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
         $data = $this->model->insertRecord(filter_input_array(INPUT_POST),"Users");
@@ -55,24 +44,13 @@ class Settings_Controller extends E_Controller
     
     //Positions Methods
     
-    public function lists(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
+    public function lists($render=1,$path='',$tags=array("9")){       
         $data = $this->_model->getAllRecords("","Positions");
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);      
-        $this->template->view("",$data);
-        $this->template->view("welcome/footer",$recent);          
+		return $data;         
     }
     
-    public function newPosition() {
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-        $menu = $this->model->getAllRecords("","menu");
-        $this->load_menu->menu($menu);
-        $this->template->view();
-        $this->template->view("welcome/footer",$recent);        
+    public function newPosition($render=1,$path='',$tags=array("9")) {
+     
     }
     
     public function getEntry(){
@@ -97,14 +75,7 @@ class Settings_Controller extends E_Controller
     }
     
     // Menu Settings
-    public function addMenu(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-        
-         $menu = $this->model->getAllRecords();
-         $this->load_menu->menu($menu);
-         $this->template->view();
-         $this->template->view("welcome/footer",$recent);
+    public function addMenu($render=1,$path='',$tags=array("9")){
          
      }
      
@@ -119,15 +90,31 @@ class Settings_Controller extends E_Controller
          $this->template->view("welcome/footer",$recent);
      }
      
-     public function showAll(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-         
-         $menu = $this->model->getAllRecords();
-         $this->load_menu->menu($menu);
-         $this->template->view("",$menu);
-         $this->template->view("welcome/footer",$recent);
+     public function showAll($render=1,$path="",$tags=array("All")){
+         $menu = $this->model->getAllRecords("","menu");
+			return $menu;
      }
+	 public function financeSettings($render=1,$path="",$tags=array("9")){
+	 	$data=array();
+		$date_control_cond=$this->_model->where(array(array("where","info","date_control","=")));
+		$date_control = $this->_model->getAllRecords($date_control_cond,"extras");
+		$date_control_flag=$date_control[0]->flag;
+		
+		$data['date_flag']=$date_control_flag;
+		$data['test']="";
+	 	return $data;
+	 }
+	 public function dateControl(){
+		$flag = $this->choice[1];
+		$flagging_cond = $this->_model->where(array(array("where","info","date_control","=")));
+		$set = array("flag"=>$flag);
+		$this->_model->updateQuery($set,$flagging_cond,"extras");
+		if($this->choice[1]==='1'){
+			print("Date control OFF");
+		}else{
+			print("Date control ON");
+		}
+	 }
      public function editMenu(){
         $cond = $this->model->where(array("where"=> array("mnID",$this->choice[3],"=")));
         $sets = array($this->choice[0]=>$this->choice[1]);

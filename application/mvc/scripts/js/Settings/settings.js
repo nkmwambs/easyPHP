@@ -103,3 +103,20 @@ function massFundsUpload(frmid){
      //}
 }
 
+function dateControl(elem){
+	if(elem.checked===true){
+		var flag=0;
+	}else{
+		var flag=1;
+	}
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/dateControl/flag/"+flag,true);      
+      xmlhttp.send();
+     
+}

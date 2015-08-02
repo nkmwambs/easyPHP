@@ -19,7 +19,7 @@ foreach($data[0] as $item):
             if($scheduledItem->approved=="0"){
                 echo "<tr><td>".Resources::img("view.png",array("title"=>"View Only","style"=>"border:1px red solid;cursor:pointer;"))."</td>"; 
             }elseif ($scheduledItem->approved=="1") {
-                echo "<tr style='background-color:red;'><td>".Resources::img("approved.png",array("title"=>"Approve","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("disapprove.png",array("title"=>"Disapprove","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;","id"=>"rejItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                     
+                echo "<tr style='background-color:red;'><td>".Resources::img("approved.png",array("title"=>"Approve","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\",this);","style"=>"border:1px red solid;cursor:pointer;"))." ".Resources::img("disapprove.png",array("title"=>"Disapprove","onclick"=>"approveSchedule(\"$scheduledItem->scheduleID\");","style"=>"border:1px red solid;cursor:pointer;","id"=>"rejItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."</td>";                     
             }elseif($scheduledItem->approved=="2"){
                 echo "<tr style='background-color:Green;'><td>".Resources::img("unreject.png",array("title"=>"Approved"))."</td>";                    
             }elseif($scheduledItem->approved=="3"){
