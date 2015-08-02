@@ -1,4 +1,8 @@
-
+<?php
+if(isset($data)){
+	print($data);
+}
+?>
 
                 <h5>Compassion Kenya Toolkit</h5>
                 <i>Welcome to Compassion Kenya toolkit &copy; 2015</i>. This application offers a one stop access to all tools used by Compassion Kenya Partners. Below is a list of the tools currently available in this toolkit.<br>
