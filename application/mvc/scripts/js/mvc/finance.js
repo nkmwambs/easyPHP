@@ -7,33 +7,36 @@ var path = 'http://'+location.hostname+'/easyPHP/';
         }
        
        
-function showContents(el){
+function showContents(el,tym){
+	//alert(tym);
     var icp = el.innerHTML; 
     var rds = document.getElementsByClassName("rds");
-    //alert(rds.length);
     for(var i=0;i<rds.length;i++){
         if(rds.item(i).checked===true){
-            //alert(rds.item(i).value);
             var rpt =rds.item(i).value;
         }
     }
-    
             xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-                document.write(xmlhttp.responseText);
-                location.reload();
+                document.getElementById('content').innerHTML=xmlhttp.responseText;
+                //document.write(xmlhttp.responseText);
+                //location.reload();
           }
         };
+        //alert(icp);
     if(rpt==="1"){
-      xmlhttp.open("GET",path+"mvc/Finance/ecjOther/icp/"+icp,true);  
+      xmlhttp.open("GET",path+"mvc/Finance/ecj/tym/"+tym+"/icp/"+icp,true);  
     }else if(rpt==="2"){
         xmlhttp.open("GET",path+"mvc/Finance/ppbfOther/icp/"+icp,true);
     }
+    
+    xmlhttp.send();
+}
     
     xmlhttp.send();
 }
