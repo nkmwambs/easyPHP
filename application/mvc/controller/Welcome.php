@@ -33,45 +33,12 @@ public $_model;
     	}
          
     }
-<<<<<<< HEAD
-    public function login() {
-        if(isset($_POST)&&!empty($_POST)){
-                  $cond = $this->_model->where(array(
-         									array("where","username",$_POST['username'],"="),
-         									array("AND","password",$_POST["password"],"="),
-         									array("AND","auth","1","=")
-         									)
-										);
- 
-
-       
-        $results = $this->_model->getAllRecords($cond,"users");
-        
-        if(is_array($results)&&sizeof($results)>0){
-
-			 users::log_sessions($results);
-            $this->dispatch($render=1,$path="show",$data=$_SESSION['fname'],$tags=array("0"));
-
-        }  else {
-			
-           $data = "Log in Error : Empty or wrong Username or Password!";
-            $_SESSION["username"]="Guest";
-            $_SESSION["userlevel"]='0';
-			$_SESSION["ID"]='0';
-            $this->dispatch($render=1,$path='login',$data,$tags=array("0"));
-        }
-    }else{
-    	//$data = "Log in Error : Empty or wrong Username or Password!";
-        $this->dispatch($render=1,$path='login',$data='',array("0"));
-    }
-=======
 	
 public function logging() {
 
 }
 public function login($render=1,$path='',$tags=array("0")){
 	
->>>>>>> test_choices
 }
     
     public function logout($render=1,$path="show",$tags=array("0")){
