@@ -45,7 +45,7 @@ class Finance_Controller extends E_Controller
         print_r(json_encode($rst));
     }
 
-    public function voucher($render=1,$tags=array("1")){
+    public function voucher($render=1,$tags=array("All")){
             try{
                 if(isset($_SESSION['username'])){
                 	
@@ -1847,12 +1847,12 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
         
 		
     }
-    public function showVoucher($render=1,$path="",$tags=array("1")){       
+    public function showVoucher($render=1,$path="",$tags=array("All")){       
         $VNum=  $this->choice[1];
         if($_SESSION['userlevel']==="1"){
             $icpNo = $_SESSION['username'];
         }  elseif ($_SESSION['userlevel']==="2") {
-            $icpNo = $_SESSION['username_backup'];
+            $icpNo = $_SESSION['fname_backup'];
         }  else {
             
         }
