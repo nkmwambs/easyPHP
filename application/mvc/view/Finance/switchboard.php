@@ -1,4 +1,5 @@
-<?php
+<?php 
+//print_r($data);
 echo "<table id='tblFinanceView'>";
 
 echo "<tr><td colspan='2'>"; 

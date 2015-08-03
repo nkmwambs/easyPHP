@@ -8,7 +8,13 @@ class Finance_Controller extends E_Controller
         //$this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
     }
     public function switchboard($render=1,$path='',$tags=array("2","3","9")){
-        return $cluster = $this->_model->getClusters();
+    	$clst='';
+    	if(Resources::session()->userlevel==='2'){
+    		$cluster_rcd_cond = $this->_model->where(array(array("where","ID",Resources::session()->ID,"=")));
+			$cluster_rcd=$this->_model->getAllRecords($cluster_rcd_cond,"users");
+			$clst=$cluster_rcd[0]->cname;
+    	}
+        return $cluster = $this->_model->getClusters($clst);
     }
 	public function view($render=1,$path="",$tags=array("All")){
 		
@@ -106,17 +112,41 @@ class Finance_Controller extends E_Controller
 }   
 
     public function ecj(){
-
-            if(isset($this->choice[1])){
+    	$d='';
+		$v_month='';
+		$render='';
+		if(Resources::session()->userlevel==='1'){
+			if(isset($this->choice[1])){
             	$d=date('Y-m-t',strtotime("last day of previous month",$this->choice[1]));
             	$v_month =date('m',$this->choice[1]);
+				$data[4]=$this->choice[1];
+				$render=2;
 			}else{
 				$d=date('Y-m-t',strtotime("last day of previous month"));
 				$v_month=date('m');
-			}		
+				$render=1;
+			}
+			$icpNo = Resources::session()->fname;
+		}else{
+			$icpNo=$this->choice[3];
+			$_SESSION['fname_backup']=$icpNo;
+			//if(isset($this->choice[3])){
+				if(isset($this->choice[1])){
+            		$d=date('Y-m-t',strtotime("last day of previous month",$this->choice[1]));
+            		$v_month =date('m',$this->choice[1]);
+					$data[4]=$this->choice[1];
+					$render=2;
+				}else{
+					$d=date('Y-m-t',strtotime("last day of previous month"));
+					$v_month=date('m');
+					$render=2;
+				}
+			//}
+		}
+            		
 					
-					$bc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","month",$d,"="),array("AND","accNo","BC","=")));
-    				$pc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","month",$d,"="),array("AND","accNo","PC","=")));
+					$bc_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","month",$d,"="),array("AND","accNo","BC","=")));
+    				$pc_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","month",$d,"="),array("AND","accNo","PC","=")));
 		
 					$bc_arr = $this->_model->getAllRecords($bc_cond,"cashbal");
 					$pc_arr = $this->_model->getAllRecords($pc_cond,"cashbal");		
@@ -129,32 +159,16 @@ class Finance_Controller extends E_Controller
     					$bc =0;
 				  		$pc= 0;
     				}
-		          		
-            	
-				
-                	$cds = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","Month(`TDate`)",$v_month,"=")));
-            	    $data[]=$this->_model->accounts();
-		            $data[] = $this->_model->getVoucherForEcj($cds);
-					$data[]=$bc;//BC Balance
-					$data[]=$pc;//PC Balance
 					
-					if(isset($this->choice[1])){
-						$data[]=$this->choice[1];
-						$render=2;
-					}else{
-						$render=1;
-					}
+                	$cds = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","Month(`TDate`)",$v_month,"=")));
+            	    $data[0]=$this->_model->accounts();
+		            $data[1] = $this->_model->getVoucherForEcj($cds);
+					$data[2]=$bc;//BC Balance
+					$data[3]=$pc;//PC Balance
+					$data[5]=$icpNo;
 		            
-		            if(Resources::session()->userlevel==="1"){
-		                $this->dispatch($render,"",$data,array("1"));
-		            }elseif(Resources::session()->userlevel==="2"){
-		                $selector_cond_pf = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
-		                $selector_pf = $this->_model->getAllRecords($selector_cond_pf,"users");
-		                $cluster = $selector_pf[0]->cname;
-		                $selector_cond_icps = $this->_model->where(array(array("where","cname",addslashes($cluster),"="),array("AND","userlevel","1","=")));
-		                $selector_icps = $this->_model->getAllRecords($selector_cond_icps,"users");
-		                $this->dispatch($render,"icpSelector",$selector_icps,array("2"));
-		        }
+		            $this->dispatch($render,"",$data,array("All"));
+		            
     }
     
     public function ppbf(){

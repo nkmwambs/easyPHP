@@ -38,8 +38,7 @@ function showContents(el,tym){
     xmlhttp.send();
 }
     
-    xmlhttp.send();
-}
+
 
 function submitFunds(frmid){
     //alert(frmid);

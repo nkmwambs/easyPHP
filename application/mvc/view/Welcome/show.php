@@ -14,14 +14,5 @@ if(isset($data)){
                     <li>HVC Management System</li>
                 </ul>
               
-            
-<?php
-//echo Users::userRights(USERID);
-//print_r(Users::userCredentials(Resources::session()->ID));
-
-//echo Resources::a_href("Welcome/show", "Home")
-//echo Resources::img("view.png",array("style"=>"border:1px red solid;"))
-
-?>
 
             

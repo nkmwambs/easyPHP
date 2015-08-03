@@ -247,8 +247,13 @@ public function civaExpenseAccounts($cond){
     }
     return $rs;     
 }
-public function getClusters(){
-    $s="SELECT cname as cluster FROM users WHERE cname<>'KE'  GROUP BY cname";
+public function getClusters($cond=''){
+	if($cond===''){
+		$s="SELECT cname as cluster FROM users WHERE cname<>'KE'  GROUP BY cname";
+	}else{
+		$s="SELECT cname as cluster FROM users WHERE cname='".$cond."' AND cname<>'KE'  GROUP BY cname";
+	}
+    
     //$q=mysql_query($s);
     $q=$this->conn->prepare($s);
 	$q->execute();
