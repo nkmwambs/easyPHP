@@ -130,7 +130,6 @@ class Finance_Controller extends E_Controller
 		}else{
 			$icpNo=$this->choice[3];
 			$_SESSION['fname_backup']=$icpNo;
-			//if(isset($this->choice[3])){
 				if(isset($this->choice[1])){
             		$d=date('Y-m-t',strtotime("last day of previous month",$this->choice[1]));
             		$v_month =date('m',$this->choice[1]);
@@ -141,10 +140,7 @@ class Finance_Controller extends E_Controller
 					$v_month=date('m');
 					$render=2;
 				}
-			//}
 		}
-            		
-					
 					$bc_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","month",$d,"="),array("AND","accNo","BC","=")));
     				$pc_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","month",$d,"="),array("AND","accNo","PC","=")));
 		

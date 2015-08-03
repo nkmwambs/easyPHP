@@ -10,7 +10,7 @@ if(isset($data[4])){
 }
     
 	echo "<button onclick='selectCJ(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectCJ(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectCJ(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
-    
+    echo "<input type='hidden' id='icpNo' name='icpNo' value='".$data[5]."'/>";
      //An array of the used accounts  
     $count=0;
     $dis_arr=array();
@@ -58,7 +58,7 @@ if(isset($data[4])){
         }
     ?>
     <thead>
-        <tr><th style="text-align:right;" colspan="3">ICP: </th><th  style="text-align:left;background-color: honeydew;" colspan="5"><?php echo $_SESSION['username'] ?></th><th>Month:</th><th style="background-color: honeydew;"><?php echo date('F',strtotime($curSelect)); ?></th><th>Year: </th><th style="background-color: honeydew;"><?php echo date('Y',strtotime($curSelect)); ?></th>
+        <tr><th style="text-align:right;" colspan="3">ICP: </th><th  style="text-align:left;background-color: honeydew;" colspan="5"><?php echo $data[5]; ?></th><th>Month:</th><th style="background-color: honeydew;"><?php echo date('F',strtotime($curSelect)); ?></th><th>Year: </th><th style="background-color: honeydew;"><?php echo date('Y',strtotime($curSelect)); ?></th>
             
             <?php
                 if(!empty($dis_arr)){echo "<th style='text-align:left;' colspan='".$income."'>INCOME</th></th><th style='text-align:left;' colspan='".$expense."'>EXPENSES</th>";}

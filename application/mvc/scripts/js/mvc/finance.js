@@ -1224,6 +1224,7 @@ function ocView(){
       xmlhttp.send();
 }
 function selectCJ(tym){
+		var icpNo=document.getElementById('icpNo').value;
 	      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
@@ -1237,7 +1238,7 @@ function selectCJ(tym){
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Finance/ecj/tym/"+tym+"/public/0",true);      
+      xmlhttp.open("GET",path+"mvc/Finance/ecj/tym/"+tym+"/icpNo/"+icpNo,true);      
       xmlhttp.send();
 }
 function selectSlip(tym){
