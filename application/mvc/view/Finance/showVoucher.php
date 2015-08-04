@@ -37,3 +37,9 @@ echo Resources::img("print.png",array("title"=>"Print","onclick"=>'printData("tb
     echo "<tr><td colspan='3' align='left' style='padding-left:25px;'>Received By:</td><td colspan='2' align='left'>Passed By:</td></tr>";
     echo "<tr><td colspan='3' align='left' style='padding-left:25px;'>Date:</td><td colspan='2' align='left'>Date:</td></tr>";
     echo "</table>";
+	
+	echo "<br><b>My Suggestion:</b><br>";
+	echo "<textarea cols='95' rows='10' placeholder='Type your suggestions on this voucher here ...'></textarea><button>Post</button>";
+	echo "<br>";
+	echo "<br><br><br><b>Users Suggestions</b><br>";
+	echo "<div id='footnotes'></div>";

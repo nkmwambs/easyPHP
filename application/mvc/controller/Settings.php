@@ -94,39 +94,84 @@ public function userslist($render=1,$path='',$tags=array("9")){
          $menu = $this->model->getAllRecords("","menu");
 			return $menu;
      }
-	 public function financeSettings($render=1,$path="",$tags=array("9")){
+	 public function financeSettings($render=1,$path="",$tags=array("All")){
 	 	$data=array();
 		
-		//Date Control
-		$date_control_cond=$this->_model->where(array(array("where","info","date_control","=")));
-		$date_control = $this->_model->getAllRecords($date_control_cond,"extras");
-		$date_control_flag=$date_control[0]->flag;
+		//if(Resources::session()->userlevel!==1){		
+			//Date Control
+			$date_control_cond=$this->_model->where(array(array("where","info","date_control","=")));
+			$date_control = $this->_model->getAllRecords($date_control_cond,"extras");
+			$date_control_flag=$date_control[0]->flag;
 		
-		//Dollar and Exchange Rate 
-		$fy = Resources::func("get_financial_year",array(date('Y-m-d')));
-		if(isset($this->choice[1])){
-			$fy = $this->choice[1];
+			//Dollar and Exchange Rate
+
+			$fy = Resources::func("get_financial_year",array(date('Y-m-d')));
+			if(isset($this->choice[1])){
+				$fy = $this->choice[1];
+			}
+			$rate_cond = $this->_model->where(array(array("where","fy",$fy,"="))); 
+			$rate_qry = $this->_model->getAllRecords($rate_cond,"fundparameters");
+			$rates = array();
+			$cnt=0;
+			foreach($rate_qry as $value):
+					if($rate_qry[$cnt]->param === 'dollar_rate'){
+						$rates['dollar_rate']=$rate_qry[$cnt]->paramVal;
+					}
+					if($rate_qry[$cnt]->param === 'exchange_rate'){
+						$rates['exchange_rate']=$rate_qry[$cnt]->paramVal;
+					}
+				$cnt++;
+			endforeach;
+			$rates['fy']=$fy;
+			
+			
+		 //}
+		
+		
+		if(Resources::session()->userlevel==='1'){
+			//ICP Population	
+			$icp_population_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","fy",$fy,"=")));
+			$icp_population = $this->_model->getAllRecords($icp_population_cond,"icppopulation");
+			$pop=array();
+			foreach($icp_population[0] as $key=>$value):
+				$pop[$key]=$value;
+			endforeach;
+			$data['icpPopulation']=$pop;
 		}
-		$rate_cond = $this->_model->where(array(array("where","fy",$fy,"="))); 
-		$rate_qry = $this->_model->getAllRecords($rate_cond,"fundparameters");
-		$rates = array();
-		$cnt=0;
-		foreach($rate_qry as $value):
-				if($rate_qry[$cnt]->param === 'dollar_rate'){
-					$rates['dollar_rate']=$rate_qry[$cnt]->paramVal;
-				}
-				if($rate_qry[$cnt]->param === 'exchange_rate'){
-					$rates['exchange_rate']=$rate_qry[$cnt]->paramVal;
-				}
-			$cnt++;
-		endforeach;
-		$rates['fy']=$fy;
 		
 		$data['date_flag']=$date_control_flag;
 		$data['rates']=$rates;
 		$data['test']="";
 	 	return $data;
 	 }
+public function changeICPPopulation(){
+			$pop = $this->choice[1];
+			$fy = $this->choice[3];
+			$icp_population_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","fy",$fy,"=")));
+			$icp_population = $this->_model->getAllRecords($icp_population_cond,"icppopulation");
+			if(count($icp_population)>0&&$icp_population[0]->editAllowed==='1'){
+				//Update
+				//print("Update");
+				$set = array("noOfBen"=>$pop);
+				$qry = $this->_model->updateQuery($set,$icp_population_cond,"icppopulation");
+				if($qry===1){
+					echo "Update Successfully!";
+				}else{
+					echo "Update failed!";
+				}
+			}elseif(count($icp_population)>0&&$icp_population[0]->editAllowed==='0'){
+				//Edit not allowed
+				print("Edit not allowed. Contact the administrator!");
+			}else{
+				//Insert
+				$popArr =array();
+				$popArr['icpNo']=Resources::session()->fname;
+				$popArr['noOfBen']=$pop;
+				$popArr['fy']=$fy;
+				$popArr['editAllowed']=1;
+				echo $this->_model->insertRecord($popArr,"icppopulation");
+			}
+}
 	 public function dateControl(){
 		$flag = $this->choice[1];
 		$flagging_cond = $this->_model->where(array(array("where","info","date_control","=")));

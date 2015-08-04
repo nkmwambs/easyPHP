@@ -122,10 +122,8 @@ function dateControl(elem){
 }
 
 function changeDollarRate(){
-	//alert("Hello");	
 	var dollar_rate = document.getElementById('dollar_rate').value;
 	var fy = document.getElementById('dollar_rate_fy').value;
-	//alert(dollar_rate);
 	xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 alert(xmlhttp.responseText);
@@ -138,7 +136,6 @@ function changeDollarRate(){
 function changeExchangeRate(){
 	var exchange_rate = document.getElementById('exchange_rate').value;
 	var fy = document.getElementById('exchange_rate_fy').value;
-	//alert(exchange_rate);
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 alert(xmlhttp.responseText);
@@ -146,5 +143,19 @@ function changeExchangeRate(){
         };
 
       xmlhttp.open("GET",path+"mvc/Settings/changeExchangeRate/exchange_rate/"+exchange_rate+"/fy/"+fy,true);      
+      xmlhttp.send();
+}
+
+function changeIcpPopulation(){
+	//alert("Hello");
+	var icpNoPop = document.getElementById('icpNoPop').value;
+	var fy = document.getElementById('icpFy').value;
+		xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/changeICPPopulation/icpNoPop/"+icpNoPop+"/fy/"+fy,true);      
       xmlhttp.send();
 }

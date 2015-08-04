@@ -1,7 +1,7 @@
 <?php
-echo Resources::a_href("Finance/fundsOpBal","<button>Closing Funds Balances</button>")." ".Resources::a_href("Finance/oustChqBf","<button>Closing O/C</button>")." ".Resources::a_href("Finance/cashBalBf","<button>Closing Cash Balance</button>")." ".Resources::a_href("Finance/opRecon","<button>Closing Bank Reconciliation</button>");
+//echo Resources::a_href("Finance/fundsOpBal","<button>Closing Funds Balances</button>")." ".Resources::a_href("Finance/oustChqBf","<button>Closing O/C</button>")." ".Resources::a_href("Finance/cashBalBf","<button>Closing Cash Balance</button>")." ".Resources::a_href("Finance/opRecon","<button>Closing Bank Reconciliation</button>");
 ?>
-<br><br><hr>
+<!--<br><br><hr>
 <div>
 <div style="margin-left:250px;margin-bottom: 50px;"><button  onclick='addFundBalRow("tblFundsBalBf");'>Add Row</button><button id='btnFundRowDel' style="display: none;">Delete Row</button><button onclick='addFundBal("frmFundsBalBf");'>Post</button><?php echo Resources::a_href("Finance/fundsOpBal","<button>Refresh</button>");?><button onclick="viewBal()">View</button></div>
 <form id='frmFundsBalBf'>
@@ -12,4 +12,4 @@ echo Resources::a_href("Finance/fundsOpBal","<button>Closing Funds Balances</but
 </form>
 </div>
 
-<div id="balView"></div>
+<div id="balView"></div>-->
