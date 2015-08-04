@@ -362,8 +362,27 @@ class Finance_Controller extends E_Controller
         $fy = $this->choice[1];
         $all_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","users.cname",$_SESSION['cname'],"=")));
         $all = $this->_model->countNewSchedules($all_cond);
+		
+		$params_cond = $this->_model->where(array(array("where","fy",$fy,"=")));
+		$param = $this->_model->getAllRecords($params_cond,"fundparameters");
+		$cnt=0;
+		foreach($param as $value):
+			foreach($value as $key=>$val):
+				if($val==='dollar_rate'){
+					$all[0]->dollar_rate=$param[$cnt]->paramVal;
+				}
+				if($val==='exchange_rate'){
+					$all[0]->exchange_rate=$param[$cnt]->paramVal;
+				}
+			endforeach;
+			$cnt++;
+		endforeach;
+		
+		$all[0]->totalCDSP = $all[0]->noOfBen*$all[0]->dollar_rate*$all[0]->exchange_rate*12;
+		
         $data[]=$fy;
         $data[]=$all;
+		$data[]=$param;
 		return $data;
         //$this->template->view("",$data);
     }
