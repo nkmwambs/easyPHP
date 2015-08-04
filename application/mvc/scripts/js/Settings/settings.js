@@ -120,3 +120,31 @@ function dateControl(elem){
       xmlhttp.send();
      
 }
+
+function changeDollarRate(){
+	//alert("Hello");	
+	var dollar_rate = document.getElementById('dollar_rate').value;
+	var fy = document.getElementById('dollar_rate_fy').value;
+	//alert(dollar_rate);
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/changeDollarRate/dollar_rate/"+dollar_rate+"/fy/"+fy,true);      
+      xmlhttp.send();
+}
+function changeExchangeRate(){
+	var exchange_rate = document.getElementById('exchange_rate').value;
+	var fy = document.getElementById('exchange_rate_fy').value;
+	//alert(exchange_rate);
+		xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/changeExchangeRate/exchange_rate/"+exchange_rate+"/fy/"+fy,true);      
+      xmlhttp.send();
+}

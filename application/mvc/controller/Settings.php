@@ -1,8 +1,8 @@
 <?php
 class Settings_Controller extends E_Controller
 {
-    public $_model;
-    public function __construct() {
+public $_model;
+public function __construct() {
         parent::__construct();
         $this->_model=new Settings_Model("recent");
             
@@ -10,11 +10,11 @@ class Settings_Controller extends E_Controller
     
     public function viewSettings($render=1,$path="",$tags=array("All")){
 		
-    }
+}
     
    // Users Methods
     
-   public function userslist($render=1,$path='',$tags=array("9")){
+public function userslist($render=1,$path='',$tags=array("9")){
         $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
         $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
         if(empty($this->choice)){
@@ -96,11 +96,34 @@ class Settings_Controller extends E_Controller
      }
 	 public function financeSettings($render=1,$path="",$tags=array("9")){
 	 	$data=array();
+		
+		//Date Control
 		$date_control_cond=$this->_model->where(array(array("where","info","date_control","=")));
 		$date_control = $this->_model->getAllRecords($date_control_cond,"extras");
 		$date_control_flag=$date_control[0]->flag;
 		
+		//Dollar and Exchange Rate 
+		$fy = Resources::func("get_financial_year",array(date('Y-m-d')));
+		if(isset($this->choice[1])){
+			$fy = $this->choice[1];
+		}
+		$rate_cond = $this->_model->where(array(array("where","fy",$fy,"="))); 
+		$rate_qry = $this->_model->getAllRecords($rate_cond,"fundparameters");
+		$rates = array();
+		$cnt=0;
+		foreach($rate_qry as $value):
+				if($rate_qry[$cnt]->param === 'dollar_rate'){
+					$rates['dollar_rate']=$rate_qry[$cnt]->paramVal;
+				}
+				if($rate_qry[$cnt]->param === 'exchange_rate'){
+					$rates['exchange_rate']=$rate_qry[$cnt]->paramVal;
+				}
+			$cnt++;
+		endforeach;
+		$rates['fy']=$fy;
+		
 		$data['date_flag']=$date_control_flag;
+		$data['rates']=$rates;
 		$data['test']="";
 	 	return $data;
 	 }
@@ -114,6 +137,56 @@ class Settings_Controller extends E_Controller
 		}else{
 			print("Date control ON");
 		}
+	 }
+public function changeDollarRate(){
+	 	$dollar_rate = $this->choice[1];
+		$fy=$this->choice[3];
+		
+		$dollar_rate_chk_cond = $this->_model->where(array(array("where","param",'dollar_rate',"="),array("AND","fy",$fy,"=")));
+		$dollar_rate_chk = $this->_model->getAllRecords($dollar_rate_chk_cond,"fundparameters");
+		if(count($dollar_rate_chk)>0){
+			//print("Update");
+			$set = array("paramVal"=>$dollar_rate);
+			$update_qry = $this->_model->updateQuery($set,$dollar_rate_chk_cond,"fundparameters");
+			if($update_qry===1){
+				echo "Record Updated successfully!";
+			}else{
+				echo "Update failed!";
+			}
+		}else{
+			//print("New Record");
+			$paramArr = array();
+			$paramArr['param']="dollar_rate";
+			$paramArr['paramVal']=$dollar_rate;
+			$paramArr['fy']=$fy;
+			echo $this->_model->insertRecord($paramArr,"fundparameters");
+		}
+		
+	 }
+public function changeExchangeRate(){
+	 	$exchange_rate = $this->choice[1];
+		$fy=$this->choice[3];
+		
+		$exchange_rate_chk_cond = $this->_model->where(array(array("where","param",'exchange_rate',"="),array("AND","fy",$fy,"=")));
+		$exchange_rate_chk = $this->_model->getAllRecords($exchange_rate_chk_cond,"fundparameters");
+		if(count($exchange_rate_chk)>0){
+			//print("Update");
+			$set = array("paramVal"=>$exchange_rate);
+			$update_qry = $this->_model->updateQuery($set,$exchange_rate_chk_cond,"fundparameters");
+			if($update_qry===1){
+				echo "Record Updated successfully!";
+			}else{
+				echo "Update failed!";
+			}
+		}else{
+			//print("New Record");
+			$paramArr = array();
+			$paramArr['param']="exchange_rate";
+			$paramArr['paramVal']=$exchange_rate;
+			$paramArr['fy']=$fy;
+			echo $this->_model->insertRecord($paramArr,"fundparameters");
+		}
+		
 	 }
      public function editMenu(){
         $cond = $this->model->where(array("where"=> array("mnID",$this->choice[3],"=")));
