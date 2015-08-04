@@ -147,12 +147,13 @@ public function userslist($render=1,$path='',$tags=array("9")){
 public function changeICPPopulation(){
 			$pop = $this->choice[1];
 			$fy = $this->choice[3];
+			$noOfMonths = $this->choice[5];
 			$icp_population_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","fy",$fy,"=")));
 			$icp_population = $this->_model->getAllRecords($icp_population_cond,"icppopulation");
 			if(count($icp_population)>0&&$icp_population[0]->editAllowed==='1'){
 				//Update
 				//print("Update");
-				$set = array("noOfBen"=>$pop);
+				$set = array("noOfBen"=>$pop,"noOfMonths"=>$noOfMonths);
 				$qry = $this->_model->updateQuery($set,$icp_population_cond,"icppopulation");
 				if($qry===1){
 					echo "Update Successfully!";
@@ -167,6 +168,7 @@ public function changeICPPopulation(){
 				$popArr =array();
 				$popArr['icpNo']=Resources::session()->fname;
 				$popArr['noOfBen']=$pop;
+				$popArr['noOfMonths']=$noOfMonths;
 				$popArr['fy']=$fy;
 				$popArr['editAllowed']=1;
 				echo $this->_model->insertRecord($popArr,"icppopulation");

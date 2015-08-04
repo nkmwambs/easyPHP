@@ -359,10 +359,20 @@ class Finance_Controller extends E_Controller
         print($Fy);
     }
     public function pfPlansView($render=2,$path="",$tags=array("2")){
+        $data=array();
         $fy = $this->choice[1];
-        $all_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","users.cname",$_SESSION['cname'],"=")));
+		$r=$fy-1;
+		$closureDate = '20'.$r.'-06-30';
+        $all_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","users.cname",$_SESSION['cname'],"="),array("AND","opfundsbal.funds",100,"="),array("AND","opfundsbalheader.closureDate",$closureDate,"=")));
         $all = $this->_model->countNewSchedules($all_cond);
 		
+		if(empty($all)){
+			$data['error']="<div id='error_div'>Budget Schedules for the FY{$fy} missing</div>";
+			return $data;
+			exit;
+		}
+		
+		//Calculate Dollar and Exchange rates and include them in $all array
 		$params_cond = $this->_model->where(array(array("where","fy",$fy,"=")));
 		$param = $this->_model->getAllRecords($params_cond,"fundparameters");
 		$cnt=0;
@@ -378,7 +388,13 @@ class Finance_Controller extends E_Controller
 			$cnt++;
 		endforeach;
 		
-		$all[0]->totalCDSP = $all[0]->noOfBen*$all[0]->dollar_rate*$all[0]->exchange_rate*12;
+		$all[0]->totalCDSP = $all[0]->noOfBen*$all[0]->dollar_rate*$all[0]->exchange_rate*$all[0]->noOfMonths;
+		$all[0]->aggTotal=$all[0]->totalCDSP+$all[0]->supportBal;
+		
+		
+		//Calulate total support fund balance in the previous Fy and include it in $all array
+		//$total_support_bal_cond = $this->_model->where(array(array("where","opfundsbal.funds",100,"="),array("AND","opfundsbalheader.icpNo")));
+		
 		
         $data[]=$fy;
         $data[]=$all;

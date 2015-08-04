@@ -476,7 +476,7 @@ public function getRequestsQuery($cond){
     return $rst;
 }
 public function countNewSchedules($cond){
-    $s = "SELECT planheader.icpNo,count(plansschedule.approved) as cnt,sum(plansschedule.totalCost) as Cost,icppopulation.noOfBen as noOfBen FROM planheader RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID LEFT JOIN users ON planheader.icpNo=users.fname LEFT JOIN icppopulation ON planheader.icpNo=icppopulation.icpNo $cond GROUP BY planheader.icpNo";
+    $s = "SELECT planheader.icpNo,count(plansschedule.approved) as cnt,sum(plansschedule.totalCost) as Cost,icppopulation.noOfBen as noOfBen,icppopulation.noOfMonths as noOfMonths,opfundsbal.amount as supportBal FROM planheader RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID LEFT JOIN users ON planheader.icpNo=users.fname LEFT JOIN icppopulation ON planheader.icpNo=icppopulation.icpNo LEFT JOIN opfundsbalheader ON planheader.icpNo=opfundsbalheader.icpNo LEFT JOIN opfundsbal ON opfundsbalheader.balHdID=opfundsbal.balHdID  $cond GROUP BY planheader.icpNo";
     //$q =  mysql_query($s);
     $q=$this->conn->prepare($s);
 	$q->execute();

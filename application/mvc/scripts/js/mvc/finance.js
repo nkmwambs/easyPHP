@@ -280,20 +280,16 @@ function addOS(frmid){
        
 }
 function adjust_financial_year(step){
-    //alert(step);
     var fy=document.getElementById("curFy").value;
         xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
-                document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                //document.getElementById('overlay').style.display='block';
+                //document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                document.getElementById('overlay').style.display='none';
-                //alert(xmlhttp.responseText);
-                //document.getElementById("schedule").innerHTML="Click Month Tab to View a Schedule";
+                //document.getElementById('overlay').style.display='none';
                 document.getElementById("curFy").value=xmlhttp.responseText;
                 document.getElementById("fy").value=xmlhttp.responseText;
-                //document.getElementById("test").value=xmlhttp.responseText;
           }
         };
 
@@ -1122,11 +1118,11 @@ function viewPlans(){
      var fy=document.getElementById("curFy").value;
       xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
-                document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                //document.getElementById('overlay').style.display='block';
+                //document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                document.getElementById('overlay').style.display='none';
+                //document.getElementById('overlay').style.display='none';
                     document.getElementById("resultsDiv").innerHTML=xmlhttp.responseText;
           }
         };

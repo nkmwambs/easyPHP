@@ -25,7 +25,7 @@ Exchange Rate:<input type="text" id='exchange_rate' name="exchange_rate" value='
 ?>
 <fieldset style="border-color: blue;">
 	<legend><b>PPBF Settings</b></legend>
-	Child Population:<input type="text" id="icpNoPop" name="icpNoPop"  value='<?php echo $data['icpPopulation']['noOfBen'];?>'/> FY: <input type="text" id="icpFy" name="icpFy"   value='<?php echo $data['icpPopulation']['fy'];?>'/><div style="color:blue;cursor: pointer;width:50px;" onclick="changeIcpPopulation();">Change</div>
+	Beneficiaries Population:<input type="text" id="icpNoPop" name="icpNoPop"  value='<?php echo $data['icpPopulation']['noOfBen'];?>'/> # Of Months: <input type="text" id="noOfMonths" name="noOfMonths"  value='<?php echo $data['icpPopulation']['noOfMonths'];?>'/> FY: <input type="text" id="icpFy" name="icpFy"   value='<?php echo $data['icpPopulation']['fy'];?>'/><div style="color:blue;cursor: pointer;width:50px;" onclick="changeIcpPopulation();">Change</div>
 </fieldset>
 <?php	
 }

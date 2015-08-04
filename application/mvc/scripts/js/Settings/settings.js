@@ -149,6 +149,7 @@ function changeExchangeRate(){
 function changeIcpPopulation(){
 	//alert("Hello");
 	var icpNoPop = document.getElementById('icpNoPop').value;
+	var noOfMonths=document.getElementById('noOfMonths').value;
 	var fy = document.getElementById('icpFy').value;
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
@@ -156,6 +157,6 @@ function changeIcpPopulation(){
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Settings/changeICPPopulation/icpNoPop/"+icpNoPop+"/fy/"+fy,true);      
+      xmlhttp.open("GET",path+"mvc/Settings/changeICPPopulation/icpNoPop/"+icpNoPop+"/fy/"+fy+"/noOfMonths/"+noOfMonths,true);      
       xmlhttp.send();
 }
