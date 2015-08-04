@@ -1809,6 +1809,12 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 	        }
    		return $this->_model->showVoucher($VNum,$icpNo);
     }
+	
+	public function postFootNote(){
+		//print_r($_POST);
+		echo $this->_model->insertRecord($_POST,"voucherfootnotes");
+	}
+	
     public function postVoucher(){
         $header = array();
         for($i=0;$i<8;$i++){
@@ -1886,13 +1892,17 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
         $VNum=  $this->choice[1];
         if($_SESSION['userlevel']==="1"){
             $icpNo = $_SESSION['username'];
-        }  elseif ($_SESSION['userlevel']==="2") {
-            $icpNo = $_SESSION['fname_backup'];
         }  else {
-            
-        }
+            $icpNo = $_SESSION['fname_backup'];
+        }  
         
-        return $data = $this->_model->showVoucher($VNum,$icpNo);
+		$footnote_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","VNumber",$VNum,"=")));
+		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes");
+		
+		$data['details']=$this->_model->showVoucher($VNum,$icpNo);
+		$data['footnotes']=$footnote_arr;
+		
+        return $data;
 
     }
     public function getFlds(){
