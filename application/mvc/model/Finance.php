@@ -104,7 +104,7 @@ public function postVoucherBody($arr,$acc){
     }
     
     public function accounts(){
-        $sql = "SELECT * FROM accounts WHERE AccGrp<2 AND Active=1 ORDER BY AccGrp DESC,AccNo ASC";
+        $sql = "SELECT * FROM accounts WHERE AccGrp<2  ORDER BY AccGrp DESC,AccNo ASC";
         //$qry = mysql_query($sql);
         $q = $this->conn->prepare($sql);
 		$q->execute();
@@ -118,7 +118,7 @@ public function postVoucherBody($arr,$acc){
 
         public function getVoucherForEcj($cnd){
     //return $this->getAllRecords($cnd,"voucher_header");
-    
+    // LEFT JOIN voucherfootnotes ON voucher_header.hID=voucherfootnotes.hID
         $s = "SELECT * FROM voucher_header $cnd";
         //$q = mysql_query($s);
         $q=$this->conn->prepare($s);
@@ -574,6 +574,20 @@ public function monthPcIncome($cond){
 	$q->execute();
 	$rst = $q->fetch(PDO::FETCH_OBJ);
 	return $rst->Cost;	
+}
+
+public function totalExpPerAc($cond){
+   	$s= "SELECT voucher_body.AccNo,SUM(voucher_body.Cost) as Cost FROM voucher_body LEFT JOIN users ON voucher_body.icpNo=users.fname $cond GROUP BY voucher_body.Cost ORDER BY voucher_body.AccNo ASC";
+    $q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
+    	if($row['AccNo']<100){
+        $rst[$row['AccNo']]=$row['Cost'];
+        }
+    }
+    
+    return $rst;	
 }
 
 }

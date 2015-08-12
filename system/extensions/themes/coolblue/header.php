@@ -1,5 +1,5 @@
 <?php
-$sess = Resources::session();
+$sess = Resources::session(); 
 ?>
 <html>
     <head>
@@ -35,7 +35,7 @@ $sess = Resources::session();
         ?> 
     </ul>
         <div id="container">
-            <div id="header" class="cntr"><div><?php echo Resources::img("logo.png",  array("style"=>"position:absolute;top:0px;left:0px;width:18%;heigth:24%;")); ?></div><div id='logo'><div style="position: absolute;top: 0px;display: inline-block;width:700px;left: 230px;"><h4>Compassion Kenya - Toolkit</h4></div></div></div>
+            <div id="header" class="cntr"><div><?php echo Resources::img("logo.png",  array("style"=>"position:absolute;top:0px;left:0px;width:18%;heigth:24%;")); ?></div><div id='logo'><div style="position: absolute;top: 0px;display: inline-block;width:700px;left: 230px;display:none;"><h4>Compassion Kenya - Toolkit</h4></div></div></div>
             
             <div id="hdr-menu">
                 <ul id="list-menu">
@@ -54,5 +54,5 @@ $sess = Resources::session();
                 //if(isset($sess->adm)&&$sess->adm==='2'&&$sess->adm!=="1"){echo "<div class='alerts'>You are on a Switch Mode (Your user profile is ".$_SESSION['username_backup']." ".Resources::img("user.png",array("id"=>"".$_SESSION['username_backup']."","onclick"=>'switchUser(this);',"style"=>'cursor:pointer;')).")</div>";}
                 ?>
             </div>
-            <div id="error"><?php ?></div>
+            <div><?php //echo $_SESSION['REDIRECT'];?></div>
             <br>

@@ -16,36 +16,20 @@
  */
 class E_Controller {
      protected $model;	
-     //protected $template;
      protected $choice;
-     //protected $helper;
      private $Con;
      private $Met;
      private $Args;
      private $session;
-     //protected $load_menu;
 	 private $method_args_count;
-	 //public $deprecate;
-	 //public static $RENDER=1;
 
     public function __construct(){
         $this->Con = $GLOBALS['Controller'];
         $this->Met = $GLOBALS['Method'];
         $this->Args = $GLOBALS['args'];
-        //$this->template=new Template($this->Con,  $this->Met);
-        //$this->load_menu=new E_Menu;
-        //$this->helper=new E_Helpers();
         $this->choice=  $this->Args;
         $this->session=session_start();
         $this->model=new E_Model($table="menu");
-		//$reflection = new ReflectionClass($this);
-        
-       // if(!empty($this->helper->global_helpers)){
-         //   foreach ($this->helper->global_helpers as $value) {
-           //   $this->helper->load("$value");  
-            //}
-            
-        //}
 		
         if(!isset($_SESSION['username'])&&empty($_SESSION)){
             		$cond = $this->model->where(array(array("where","ID","0","=")));
@@ -56,18 +40,10 @@ class E_Controller {
                 	endforeach;
         }
 		
-		
-        $url = $this->Con."/".$this->Met;
-        $cond = $this->model->where(array("where"=>array("public",'1',"="),"AND"=>array("url",$url,"=")));
-        $rst = $this->model->getAllRecords($cond);
-        if(count($rst)===0&&$_SESSION["username"]==="Guest"){
-            if($this->choice[0]!=='public'&&$this->choice[1]!=='1'){
-                header("location:".Resources::url($GLOBALS['app_default_controller']."/".$GLOBALS['app_default_view']));
-            }
-            
+        $url = $this->Con."/".$this->Met;        
+        if(isset($this->choice[0])&&$this->choice[0]==='public'&&$this->choice[1]!=='1'&&Resources::session()->username==='Guest'){
+        	header("location:".Resources::url($GLOBALS['app_default_controller']."/".$GLOBALS['app_default_view']));
         }
-
-        
     }
 
 	protected function dispatch($render="1",$path,$results,$tags=array()){

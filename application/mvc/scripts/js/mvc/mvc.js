@@ -200,7 +200,7 @@ function login(){
             
         };
                                                
-         xmlhttp.open("POST",path+"/mvc/Welcome/show/public/0",true);
+         xmlhttp.open("POST",path+"/mvc/Welcome/show/public/1",true);
          xmlhttp.send(frmData);
 }
 

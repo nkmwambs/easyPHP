@@ -266,9 +266,9 @@ public static function script($scripts){
     }
 public static function menuItems(){
 			$model = new E_Model("menu");
-			$rec_cond=  $model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
+			//$rec_cond=  $model->where(array("where"=>array("userid",self::session()->ID,"=")));
+			$rec_cond= $model->where(array(array("where","userid",self::session()->ID,"=")));
             $recent = $model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");    
-            //$menu = $model->getAllRecords();
             return $recent;
 }
 public static function render($render="1",$path="",$results=""){

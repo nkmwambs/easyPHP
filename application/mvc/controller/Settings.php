@@ -11,7 +11,6 @@ public function __construct() {
     public function viewSettings($render=1,$path="",$tags=array("All")){
 		
 }
-    
    // Users Methods
     
 public function userslist($render=1,$path='',$tags=array("9")){
@@ -389,5 +388,35 @@ public function changeExchangeRate(){
 				print($recNum ." records uploaded successfully!");
 			}
 
-	}
+}
+
+public function general($render=1,$path='',$tags=array("All")){
+	$siteOff_cond = $this->_model->where(array(array("where","info","offline","=")));
+	$siteOff_arr = $this->_model->getAllRecords($siteOff_cond,"extras");
+	$siteOff_flag = $siteOff_arr[0]->flag;
+	$msg = $siteOff_arr[0]->other;
+	
+	$data=array();
+	$data['siteOff']=$siteOff_flag;
+	$data['msg']=$msg;
+	
+	return $data;
+}
+
+public function getOfflineMsg(){
+	echo $this->choice[1];
+}
+
+public function siteOff(){
+	$state = $this->choice[1];
+	$siteOff_cond = $this->_model->where(array(array("where","info","offline","=")));
+	$sets = array("flag"=>$state);
+	$rst = $this->_model->updateQuery($sets,$siteOff_cond,"extras");
+	if($state==='1'&&$rst===1){
+		echo "Offline Mode ON";
+	}else{
+		echo "Offline Mode OFF";
+	}	
+}
+
 }

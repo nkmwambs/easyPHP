@@ -17,7 +17,19 @@ class Finance_Controller extends E_Controller
         return $cluster = $this->_model->getClusters($clst);
     }
 	public function view($render=1,$path="",$tags=array("All")){
+		if(Resources::session()->userlevel===1){
+			$sum_per_ac_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","voucher_body.AccNo",100,"<")));
+		}elseif(Resources::session()->userlevel===2){
+			$clst_cond = $this->_model->where(array(array("where","ID",Resources::session()->ID,"=")));
+			$clst_arr = $this->_model->getAllRecords($clst_cond,"users");
+			
+			$sum_per_ac_cond = $this->_model->where(array(array("where","cname",$clst_arr[0]->cname,"="),array("AND","voucher_body.AccNo",100,"<")));
+		}else{
+			$sum_per_ac_cond="";			
+		}
+			
 		
+		return $this->_model->totalExpPerAc($sum_per_ac_cond);
 	}
 
     public function viewAll($render=1){
@@ -156,12 +168,30 @@ class Finance_Controller extends E_Controller
 				  		$pc= 0;
     				}
 					
-                	$cds = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","Month(`TDate`)",$v_month,"=")));
+					//Get FootNotes
+					if(isset($this->choice[1])){
+						$y = date("Y",$this->choice[1]);
+					}else{
+						$y=date("Y");
+					}
+					$VoucherFootNotes_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","Month(VDate)",$v_month,"="),array("AND","Year(VDate)",$y,"=")));
+					$VoucherFootNotes_arr = $this->_model->getAllRecords($VoucherFootNotes_cond,"voucherfootnotes");
+					
+					//Noted Vouchers
+					$noted_vouchers=array();
+					foreach($VoucherFootNotes_arr as $value):
+						$noted_vouchers[]=$value->VNumber;
+					endforeach;
+					
+					
+                	$cds = $this->_model->where(array(array("where","voucher_header.icpNo",$icpNo,"="),array("AND","Month(voucher_header.TDate)",$v_month,"=")));
             	    $data[0]=$this->_model->accounts();
 		            $data[1] = $this->_model->getVoucherForEcj($cds);
 					$data[2]=$bc;//BC Balance
 					$data[3]=$pc;//PC Balance
 					$data[5]=$icpNo;
+					$data[6]=$VoucherFootNotes_arr;
+					$data[7]=array_unique($noted_vouchers);
 		            
 		            $this->dispatch($render,"",$data,array("All"));
 		            
@@ -1811,8 +1841,26 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
     }
 	
 	public function postFootNote(){
-		//print_r($_POST);
-		echo $this->_model->insertRecord($_POST,"voucherfootnotes");
+		$VNum=$_POST['VNumber'];
+		$icpNo=$_POST['icpNo'];
+		
+		$hid_cond = $this->_model->where(array(array("where","VNumber",$VNum,"="),array("AND","icpNo",$icpNo,"=")));
+		$hid_arr = $this->_model->getAllRecords($hid_cond,"voucher_header");
+		$hid = $hid_arr[0]->hID;
+		$tDate = $hid_arr[0]->TDate;
+		
+		$_POST['hID']=$hid;
+		$_POST['VDate']=$tDate;
+		
+		$this->_model->insertRecord($_POST,"voucherfootnotes");
+		
+		$footnote_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","VNumber",$VNum,"=")));
+		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes"," ORDER BY footnoteID DESC");
+		
+		$data['details']=$this->_model->showVoucher($VNum,$icpNo);
+		$data['footnotes']=$footnote_arr;
+		
+		$this->dispatch($render=2,$path='',$data,$tags=array("All"));
 	}
 	
     public function postVoucher(){
@@ -1897,7 +1945,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
         }  
         
 		$footnote_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","VNumber",$VNum,"=")));
-		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes");
+		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes"," ORDER BY footnoteID DESC");
 		
 		$data['details']=$this->_model->showVoucher($VNum,$icpNo);
 		$data['footnotes']=$footnote_arr;

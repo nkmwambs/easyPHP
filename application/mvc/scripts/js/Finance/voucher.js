@@ -635,17 +635,17 @@ function postFootNote(frmid){
    var frm = document.getElementById(frmid);  
     var frmData = new FormData(frm);
             xmlhttp.onreadystatechange=function() {
-            //if(xmlhttp.readyState!==4){
-              //  document.getElementById('overlay').style.display='block';
-                //document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
-            //}
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                //document.getElementById('overlay').style.display='none';
-                //alert(xmlhttp.responseText);
-                location.reload();
+                document.getElementById('fNotes').innerHTML=xmlhttp.responseText;
+                //document.getElementById('msgArea').innerHTML="";
+                document.getElementById('msgArea').value="";
+                alert("Note Posted Successfully");
             }
         };
-                                               
+    if(document.getElementById('msgArea').value===""){
+    	alert("Note cannot be empty!");
+    	exit;
+    }                                      
          xmlhttp.open("POST",path+"/mvc/Finance/postFootNote/public/0",true);
          xmlhttp.send(frmData);
 }

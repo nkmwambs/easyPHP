@@ -160,3 +160,32 @@ function changeIcpPopulation(){
       xmlhttp.open("GET",path+"mvc/Settings/changeICPPopulation/icpNoPop/"+icpNoPop+"/fy/"+fy+"/noOfMonths/"+noOfMonths,true);      
       xmlhttp.send();
 }
+
+function siteOff(elem){
+	var state=0;
+	if(elem.checked){
+		state=1;
+	}
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/siteOff/state/"+state,true);      
+      xmlhttp.send();
+}
+
+function getOfflineMsg(){
+	
+	var msg =document.getElementById('offlineMsg').value;
+	//alert(msg);
+		xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/getOfflineMsg/msg/"+msg,true);      
+      xmlhttp.send();
+}

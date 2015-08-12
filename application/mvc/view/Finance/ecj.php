@@ -1,5 +1,6 @@
 <?php 
-//print_r($data);
+//print_r($data[6]);
+//print($data[6]);
 echo "<br>";
 if(isset($data[4])){
 	$curSelect=date('F-Y',$data[4]);
@@ -136,3 +137,19 @@ if(isset($data[4])){
         ?>
     </tbody>
 </table>
+<br><br>
+<b>Current Month's Footnotes</b>
+<?php
+if(!empty($data[7])){
+	foreach($data[7] as $val):
+		echo "<br><b>{$val}</b><br>";
+		foreach($data[6] as $value):
+			if($value->VNumber===$val){
+				echo "<div class='footnotes_header'>{$value->msg_from}  post for Voucher Number {$value->VNumber}: <i>Posted on {$value->stmp}</i></div><br>";
+				echo "<div class='footnotes_body'>{$value->msg}</div>";
+			}
+		endforeach;
+	endforeach;	
+}else{
+	echo "<br><br><div id='error_div'>No Footnotes for this month Available</div><br><br>";
+}

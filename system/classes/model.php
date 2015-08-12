@@ -79,10 +79,10 @@ public function where($cond){
       
       
         if($cond===""){
-                $sql ="SELECT * FROM `".$_table."`";
+                $sql ="SELECT * FROM `".$_table."` $extra";
             }else{
                 
-                $sql ="SELECT * FROM `".$_table."` $cond";
+                $sql ="SELECT * FROM `".$_table."` $cond $extra";
             }
 
                         //$query = mysql_query($sql);

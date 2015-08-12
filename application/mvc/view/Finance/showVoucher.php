@@ -46,8 +46,10 @@ echo Resources::img("print.png",array("title"=>"Print","onclick"=>'printData("tb
 	echo "<button onclick='postFootNote(\"frmNotes\");'>Post</button>";
 	echo "<br>";
 	echo "<br><br><br><b>Users Suggestions on this Voucher</b><br><br>";
+	echo "<div id='fNotes'>";
 	foreach($data['footnotes'] as $value):
-		echo "<div class='footnotes_header'>{$value->msg_from}: <i>Posted on {$value->stmp}</i></div><br>";
+		echo "<div class='footnotes_header'>{$value->msg_from}  post for Voucher Number {$value->VNumber}: <i>Posted on {$value->stmp}</i></div><br>";
 		echo "<div class='footnotes_body'>{$value->msg}</div>";
 	endforeach;
+	echo "</div>";
 	echo "<br><br>";

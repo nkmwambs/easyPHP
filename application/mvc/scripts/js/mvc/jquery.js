@@ -1,7 +1,4 @@
-
-                  
-	$(document).ready(function(){
-		
+      $(document).ready(function(){
 				$("#frmDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
                 $("#toDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});                
                 $("#attenddate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true}); 
