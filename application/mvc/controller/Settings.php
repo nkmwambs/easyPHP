@@ -247,9 +247,28 @@ public function changeExchangeRate(){
      public function profile($render=1,$path="",$tags=array("All")){
 
      }
+	 public function editUserProfile(){
+	 	 $uname = $this->choice[1];
+         $pass = $this->choice[3];
+         $cond = $this->_model->where(array(array("where","username",$uname,"=")));
+		 $sets = array("password"=>$pass);
+		 $qry = $this->_model->updateQuery($sets,$cond,"users");
+		 //print($qry);
+		 if($qry===1){
+		 	echo "Update Successful!";
+		 }else{
+		 	echo "Error Occured: Update unsuccessful!";
+		 }
+	 }
      
      public function confirmUserExist(){
-         
+         $uname = $this->choice[1];
+         $pass = $this->choice[3];
+         $cond = $this->_model->where(array(array("where","username",$uname,"="),array("AND","password",$pass,"=")));
+         $qry = $this->_model->getAllRecords($cond,"users");
+		 $cnt = count($qry);
+		 
+		 print($cnt);
      }
 	public function plansHeaderUpload($render=1,$path="",$tags=array("3","9")){
 		$cond  = $this->_model->where(array(array("where","userlevel",1,"=")));
@@ -417,6 +436,30 @@ public function siteOff(){
 	}else{
 		echo "Offline Mode OFF";
 	}	
+}
+
+public function showUsersList($render=2,$path='',$tags=array("All")){
+	$grp =  $this->choice[1];
+	$cond = $this->_model->where(array(array("where","users.userlevel",$grp,"=")));
+	$qry = $this->_model->getUsersByPosition($cond);
+	
+	$data = array();
+	$data['users']=$qry;
+	$data['cat']=$grp;
+	
+	return $data;
+}
+
+public function addUserToCategory($render=2,$path='',$tags=array("All")){
+	$cat = $this->choice[1];
+	$cond_users = $this->_model->where(array(array("where","userlevel",$cat,"=")));
+	$qry_users = $this->_model->getAllRecords($cond_users,"users");
+	
+	$data = array();
+	$data['users']=$qry_users;
+	
+	return $data;
+	
 }
 
 }

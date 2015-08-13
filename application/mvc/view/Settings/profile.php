@@ -14,5 +14,5 @@ echo "<tr><td><label for='newPassword'>New Password</label></td><td><input style
 echo "<tr><td><label for='newPasswordRepeat'>Repeat New Password</label></td><td><input style='width:100%;'  type='text' id='newPasswordRepeat' name='newPasswordRepeat'/></td></tr>";
 echo "</tbody>";
 echo "</form>";
-echo "<tr><td colspan='2' style='text-align:center;padding-top:25px;'>".Resources::a_href("Settings/profile",Resources::img("diskedit.png", array("title"=>"Edit","onclick"=>"editUserProfile(\"Settings/profile\");")))."<td></tr>";
+echo "<tr><td colspan='2' style='text-align:center;padding-top:25px;'>".Resources::img("diskedit.png", array("title"=>"Edit","onclick"=>'editUserProfile();'))."<td></tr>";
 echo "</table>";

@@ -189,3 +189,65 @@ function getOfflineMsg(){
       xmlhttp.open("GET",path+"mvc/Settings/getOfflineMsg/msg/"+msg,true);      
       xmlhttp.send();
 }
+function editUserProfile(){
+    var uname = document.getElementById("fname").value;
+    var oldPass = document.getElementById("oldPassword").value;
+    var newPass = document.getElementById("newPassword").value;
+    var newPassRpt = document.getElementById("newPasswordRepeat").value;
+    //alert(uname);
+   
+    if(newPass===newPassRpt&&newPass!==""&&oldPass!==""){   
+    	//alert("Password Matches");
+    	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                //alert(xmlhttp.responseText);
+                var cnfm = xmlhttp.responseText;
+                if(cnfm ==='1'){
+                	//alert("User exists");
+                			xmlhttp.onreadystatechange=function() {
+					            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+					                alert(xmlhttp.responseText);
+          						}
+        					};
+
+					      xmlhttp.open("GET",path+"mvc/Settings/editUserProfile/username/"+uname+"/password/"+newPass,true);      
+					      xmlhttp.send();
+                }else{
+                	alert('User does not exist!');
+                }
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/confirmUserExist/username/"+uname+"/password/"+oldPass,true);      
+      xmlhttp.send();
+    
+    }else{
+        alert("The new password repeat does not match or old password field is empty!");
+    }
+    
+}
+
+function showUsersList(pstID){
+	//alert(dsgID);	
+			xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            	document.getElementById('rst').innerHTML=xmlhttp.responseText;
+            	
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/showUsersList/pstID/"+pstID,true);      
+      xmlhttp.send();
+	
+}
+function addUserToCategory(cat){
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            	document.getElementById('rst').innerHTML=xmlhttp.responseText;
+            	
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Settings/addUserToCategory/cat/"+cat,true);      
+      xmlhttp.send();
+}

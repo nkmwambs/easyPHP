@@ -42,42 +42,7 @@ function chkAll(el){
    }
 }
 
-function editUserProfile(url){
-    var uname = document.getElementById("uname").value;
-    var oldPass = document.getElementById("oldPassword").value;
-    var newPass = document.getElementById("newPassword").value;
-    var newPassRpt = document.getElementById("newPasswordRepeat").value;
-    
-    if(newPass===newPassRpt){   
-    
-            xmlhttp.onreadystatechange=function() {
-            if(xmlhttp.readyState!==4){
-                document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
-            }
-            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                //el.parentNode.innerHTML=xmlhttp.responseText;
-                document.getElementById('overlay').style.display='none';
-                //document.writeln(xmlhttp.responseText);
-                
-                if(xmlhttp.responseText==='1'){
-                    xmlrequest(url);
-                    alert("Password Changed successfully!");
-                }else if(xmlhttp.responseText==='0'){
-                    xmlrequest(url);
-                    alert("Old paswword not found. In case this problem persist contact the administrator!");
-                }
-             }
-        };
-          //alert(url);                                     
-         xmlhttp.open("GET",path+"system/index.php?url=mvc/Settings/confirmUserExist&rnd="+Math.random(),true);
-         xmlhttp.send();
-    
-    }else{
-        xmlrequest(url);
-        alert("The new password repeat does not match!");
-    }
-}
+
 function recentItems(title,url,userid,img){
        //alert(title);
         var mod_url=url.replace("/","_");
