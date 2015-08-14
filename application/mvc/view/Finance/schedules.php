@@ -6,7 +6,7 @@ echo "<hr><br>";
 $months_arr = Resources::func("get_month_number_array");
 
 $arr_financial_year_months_order =array("","July","August","September","October","November","December","January","February","March","April","May","June");
-echo "<button onclick='addScheduleRow();' id='btnAddRow' style='display:none;'>Add Row</button><button style='display:none;' id='btnPostSchedule' onclick='postSchedule(\"frmSchedule\");'>Post Schedule</button>";
+echo "<button onclick='addScheduleRow();' id='btnAddRow' style='display:none;'>Add Row</button><button style='display:none;' id='btnPostSchedule' onclick='postSchedule(\"frmSchedule\");'>Post Schedule</button><button id='btnDelRow' style='display:none;' onclick='delRowPlan(\"tblSchedule\");'>Delete Row</button>";
 echo "<div id='scheduleview'>";
 
 echo "<form id='frmSchedule'>";
@@ -33,7 +33,7 @@ endforeach;
 echo "<td>&nbsp;</td></tr>";
 echo "</table>";
 //echo "<div id='schedule'>Click Month Tab to View a Schedule</div><br>";
-echo "<div id='notesDiv'>View Notes Here</div>";
+echo "<div id='notesDiv'>View/ Enter Notes Here</div>";
 echo "</form>";
 echo "</div>";
 

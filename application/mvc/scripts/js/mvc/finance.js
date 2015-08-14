@@ -331,7 +331,21 @@ function addScheduleRow(){
     
     var cell0 = newRw.insertCell(0);
     var chk = document.createElement("input");
-    setAttributes(chk,{"type":"checkbox","class":"chks"});
+    setAttributes(chk,{"type":"checkbox","class":"chk"});
+    chk.onclick=function(){
+                            var chks = document.getElementsByClassName("chk");
+                            var cnt = 0;
+                            for(var i=0;i<chks.length;i++){
+                                if(chks.item(i).checked===true){
+                                    cnt++;
+                                }
+                            }
+                            if(cnt>0){
+                                document.getElementById("btnDelRow").style.display="block";
+                            }else{
+                                document.getElementById("btnDelRow").style.display="none";
+                            }
+                        };
     cell0.appendChild(chk);
     
     //Check Box
@@ -576,8 +590,10 @@ function scheduleRow(obj,indx){
     //Check box column
     var cell0 = newRw.insertCell(0);
     var chk = document.createElement("input");
-    setAttributes(chk,{"type":"checkbox","class":"chks"});
+    chk.disabled=true;
+    setAttributes(chk,{"type":"checkbox","class":"chk"});
     cell0.appendChild(chk);
+
     
     //Details Column
     var cell1 =newRw.insertCell(1);
@@ -800,12 +816,18 @@ function scheduleRow(obj,indx){
     setAttributes(approved,{"type":"hidden","name":"approved[]","class":"approved","value":"0","style":"width:80px","id":"approved"+rws});
     if(obj[indx].approved==='0'){
         notes.innerHTML='Not Approved';
+        setAttributes(notes,{"style":"background-color:blue;padding:3px;border-radius:3px;color:white;","id":"notes"+rws});
     }else if(obj[indx].approved==='1'){
         notes.innerHTML='Submitted';
+        setAttributes(notes,{"style":"background-color:brown;padding:3px;border-radius:3px;color:white;","id":"notes"+rws});
     }else if(obj[indx].approved==='2'){
         notes.innerHTML='Approved';
+        setAttributes(notes,{"style":"background-color:green;padding:3px;border-radius:3px;color:white;","id":"notes"+rws});
+    }else if(obj[indx].approved==='3'){
+    	notes.innerHTML='Rejected';
+    	setAttributes(notes,{"style":"background-color:red;padding:3px;border-radius:3px;color:white;","id":"notes"+rws});
     }
-    setAttributes(notes,{"style":"background-color:green;padding:3px;border-radius:3px;color:white;","id":"notes"+rws});
+    //setAttributes(notes,{"style":"background-color:green;padding:3px;border-radius:3px;color:white;","id":"notes"+rws});
     cell20.appendChild(notes); 
     cell20.appendChild(approved); 
     if(obj[indx].approved==='2'){
@@ -992,6 +1014,8 @@ function sendRequest(elem){
                 scheduleID_input.value=scheduleID;
                 setAttributes(scheduleID_input,{"type":"hidden","id":"scheduleID_input","name":"scheduleID"});
                 document.getElementById("frmRq").appendChild(scheduleID_input);
+                
+                
          }
         };
 
@@ -1024,9 +1048,9 @@ function postRequest(){
                 document.getElementById("rqMsgDiv").innerHTML="";
                 document.getElementById("rqMsgDiv").style.display='none';
                 document.getElementById("scheduleID_input").style.display='none';
-                if(xmlhttp.responseText==="1"){
+                //if(xmlhttp.responseText===1){
                     location.reload();
-                }
+                //}
             }
         };
                                                
@@ -1274,4 +1298,26 @@ function selectDisburse(tym){
       xmlhttp.send();
 }
 
+function delRowPlan(tableID) {
+	var table = document.getElementById(tableID);
+	var rowCount = table.rows.length;
+	var totalCost = document.getElementsByClassName('totalCost');
+	var delTotals=0;		
+		for(var i=0; i<rowCount; i++) {
+					var row = table.rows[i];
+					var chkbox = row.cells[0].childNodes[0];
+					if(null !== chkbox && true === chkbox.checked) {
+						
+						table.deleteRow(i);
+						rowCount--;
+						i--;
+					}
 
+				}
+				
+		for(var j=0;j<totalCost.length;j++){
+				delTotals+=parseFloat(totalCost.item(j).value);
+		}
+		
+		document.getElementById('acTotal').value=delTotals;	
+}

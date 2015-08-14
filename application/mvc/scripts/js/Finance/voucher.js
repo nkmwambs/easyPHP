@@ -38,7 +38,7 @@ function addRow(tableID) {
                         var cell0 = row.insertCell(0);
                         var element0 = document.createElement("input");
                         element0.type = "checkbox";
-                        element0.name="chkbox[]";
+                        //element0.name="chkbox[]";
                         element0.className="chkbx";
                         element0.onclick=function(){
                             var chks = document.getElementsByClassName("chkbx");
@@ -232,7 +232,8 @@ function chqIntel(str){
         };
         
     if(str!=="0"){
-        xmlhttp.open("GET",path+"system/index.php?url=mvc/Finance/chqIntel/chq/"+str,true);
+    var finStr = str.replace(/^0+/, '');
+        xmlhttp.open("GET",path+"system/index.php?url=mvc/Finance/chqIntel/chq/"+finStr,true);
         xmlhttp.send();
      }
 }
@@ -333,7 +334,9 @@ function postVoucher(){
          if(document.getElementById('error_div')){
          	document.getElementById('error_div').innerHTML='Reset to add a New Voucher!';
          	document.getElementById('resetBtn').style.backgroundColor='red';
-         }else{                                     
+         }else{  
+         	document.getElementById('btnPostVch').style.display='none';
+            document.getElementById('btnAddRow').style.display='none';//btnAddRow                                   
 	         xmlhttp.open("POST",path+"/mvc/Finance/postVoucher",true);
 	         xmlhttp.send(frmData);
          }

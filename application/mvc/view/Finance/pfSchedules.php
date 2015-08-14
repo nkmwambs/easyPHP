@@ -23,7 +23,7 @@ foreach($data[0] as $item):
             }elseif($scheduledItem->approved=="2"){
                 echo "<tr style='background-color:Green;'><td>".Resources::img("unreject.png",array("title"=>"Approved"))."</td>";                    
             }elseif($scheduledItem->approved=="3"){
-                echo "<tr style='background-color:yellow;'><td>".Resources::img("mail.png",array("title"=>"Send Reminder","style"=>"cursor:pointer;","id"=>"remItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."".Resources::img("approved.png")."</td>";
+                echo "<tr style='background-color:yellow;'><td>".Resources::img("message.png",array("title"=>"Send Reminder","style"=>"cursor:pointer;","id"=>"remItem_".$scheduledItem->scheduleID,"onclick"=>"sendRequest(this);"))."".Resources::img("approved.png")."</td>";
             }
             
             echo "<td style='text-align:left;'>".$scheduledItem->details."</td><td>".$scheduledItem->qty."</td><td>".number_format($scheduledItem->unitCost,2)."</td><td>".$scheduledItem->often."</td><td>".number_format($scheduledItem->totalCost,2)."</td><td>".number_format($scheduledItem->validate,2)."</td><td>".number_format($scheduledItem->JulAmt,2)."</td><td>".number_format($scheduledItem->AugAmt,2)."</td><td>".number_format($scheduledItem->SepAmt,2)."</td><td>".number_format($scheduledItem->OctAmt)."</td><td>".number_format($scheduledItem->NovAmt,2)."</td><td>".number_format($scheduledItem->DecAmt,2)."</td><td>".number_format($scheduledItem->JanAmt,2)."</td><td>".number_format($scheduledItem->FebAmt,2)."</td><td>".number_format($scheduledItem->MarAmt,2)."</td><td>".number_format($scheduledItem->AprAmt)."</td><td>".number_format($scheduledItem->MayAmt,2)."</td><td>".number_format($scheduledItem->JunAmt,2)."</td>";
@@ -32,7 +32,7 @@ foreach($data[0] as $item):
         }elseif($scheduledItem->approved==="1"){
             $approved = "<span style='color:blue;'>Submitted</span>";
         }elseif($scheduledItem->approved==="2") {
-            $approved = "<span style='color:green;'>Approved</span>";
+            $approved = "<span style='color:white;'>Approved</span>";
         }elseif ($scheduledItem->approved==="3") {
            $approved = "<span style='color:red;'>Rejected</span>";     
         }

@@ -74,7 +74,7 @@ $totCash=$data['bank']+$data['pc'];
 echo "<tr><td colspan='3'>Total</td><td colspan='2' class='Totals' id='cashBal'>".number_format($totCash,2)."</td></tr>";
 echo "<tr><th colspan='5'>Accuracy Validation</th></tr>";
 $validation = $totEnd-$totCash;
-if($validation!==0){
+if(number_format($validation,2)!=='0.00'){
 	$style="background-color:red;color:white;font-weight:bold;";
 }else{
 	$style="background-color:green;color:white;font-weight:bold;";

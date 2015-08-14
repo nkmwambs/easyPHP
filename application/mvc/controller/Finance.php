@@ -460,7 +460,13 @@ class Finance_Controller extends E_Controller
             $acDetails[$filter->AccText]=$obj;
         endforeach;
         
-        //$totals=$this->_model->getSchedulesSummaryWithAcNames($schedules_cond);
+        $totals=$this->_model->getSchedulesSummaryWithAcNames($schedules_cond);
+		
+		$rqMsg_cond = $this->_model->where(array(array("where","closed",0,"="),array("AND","senderID",Resources::session()->ID,"=")));
+		$rqMsg = $this->_model->getAllRecords("","plansrequests");
+		//foreach():
+		//endforeach;
+		
         //$data[]=$acDetails;
         
         //$schedules_arr=array();
@@ -468,7 +474,8 @@ class Finance_Controller extends E_Controller
 
         $data[]=$acDetails;
 		$data[]=$schedules;
-        //$data[]=$totals;
+        $data[]=$totals;
+		$data[]=$rqMsg;
         return $data;
     }
     public function viewPlanSummary($render=2,$path="",$tags=array("1")){
@@ -602,7 +609,7 @@ class Finance_Controller extends E_Controller
         }
         
     }
-    public function massSubmitPlanItems($render=1,$path="viewAllSchedules"){
+    public function massSubmitPlanItems($render=2,$path="viewAllSchedules",$tags=array("All")){
         $fy = $this->choice[1];
         $new_schedules_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$_SESSION['fname'],"="),array("AND","plansschedule.approved",0,"=")));
         $new_schedules = $this->_model->getScheduleIDs($new_schedules_cond);
@@ -1886,7 +1893,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		if($rwChqNo===""){
 			$header[6]="";
 		}else{
-			$header[6]=$rwChqNo."-".$bank_code;
+			$header[6]=ltrim($rwChqNo,'0')."-".$bank_code;
 		}
 			
 		
