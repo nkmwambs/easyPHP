@@ -8,5 +8,7 @@
                 $("#osDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true}); 
                 $("#closureDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
 				$("#statementDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
+				$("#bookedFromDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
+				$("#bookedToDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
 				$(".dateSelector").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
 		});

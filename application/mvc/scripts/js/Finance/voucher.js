@@ -323,6 +323,8 @@ function postVoucher(){
                 document.getElementById('overlay').style.display='none';
                //alert(xmlhttp.responseText);
                document.getElementById('info_div').id='error_div';
+               document.getElementById('btnPostVch').style.display='none';
+               document.getElementById('btnAddRow').style.display='none';//btnAddRow
                document.getElementById('error_div').innerHTML=xmlhttp.responseText+": Reset to Submit New Record";
                //document.getElementById("content").innerHTML=xmlhttp.responseText;
                 

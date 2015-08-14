@@ -33,3 +33,47 @@ a{
     float: left;
 
 }
+#booked_maasai_one{
+	position:absolute;
+	z-index: 50;
+	left:130px;
+	top:30px;
+}
+#booked_maasai_two{
+	position:absolute;
+	z-index: 50;
+	left:340px;
+	top:30px;
+}
+#booked_gatu{
+	position:absolute;
+	z-index: 50;
+	left:700px;
+	top:30px;
+}
+#booked_abardare{
+	position:absolute;
+	z-index: 50;
+	left:570px;
+	top:180px;
+}
+
+#booked_tsavo{
+	position:absolute;
+	z-index: 50;
+	left:455px;
+	top:285px;
+}
+
+#booked_samburu{
+	position:absolute;
+	z-index: 50;
+	left:450px;
+	top:420px;
+}
+#booked_shaba{
+	position:absolute;
+	z-index: 50;
+	left:390px;
+	top:420px;
+}
