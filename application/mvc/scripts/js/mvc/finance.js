@@ -1320,4 +1320,5 @@ function delRowPlan(tableID) {
 		}
 		
 		document.getElementById('acTotal').value=delTotals;	
+		document.getElementById('btnDelRow').style.display='none';
 }
