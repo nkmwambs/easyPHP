@@ -126,6 +126,9 @@ public function userslist($render=1,$path='',$tags=array("9")){
 			
 		 //}
 		
+		//Get ICPs
+		$icps_cond = $this->_model->where(array(array("where","userlevel",'1',"=")));//,array("AND","department",'0',"=")
+		$icps = $this->_model->getAllRecords($icps_cond,"users","ORDER BY fname ASC");		
 		
 		if(Resources::session()->userlevel==='1'){
 			//ICP Population	
@@ -138,8 +141,10 @@ public function userslist($render=1,$path='',$tags=array("9")){
 			$data['icpPopulation']=$pop;
 		}
 		
+		
 		$data['date_flag']=$date_control_flag;
 		$data['rates']=$rates;
+		$data['geticps']=$icps;
 		$data['test']="";
 	 	return $data;
 	 }

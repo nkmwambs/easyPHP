@@ -83,12 +83,21 @@ class Finance_Controller extends E_Controller
 							$max_voucher['TDate']=$max_date[0]->TDate;
 							$max_voucher['VNumber']=$max_date[0]->VNumber;
 					}else{
-							$open_bc_bal_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=",array("AND","accNo","BC","="))));
-							$open_bc_bal=$this->_model->getAllRecords($open_bc_bal_cond,"cashbal");
-								$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($open_bc_bal[0]->month)))));
-								$m=date("m",strtotime('next month',strtotime($open_bc_bal[0]->month)));
-								$max_voucher['TDate']=	$open_bc_bal[0]->month;
-								$max_voucher['VNumber']=$fy.$m."00";				
+								
+						$open_bc_bal_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=",array("AND","accNo","BC","="))));
+						$open_bc_bal=$this->_model->getAllRecords($open_bc_bal_cond,"cashbal");
+						if(empty($open_bc_bal)){
+							//$fy_begin_date = '2015-06-30';
+							$data['error']="<div id='error_div'>Missing Opening Funds Balances!</div>";
+						}else{
+							$fy_begin_date = $open_bc_bal[0]->month;
+							$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($fy_begin_date)))));
+								$m=date("m",strtotime('next month',strtotime($fy_begin_date)));
+								$max_voucher['TDate']=	$fy_begin_date;//$open_bc_bal[0]->month;
+								$max_voucher['VNumber']=$fy.$m."00";
+						}	
+								//$fy_begin_date = '2015-06-30';
+												
 					}
 					
                     $mth = date('m');
@@ -2011,10 +2020,10 @@ public function getExpAccounts(){
 public function addFundBal(){
 
 	$day = date("j",strtotime($_POST['closureDate']));
-	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","allowEdit","1","=")));
+	$cond = $this->_model->where(array(array("where","icpNo",$_POST['icpNo'],"="),array("AND","allowEdit","1","=")));
 	$qry = $this->_model->getAllRecords($cond,"opfundsbalheader");
 	
-	$cond_two = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+	$cond_two = $this->_model->where(array(array("where","icpNo",$_POST['icpNo'],"=")));
 	$qry_two = $this->_model->getAllRecords($cond_two,"opfundsbalheader");
 		
 	if(count($qry)===0&&count($qry_two)>0){
@@ -2024,10 +2033,10 @@ public function addFundBal(){
 		//	print("Choose the last day of the month as the close date.");
 		//}else{
 		    $header_arr['closureDate']=$_POST['closureDate'];
-		    $header_arr['icpNo']=$_SESSION['fname'];
+		    $header_arr['icpNo']=$_POST['icpNo'];
 		    $header_arr['totalBal']=$_POST['totalBal'];
 		    $header_arr['systemOpening']="1";
-		    $bal_chk_cond = $this->_model->where(array(array("where","icpNo",$_SESSION['fname'],"="),array("AND","systemOpening","1","=")));
+		    $bal_chk_cond = $this->_model->where(array(array("where","icpNo",$_POST['icpNo'],"="),array("AND","systemOpening","1","=")));
 		    $bal_chk = $this->_model->getAllRecords($bal_chk_cond,"opfundsbalheader");
 		 
 		    if(count($bal_chk)>0){
@@ -2036,11 +2045,12 @@ public function addFundBal(){
 		        $this->_model->deleteQuery($bal_chk_cond,"opfundsbalheader");
 		        $this->_model->deleteQuery($id_cond,"opfundsbal");
 		    }
+		    $cur_icp_num=array_shift($_POST);
 		    array_shift($_POST);
-		    array_shift($_POST);
+			array_shift($_POST);
 		    $this->_model->insertRecord($header_arr,"opfundsbalheader");
 		    
-		    $new_bal_chk_cond = $this->_model->where(array(array("where","icpNo",$_SESSION['fname'],"=")));
+		    $new_bal_chk_cond = $this->_model->where(array(array("where","icpNo",$cur_icp_num,"=")));
 		    $new_bal_chk = $this->_model->getAllRecords($new_bal_chk_cond,"opfundsbalheader");
 		    $curID = $new_bal_chk[0]->balHdID;
 		
@@ -2087,9 +2097,20 @@ public function addOustChqBf(){
     
 }
 public function viewBal($render=2,$path="",$tags=array("All")){
-	$cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"=")));
+	$data=array();
+	$cond = "";//$this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"=")));
 	$qry = $this->_model->viewFundsBal($cond);
-	return $qry;
+	
+	//ICP
+	$icp_arr=array();
+	foreach ($qry as $value) {
+		$icp_arr[$value->icpNo][]=$value;
+	}
+	
+	$data['allBal']=$qry;
+	$data['mixed_arr']=$icp_arr;
+	
+	return $data;
 }
 public function cashBalBf($render=1,$path="",$tags=array("1")){   
       

@@ -4,7 +4,13 @@ if(is_array($data)){
 }else{
 	print($data['test']);
 }
+
+if(isset($data['error'])){
+	echo $data['error'];
+	exit;
+}
 ?>
+
 
 <button id="btnAddRow" onclick="addRow('bodyTable');">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
 <br><br><div id='info_div'></div>

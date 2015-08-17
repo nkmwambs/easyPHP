@@ -1172,6 +1172,10 @@ function viewBal(){
       xmlhttp.send();
 }
 
+function hideViewBal(){
+	document.getElementById('balView').innerHTML='';
+}
+
 function addCash(frmid){
 	 var frm = document.getElementById(frmid);  
    //frm.submit();

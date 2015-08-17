@@ -9,33 +9,69 @@ private $_model;
     public function userRegister($render=1,$path="",$tags=array("All")) {
 			//print_r($_POST);  
 			$rst = $this->_model->getAllRecords("","securityqueries");
-			return $rst;        
+			
+			$icp_cond='';
+			$clst_cond='';
+			if(Resources::session()->userlevel==='2'){
+				$icp_cond = $this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel",1,"=")));
+				$clst_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"=")));
+			}
+			$clst = $this->_model->getAllRecords($clst_cond,"users","GROUP BY cname");
+			$icps = $this->_model->getAllRecords($icp_cond,"users");
+			
+			$data=array();
+			
+			$data['secQtn']=$rst;
+			$data['icps']=$icps;
+			$data['clst']=$clst;
+			return $data;        
         }
 
-    public function submitUser(){
+    public function submitUsers(){
 
-            array_pop($_POST);
-			$arr = $_POST;
-            $cond = $this->_model->where(array(array("where","username",$_POST['username'],"="),array("AND","email",$_POST['email'],"=")));
+            //array_pop($_POST);
+			$arr = array();
+            $cond = $this->_model->where(array(array("where","username",$_POST['username'],"=")));
             $rst = $this->_model->getAllRecords($cond,"users");
-			//print_r($_POST);
 		    if(count($rst)===0){
-                $_POST['admin']='0';
-				$_POST['cname']=Resources::session()->cname;
-				$_POST['userlevel']='1';
-				$_POST['delegated_role']='0';
-				$_POST['auth']='1';
-				$_POST['log_after_register']='0';
-				$_POST['securityQstnID']='0';
-				$_POST['qAns']='0';
+		    	$arr['username']=$_POST['username'];	
+				$arr['userfirstname']=$_POST['userfirstname'];
+				$arr['userlastname']=$_POST['userlastname'];
+				$arr['fname']=$_POST['fname'];
+				$arr['lname']=$_POST['fname'];
+				$arr['cname']=$_POST['cname'];
+				$arr['email']=$_POST['email'];
+				$arr['password']=$_POST['password'];
+				$arr['admin']=0;
+				$arr['userlevel']=1;
+				$arr['delegated_role']=0;
+				$arr['department']=$_POST['department'];
+				$arr['auth']=1;
+				$arr['logs_after_register']=0;
+				$arr['securityQstnID']=$_POST['securityQstnID'];
+				$arr['qAns']=$_POST['qAns'];
+				$arr['reffererID']=Resources::session()->ID;
+					
+		    	
+		    	//$_POST['lname']=$_POST['fname'];
+               // $_POST['admin']='0';
+				//$_POST['delegated_role']='0';
+			//	$_POST['log_after_register']='0';
 				//$_POST['reffererID']=Resources::session()->ID;
-               //echo $this->_model->insertRecord($arr,"users");
+               	echo $this->_model->insertRecord($_POST,"users");
                print_r($_POST);
             }  else {
-                echo "The username {$_POST['username']} or email {$_POST['uname']} is already used!";
+                echo "The username {$_POST['username']} is already used!";
             }
 		    
         }
+	public function getICPs(){
+		$clst = $this->choice[1];
+		//echo $clst;
+		$icps_cond = $this->_model->where(array(array("where","cname",$clst,"="),array("AND","userlevel",1,"=")));
+		$icps_arr = $this->_model->getAllRecords($icps_cond,"users");
+		echo  json_encode($icps_arr);
+	}
     public function changePwd(){
             //print_r($_POST);
         $encrypt_pwd = md5($_POST['oldPassword']);

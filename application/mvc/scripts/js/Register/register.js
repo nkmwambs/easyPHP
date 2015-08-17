@@ -5,7 +5,7 @@ var path = 'http://'+location.hostname+'/easyPHP/';
                   } else { // code for IE6, IE5
                 var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
-function submitUser(frmid){
+function submitUsers(frmid){
     var frm = document.getElementById(frmid);
     var frmData = new FormData(frm);
     xmlhttp.onreadystatechange=function() {
@@ -21,6 +21,7 @@ function submitUser(frmid){
                 for(var i=0;i<inputs.length;i++){
                     inputs.item(i).value="";
                 }
+                location.reload();
             }
         };
         var cnt=0;
@@ -31,7 +32,7 @@ function submitUser(frmid){
         }else if(passmatch===0){
             document.getElementById('register_error').innerHTML= "Cannot submit, Passwords are not matching";
         }else{
-         xmlhttp.open("POST",path+"/mvc/Register/submitUser/public/1",true);
+         xmlhttp.open("POST",path+"/mvc/Register/submitUsers/public/1",true);
          xmlhttp.send(frmData);
      }
 }
@@ -143,4 +144,24 @@ function changePwd(frmid){
     }
 }
  
+ function listIcps(elem){
+ 	var clst = elem.value;
+ 	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                    //alert(xmlhttp.responseText);
+                    var obj = JSON.parse(xmlhttp.responseText);
+
+                    for(var i=0;obj.length;i++){
+                    		var opt=document.createElement("OPTION");
+                    		opt.innerHTML=obj[i].fname;
+                    		document.getElementById('icp').appendChild(opt);
+                    }
+                    
+          }
+        };
+
+      xmlhttp.open("GET",path+"mvc/Register/getICPs/clst/"+clst,true);      
+      xmlhttp.send();
+ }
 

@@ -123,12 +123,12 @@ function ppbfCalc(lvl){
         var tbl = document.getElementById("ppbfPfView");
             for(var i=0;i<tbl.rows.length;i++){
                 tbl.rows[i].cells[0].style.display='none';
-                if(tbl.rows[i].cells[1].innerHTML==="1"){tbl.rows[i].cells[1].innerHTML="Annual"}
-                if(tbl.rows[i].cells[1].innerHTML==="2"){tbl.rows[i].cells[1].innerHTML="Supplementary"}
-                if(tbl.rows[i].cells[4].innerHTML==="0"&&lvl===2){tbl.rows[i].cells[4].innerHTML="<button  style='background-color:red;'  onclick='ppbfApproval("+tbl.rows[i].cells[0].innerHTML+",1,this);'>Approve</button>"}
-                if(tbl.rows[i].cells[4].innerHTML==="1"&&lvl===2){tbl.rows[i].cells[4].innerHTML="<button onclick='ppbfApproval("+tbl.rows[i].cells[0].innerHTML+",0,this);'>UnApprove</button>"}
-                if(tbl.rows[i].cells[4].innerHTML==="0"&&lvl===3){tbl.rows[i].cells[4].innerHTML="<button  style='background-color:red;'>Approve</button>"}
-                if(tbl.rows[i].cells[4].innerHTML==="1"&&lvl===3){tbl.rows[i].cells[4].innerHTML="<button>UnApprove</button>"}
+                if(tbl.rows[i].cells[1].innerHTML==="1"){tbl.rows[i].cells[1].innerHTML="Annual";}
+                if(tbl.rows[i].cells[1].innerHTML==="2"){tbl.rows[i].cells[1].innerHTML="Supplementary";}
+                if(tbl.rows[i].cells[4].innerHTML==="0"&&lvl===2){tbl.rows[i].cells[4].innerHTML="<button  style='background-color:red;'  onclick='ppbfApproval("+tbl.rows[i].cells[0].innerHTML+",1,this);'>Approve</button>";}
+                if(tbl.rows[i].cells[4].innerHTML==="1"&&lvl===2){tbl.rows[i].cells[4].innerHTML="<button onclick='ppbfApproval("+tbl.rows[i].cells[0].innerHTML+",0,this);'>UnApprove</button>";}
+                if(tbl.rows[i].cells[4].innerHTML==="0"&&lvl===3){tbl.rows[i].cells[4].innerHTML="<button  style='background-color:red;'>Approve</button>";}
+                if(tbl.rows[i].cells[4].innerHTML==="1"&&lvl===3){tbl.rows[i].cells[4].innerHTML="<button>UnApprove</button>";}
             }
             var btn = document.getElementsByTagName("button");
             for(var j=0;j<btn.length;j++){
