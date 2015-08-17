@@ -17,6 +17,15 @@ public $_model;
 	public function offline($render=1,$path='',$tags=array("0","All")){
 		
 	}
+public function updateLogs(){
+	$log_calc=0;
+	$log_cond = $this->_model->where(array(array("where","username",Resources::session()->username,"=")));
+	$logs = $this->_model->getAllRecords($log_cond,"users");
+	$log_calc=$logs[0]->logs_after_register+1;
+	
+	$log_set = array("logs_after_register"=>$log_calc);
+	$this->_model->updateQuery($log_set,$log_cond,"users");
+}
 public function show(){
 		$siteOff_cond = $this->_model->where(array(array("where","info","offline","=")));
 		$siteOff_arr = $this->_model->getAllRecords($siteOff_cond,"extras");
@@ -46,8 +55,14 @@ public function show(){
 			        }
 					
 					if((count($offline_arr)>0&&Resources::session()->admin==='1')||(count($offline_arr)===0)){
-						$path='show';
 						$render=1;
+						if(Resources::session()->logs_after_register==='0'&&$data['return']===""){
+							$path='passReset';	
+						}else{
+							$path='show';
+							$this->updateLogs();
+						}
+						
 					}else{
 						$path='offline';
 						$render=2;
@@ -67,11 +82,32 @@ public function show(){
 public function logging() {
 
 }
+public function newPassReset(){
+           // $pwd=  md5($_POST['password']);
+            $sets = array('password'=>$_POST['password']);
+            $newPwd_cond = $this->_model->where(array(array("where","username",Resources::session()->username,"=")));//"where"=>array("ID",$_SESSION['ID'],"=")
+            $newPwd_rst = $this->_model->updateQuery($sets,$newPwd_cond,"users");
+            if($newPwd_rst===1){
+            	$sets_log = array("logs_after_register"=>1);
+            	$this->_model->updateQuery($sets_log,$newPwd_cond,"users");
+				
+				$getPost=array();
+				$getPost['userID']=Resources::session()->ID;
+				$getPost['pwd']=$_POST['password'];
+				$getPost['changedBy']=Resources::session()->username;
+				
+				$this->_model->insertRecord($getPost,"pwdbackup");
+				
+				echo "Password Reset Successful!";
+            }else{
+            	echo "Error Occurred!";
+            }
+}
 public function login($render=1,$path='',$tags=array("0")){
-	
+	users::unset_log_sessions();
 }
     
-    public function logout($render=1,$path="show",$tags=array("0")){
+public function logout($render=1,$path="show",$tags=array("0")){
 		users::unset_log_sessions();
 		$siteOff_cond = $this->_model->where(array(array("where","info","offline","=")));
 		$siteOff_arr = $this->_model->getAllRecords($siteOff_cond,"extras");
@@ -82,11 +118,11 @@ public function login($render=1,$path='',$tags=array("0")){
 		return $data;
 }
 
-    public function profile($render=1){
+public function profile($render=1){
          
     }
 	
-    function newRecent(){
+public function newRecent(){
         $record['itemTitle']=  $this->choice[1];
         $record['url']=  $directory = str_replace("_", "/", $this->choice[3]);
         $record['userid']=  $this->choice[5];
@@ -99,11 +135,10 @@ public function login($render=1,$path='',$tags=array("0")){
         if(substr_count($this->choice[7],".")>0&&substr_count($this->choice[7],"png")>0){
             $this->_model->insertRecord($record,"recent");
         }
-        
-        
+  
     }
-    public function switchUser($render=1,$path="",$tags=array("All")){
-			
+
+public function switchUser($render=1,$path="",$tags=array("All")){	
             if(!isset($_POST)){
                  $cond = $this->model->where(array(array("where","username",$this->choice[1],"=")));
             }else{
@@ -118,13 +153,10 @@ public function login($render=1,$path='',$tags=array("0")){
                             endforeach;
                     }
 
-                    return $_SESSION['fname'];
-
-            
-                     
+                    return $_SESSION['fname'];                     
     }
     
-    public function searchUser(){
+public function searchUser(){
         $_SESSION['search_user'] =  $this->choice[1];
         $username = $_SESSION['search_user'];
         $search=  $this->_model->searchUsers($username);

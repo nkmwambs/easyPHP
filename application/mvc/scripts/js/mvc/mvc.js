@@ -169,3 +169,34 @@ function login(){
          xmlhttp.send(frmData);
 }
 
+ function newPassReset(frmid){
+ 	var pass1 =  document.getElementById('password').value;
+ 	var pass2 =  document.getElementById('rptPassword').value;
+ 	
+ 	
+ 	
+    var frm = document.getElementById(frmid);
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+                //document.write(xmlhttp.responseText);
+                document.getElementById('coverUp').style.display='none';
+                           
+
+            }
+        };
+    if(pass1!==pass2){
+ 		alert("Password and Password Repeat Must be the same");
+ 		//exit();
+ 	}else{                                           
+         xmlhttp.open("POST",path+"/mvc/Welcome/newPassReset",true);
+         xmlhttp.send(frmData);   
+     }  
+}
+
