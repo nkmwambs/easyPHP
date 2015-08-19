@@ -380,6 +380,26 @@ function inactivateCase(cid){
       	xmlhttp.open("GET",path+"mvc/Reports/inactivateCase/cid/"+cid,true);      
         xmlhttp.send();
 }
+function stateSort(){
+	var state = document.getElementById('stateSort').value;
+	//alert(state);
+			xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.getElementById("rptsDiv").innerHTML=xmlhttp.responseText;
+				//location.reload();
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("GET",path+"mvc/Reports/manageHvc/state/"+state,true);      
+        xmlhttp.send();
+}
 function isInt(value) {
   return !isNaN(value) && 
          parseInt(Number(value)) == value && 

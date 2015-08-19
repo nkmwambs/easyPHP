@@ -206,10 +206,17 @@ class Reports_Controller extends E_Controller
 	public function manageHvc($render=1,$path="",$tags=array("All")){
 		$data=array();
 		$cases_cond='';
+		$active="";
+		if(isset($this->choice[1])){
+			$active=$this->choice[1];
+		}else{
+			$active=1;
+		}
+		
 		if(Resources::session()->userlevel==='1'){
-			$cases_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"=")));
+			$cases_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"="),array("AND","active",$active,"=")));
 		}elseif(Resources::session()->userlevel==='2'){
-			$cases_cond = $this->_model->where(array(array("where","cst",Resources::session()->cname,"=")));
+			$cases_cond = $this->_model->where(array(array("where","cst",Resources::session()->cname,"="),array("AND","active",$active,"=")));
 		}else{
 			$cases_cond='';
 		}
