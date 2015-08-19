@@ -36,6 +36,7 @@ public function show(){
 		$offline_arr = $this->model->getAllRecords($offline_cond,"extras");
 		
 		//print_r($offline_arr);
+		$msg='';
 		$render="";
 		$path="";
 		$data['return']="";
@@ -72,10 +73,10 @@ public function show(){
 		}else{
 					$render=1;
 					$path="show";
-					$data='';
+					$data['return']='';
 		}
 		
-		$this->dispatch($render,$path,$data,$tags=array("0","All"));
+		$this->dispatch($render,$path,$data['return'],$tags=array("0","All"));
          
     }
 	
