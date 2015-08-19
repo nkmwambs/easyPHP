@@ -87,17 +87,15 @@ class Finance_Controller extends E_Controller
 						$open_bc_bal_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=",array("AND","accNo","BC","="))));
 						$open_bc_bal=$this->_model->getAllRecords($open_bc_bal_cond,"cashbal");
 						if(empty($open_bc_bal)){
-							//$fy_begin_date = '2015-06-30';
-							$data['error']="<div id='error_div'>Missing Opening Funds Balances!</div>";
+							$fy_begin_date = '2015-06-30';
 						}else{
 							$fy_begin_date = $open_bc_bal[0]->month;
-							$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($fy_begin_date)))));
-								$m=date("m",strtotime('next month',strtotime($fy_begin_date)));
-								$max_voucher['TDate']=	$fy_begin_date;//$open_bc_bal[0]->month;
-								$max_voucher['VNumber']=$fy.$m."00";
 						}	
 								//$fy_begin_date = '2015-06-30';
-												
+								$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($fy_begin_date)))));
+								$m=date("m",strtotime('next month',strtotime($fy_begin_date)));
+								$max_voucher['TDate']=	$fy_begin_date;//$open_bc_bal[0]->month;
+								$max_voucher['VNumber']=$fy.$m."00";				
 					}
 					
                     $mth = date('m');
@@ -1919,6 +1917,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
         
         $qry_array['totals']=  str_replace(",","",$qry_array['totals']);
 		echo $this->_model->insertRecord($qry_array,"voucher_header");
+		
+		 
         //print_r($qry_array);
         
         $hID_cond=$this->_model->where(array(array("where","VNumber",$qry_array['VNumber'],"="),array("AND","icpNo",$qry_array['icpNo'],"=")));
@@ -1949,7 +1949,27 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		            //$mth = date('m');
                     //$icp = $_SESSION['username'];
                     //return $data = $this->_model->getMonthByNumber($mth,$icp);
-        
+                    
+        //Mail Voucher to PF
+		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel",2,"=")));
+		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users");
+		$pf_email = $pf_email_arr[0]->email;
+		
+		//Mail Body
+		$body = "<b>Voucher Number:</b>".$qry_array['VNumber']."<br>";
+		$body.= "<b>Total Amount:</b>".$qry_array['totals']."<br>";
+		$body.="<b>Voucher Type:</b>".$qry_array['VType']."<br>";
+		$body.="<b>Description:</b>".$qry_array['TDescription']."<br>";
+		$body.="<b>Posting Date and Time:</b>".date('Y-m-d H:i:s',strtotime('+9 hours',$qry_array['unixStmp']))."<br>";
+		$body.="<b>Transaction Date:</b>".$qry_array['TDate']."<br>";
+		$body.="<b>Posted By:</b>".Resources::session()->username."<br>";
+		
+		
+		//Mail Header
+		
+		$title = $qry_array['icpNo']." Voucher Posting: V# ".$qry_array['VNumber'];
+		
+		Resources::mailing($pf_email, Resources::session()->email, $title, $body); 
 		
     }
     public function showVoucher($render=1,$path="",$tags=array("All")){       

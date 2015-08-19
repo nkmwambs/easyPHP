@@ -38,9 +38,12 @@ public static function mailing($mailto,$mailfrom,$subject,$msg){
 
  	// use wordwrap() if lines are longer than 70 characters
  	$msg = wordwrap($msg,70);
-
+	//Headers
+	$headers = "MIME-Version: 1.0"."\r\n";
+	$headers .= "Content-Type: text/html; charset=ISO-8859-1"."\r\n"; 
+	$headers .= "From: admin@compassionkenya.com";
  	// send email
- 	mail($mailto,$subject,$msg,$mailfrom);
+ 	mail($mailto,$subject,$msg,$headers);
 }	 
 public static function ie_detect()
 {

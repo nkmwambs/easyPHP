@@ -153,9 +153,82 @@ class Reports_Controller extends E_Controller
     
         
     public function hvcIndexing($render=1,$path="",$tags=array("All")){
-        $data = "Annual HVC Indexing Form!";
+        //$data = "Annual HVC Indexing Form!";
+        $data = array();
+		//Get ICP Cluster
+		$clst_cond = $this->_model->where(array(array("where","fname",Resources::session()->fname,"=")));
+		$clst_arr = $this->_model->getAllRecords($clst_cond,"users");
+		$clst = $clst_arr[0]->cname;
+		$icp = $clst_arr[0]->fname;
+		
+		//Vulnerabilities
+		$vul_arr = $this->_model->getAllRecords("","vulnerability");
+		
+		//intervention
+		$int_arr = $this->_model->getAllRecords("","intervention");
+		
+		//non_hvc_int
+		$otherInt_arr = $this->_model->getAllRecords("","non_hvc_int");
+		
+		
+		$data['clst']=$clst;
+		$data['icp']=$icp;
+		$data['vul']=$vul_arr;
+		$data['int']=$int_arr;
+		$data['otherInt']=$otherInt_arr;
+		
+		$data['test']="";
 		return $data;
     }
+	public function submitHvcIndex(){
+		//print_r($_POST);
+		$vul = implode(",", $_POST['vul']);
+		$intervene = implode(",", $_POST['intervene']);
+		$othSup = implode(",", $_POST['othSup']);
+		
+		$_POST['vul']= $vul;
+		$_POST['intervene']=$intervene;
+		$_POST['othSup']=$othSup;
+		
+		$arr = $_POST;
+		//print_r($_POST);
+		
+		//Count duplicated
+		$duplicate_cond = $this->_model->where(array(array("where","childNo",$_POST['childNo'],"=")));
+		$duplicate_arr = $this->_model->getAllRecords($duplicate_cond,"indexing");
+		
+		if(!empty($duplicate_arr)){
+			echo "You are posting a duplicate record. A beneficiary can only be re-indexed after a period not less than one Year";
+		}else{
+		echo $this->_model->insertRecord($arr,"indexing");
+		}
+	}
+	public function manageHvc($render=1,$path="",$tags=array("All")){
+		$data=array();
+		$cases_cond='';
+		if(Resources::session()->userlevel==='1'){
+			$cases_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"=")));
+		}elseif(Resources::session()->userlevel==='2'){
+			$cases_cond = $this->_model->where(array(array("where","cst",Resources::session()->cname,"=")));
+		}else{
+			$cases_cond='';
+		}
+		
+		//All HVC Cases
+		$cases_arr = $this->_model->getAllRecords($cases_cond,"indexing");
+		
+		$data['allCases']=$cases_arr;
+		
+		$data['test']="";
+		
+		return $data;
+	}
+	public function inactivateCase(){
+		$cid = $this->choice[1];
+		$inactivate_cond = $this->_model->where(array(array("where","indID",$cid,"=")));
+		$sets = array("active"=>0);
+		echo $this->_model->updateQuery($sets,$inactivate_cond,"indexing");
+	}
 	public function newQuery(){
 		//print_r($_POST);
 		$data['qryName']=$_POST['qryName'];

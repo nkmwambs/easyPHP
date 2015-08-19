@@ -291,6 +291,124 @@ function getMthsforQtr(){
  	}
 
 }
-//function see(elem){
+function submitHvcIndex(){
+	//alert("Hello");
+	var frm = document.getElementById('indexing');  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+				//document.write(xmlhttp.responseText);
+				location.reload();
+                }
+            
+        };
+var validate = document.getElementsByClassName('validate');
+
+var cnt=0;
+for(var k=0;k<validate.length;k++){
+	if(validate.item(k).value===""){
+		cnt++;
+		validate.item(k).style.backgroundColor='red';
+	}
+}        
+
+if(cnt!==0){
+	alert(cnt +" mandatory fields are empty!");
+	exit;
+}
+        
+var cnf = confirm("Are you sure you want to submit this record!");
+
+if(!cnf){
+	alert("Record not submitted!");
+}else{                                 
+         xmlhttp.open("POST",path+"/mvc/Reports/submitHvcIndex/public/0",true);
+         xmlhttp.send(frmData);
+}
+}
+
+function changeClr(id){
+                  document.getElementById(id).style.backgroundColor='white';
+                  document.getElementById("childName").style.backgroundColor='white';
+                  document.getElementById("childDOB").style.backgroundColor='white';
+                  document.getElementById("childAge").style.backgroundColor='white';
+                  document.getElementById("childSex").style.backgroundColor='white';
+              }
+function monthDiff(firstDate, secondDate) {
+        var fm = firstDate.getMonth();
+        var fy = firstDate.getFullYear();
+        var sm = secondDate.getMonth();
+        var sy = secondDate.getFullYear();
+        var months = Math.abs(((fy - sy) * 12) + fm - sm);
+        var firstBefore = firstDate > secondDate;
+        firstDate.setFullYear(sy);
+        firstDate.setMonth(sm);
+        firstBefore ? firstDate < secondDate ? months-- : "" : secondDate < firstDate ? months-- : "";
+        return months;
+}            
+function calcAge(elem){
+	var date2=new Date(elem.value);
+	var date1=new Date();
+	var noOfmonths	= monthDiff(date1,date2);
+	
+	var years=parseInt(noOfmonths)/12;
+	
+	document.getElementById('childAge').value=years.toFixed(2);
+}
+function inactivateCase(cid){
+	//alert(cid);	
+		//var period = document.getElementById('showQtr').value;
+	//var mth = document.getElementById('showMnth').value;
+		xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.getElementById("rptsDiv").innerHTML=xmlhttp.responseText;
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("GET",path+"mvc/Reports/inactivateCase/cid/"+cid,true);      
+        xmlhttp.send();
+}
+function isInt(value) {
+  return !isNaN(value) && 
+         parseInt(Number(value)) == value && 
+         !isNaN(parseInt(value, 10));
+}
+function completeChildNo(elem){
 	//alert(elem.value);
-//}
+	var icp = document.getElementById('pNo').value;
+	var cnum = elem.value;
+	if(isNaN(parseInt(cnum))){
+		alert("Enter numeric values only!");
+		document.getElementById('childNo').value="";
+		document.getElementById('childNo').style.backgroundColor='red';
+		exit;
+	}
+	if(cnum.length>4){
+		alert("Enter only the child number without the ICP Number prefix");
+		document.getElementById('childNo').value="";
+		document.getElementById('childNo').style.backgroundColor='red';
+		exit;
+	}
+	
+	if(cnum.length===1){
+		document.getElementById('childNo').value=icp+"000"+cnum;
+	}else if(cnum.length===2){
+		document.getElementById('childNo').value=icp+"00"+cnum;
+	}else if(cnum.length===3){
+		document.getElementById('childNo').value=icp+"0"+cnum;
+	}else{
+		document.getElementById('childNo').value=icp+cnum;
+	}
+}
