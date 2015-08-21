@@ -34,7 +34,7 @@ public static function includes($path,$separator="."){
 		require_once $fPath;
 }
 
-public static function mailing($mailto,$mailfrom,$subject,$msg){
+public static function mailing($mailto,$subject,$msg){
 
  	// use wordwrap() if lines are longer than 70 characters
  	$msg = wordwrap($msg,70);
@@ -279,6 +279,14 @@ public static function render($render="1",$path="",$results=""){
 		$recent = self::menuItems();
 		$menu = $model->getAllRecords();
 		
+		$users_online_arr=array();
+		if(self::session()->ID!=='0'){
+			$users_online_cond = $model->where(array(array("where","sess_state",1,"=")));
+			$users_online_arr = $model->getAllRecords($users_online_cond,"user_sessions","ORDER BY sess_id DESC LIMIT 0,10");
+		}
+			
+		
+		
         /**
          * $menu - A multi-dimensional array with all rows of the menus table
          * This part of the function makes an array of the string found in the exception field of each row of the menu table using the explode function
@@ -398,7 +406,8 @@ public static function render($render="1",$path="",$results=""){
 				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php";
 			}
 	        if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
-				$data = $side_menu_data;
+				$data['side'] = $side_menu_data;
+				$data['users']=$users_online_arr;
 				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php";
 			}
 		}

@@ -1183,7 +1183,7 @@ function addCash(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -1200,7 +1200,8 @@ function addCash(frmid){
          xmlhttp.send(frmData);
 }
 function viewCashBal(){
-//document.getElementById('viewCashBal').innerHTML="Hello";	
+//var icpNo = document.getElementById('icpNo').value;
+//alert(icpNo);	
       xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
@@ -1212,7 +1213,7 @@ function viewCashBal(){
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Finance/viewCashBal",true);      
+      xmlhttp.open("GET",path+"mvc/Finance/viewCashBal/",true);      
       xmlhttp.send();
 }
 function viewCashStmtBal(){

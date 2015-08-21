@@ -1,5 +1,7 @@
 <?php
+if(!is_array($data)){
 print($data);
+}
 ?>
 				
                 <h5>Compassion Kenya Toolkit</h5>

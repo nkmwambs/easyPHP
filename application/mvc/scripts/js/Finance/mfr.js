@@ -26,6 +26,7 @@ function submitMfr(frmid){
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
                 alert(xmlhttp.responseText);
+                location.reload();
             }
         };
         var recon = document.getElementById("reconTxt").value;

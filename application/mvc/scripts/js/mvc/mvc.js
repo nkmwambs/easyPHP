@@ -147,6 +147,21 @@ function delRec(){
         location.reload();
     }
 }
+function showLogin(){
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('content').innerHTML=xmlhttp.responseText;
+
+            }
+        };                                          
+         xmlhttp.open("GET",path+"/mvc/Welcome/Login",true);
+         xmlhttp.send(); 
+}
 
 function login(){
 	//alert("Hello");
@@ -180,10 +195,11 @@ function login(){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loadingmin.gif"/>';
 
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            	document.getElementById('overlay').style.display='none';
                 alert(xmlhttp.responseText);
                 //document.write(xmlhttp.responseText);
                 document.getElementById('coverUp').style.display='none';
@@ -191,12 +207,29 @@ function login(){
 
             }
         };
-    if(pass1!==pass2){
- 		alert("Password and Password Repeat Must be the same");
+    if(pass1!==pass2||pass1===""||pass2===""){
+ 		alert("Password and Password Repeat Must be the same and not empty");
  		//exit();
  	}else{                                           
          xmlhttp.open("POST",path+"/mvc/Welcome/newPassReset",true);
          xmlhttp.send(frmData);   
      }  
 }
+
+function forgotPassReset(frmid){
+	//alert(frmid);
+	document.getElementById('msg').innerHTML="";
+	var frm = document.getElementById(frmid);
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+           
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('msg').innerHTML=xmlhttp.responseText;
+
+            }
+        };                                          
+         xmlhttp.open("POST",path+"/mvc/Welcome/forgotPassReset",true);
+         xmlhttp.send(frmData);   
+}
+
 

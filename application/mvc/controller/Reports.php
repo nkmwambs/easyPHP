@@ -152,9 +152,10 @@ class Reports_Controller extends E_Controller
     }
     
         
-    public function hvcIndexing($render=1,$path="",$tags=array("All")){
+    public function hvcIndexing(){
         //$data = "Annual HVC Indexing Form!";
         $data = array();
+		$path='';
 		//Get ICP Cluster
 		$clst_cond = $this->_model->where(array(array("where","fname",Resources::session()->fname,"=")));
 		$clst_arr = $this->_model->getAllRecords($clst_cond,"users");
@@ -178,7 +179,15 @@ class Reports_Controller extends E_Controller
 		$data['otherInt']=$otherInt_arr;
 		
 		$data['test']="";
-		return $data;
+		//return $data;
+		if(Resources::session()->userlevel==='1'){
+			$path='';
+		}else{
+			$data = $this->manageHvc();
+			$path="manageHvc";
+		}
+		
+		$this->dispatch($render=1,$path, $data,$tags=array("All"));
     }
 	public function submitHvcIndex(){
 		//print_r($_POST);
@@ -206,17 +215,29 @@ class Reports_Controller extends E_Controller
 	public function manageHvc($render=1,$path="",$tags=array("All")){
 		$data=array();
 		$cases_cond='';
-		$active="";
-		if(isset($this->choice[1])){
+		$active=1;
+		$icpNo=Resources::session()->fname;
+		$cst=Resources::session()->cname;
+		
+		if(isset($this->choice[1])&&$this->choice[0]==='state'){
 			$active=$this->choice[1];
-		}else{
-			$active=1;
 		}
 		
-		if(Resources::session()->userlevel==='1'){
-			$cases_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"="),array("AND","active",$active,"=")));
-		}elseif(Resources::session()->userlevel==='2'){
-			$cases_cond = $this->_model->where(array(array("where","cst",Resources::session()->cname,"="),array("AND","active",$active,"=")));
+		if(isset($this->choice[3])){
+			$icpNo=$this->choice[3];
+			$data['setPF']=1;	
+			$data['icpNo']=$icpNo;
+		}
+		
+		if(isset($this->choice[1])&&$this->choice[0]==='cst'){
+			$cst=str_replace("_","-",$this->choice[1]);
+			$data['setOther']=1;
+		}
+		
+		if(Resources::session()->userlevel==='1'||isset($data['setPF'])){
+			$cases_cond = $this->_model->where(array(array("where","pNo",$icpNo,"="),array("AND","active",$active,"=")));
+		}elseif(Resources::session()->userlevel==='2'||isset($data['setOther'])){
+			$cases_cond = $this->_model->where(array(array("where","cst",$cst,"="),array("AND","active",$active,"=")));
 		}else{
 			$cases_cond='';
 		}
@@ -224,12 +245,29 @@ class Reports_Controller extends E_Controller
 		//All HVC Cases
 		$cases_arr = $this->_model->getAllRecords($cases_cond,"indexing");
 		
+		//ICP with Indexed Beneficiaries
+		$icp_arr = array();
+		foreach ($cases_arr as $value) {
+			$icp_arr[$value->pNo][]=$value;
+		}
+		
+		//Clusters With Indexed Beneficiaries
+		$clst_arr = array();
+		foreach ($cases_arr as $value) {
+			$clst_arr[$value->cst][$value->pNo][]=$value;
+			
+		}
+		
+		
 		$data['allCases']=$cases_arr;
+		$data['caseGrpByIcp']=$icp_arr;
+		$data['caseGrpByCst']=$clst_arr;
 		
 		$data['test']="";
 		
 		return $data;
 	}
+
 	public function inactivateCase(){
 		$cid = $this->choice[1];
 		$inactivate_cond = $this->_model->where(array(array("where","indID",$cid,"=")));

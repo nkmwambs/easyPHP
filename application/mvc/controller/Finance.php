@@ -975,7 +975,11 @@ class Finance_Controller extends E_Controller
 			foreach ($accs as $value) {
 				$sum_bud_to_date+=$value['BudToDate'];
 			}
-		$obv=($sum_var/$sum_bud_to_date)*100;
+		$obv=0;
+		if($sum_bud_to_date!==0){
+			$obv=($sum_var/$sum_bud_to_date)*100;	
+		}	
+		
 		
 		//Calculate Survival Ratio
 		$sum_500_inc=0;
@@ -1103,7 +1107,9 @@ class Finance_Controller extends E_Controller
 			
 		}
 				
-		
+		//Get Bank Statement File Name
+		$getBs = $this->_model->getAllRecords($bs_date_check_cond,"bssubmitted");
+				//$data['getBs']=$getBs;
 		
 				
 		
@@ -1124,6 +1130,7 @@ class Finance_Controller extends E_Controller
 		$data['statementAmount']=$statementAmount;
 		$data['varJustify']=$varJustify;
 		$data['time']=time();
+		$data['getBs']=$getBs;
 		$data['test']="";
 		
 		
@@ -1617,6 +1624,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		$state=0;
 		$mfrClosureFundsID=0;
 		$sysOpen=0;
+		$closureMonth='';
 		if(empty($chk_state)){
             	$state = 0;
          }elseif($chk_state[0]->allowEdit==='1'){
@@ -1643,11 +1651,11 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			$statementAmount=$bs_date_check[0]->amount;
 			
 		}
-				
-
 		
+		//Get Bank Statement File Name
+		$getBs = $this->_model->getAllRecords($bs_date_check_cond,"bssubmitted");
+				//$data['getBs']=$getBs;
 		
-				
 		//$data=array();
 		if($sysOpen==='0'||$cnt_close_funds<=1&&date('m',strtotime($fullDate))!==$closureMonth){
 		$data['balbf'] = $refined_balbf;
@@ -1667,11 +1675,60 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		$data['statementAmount']=$statementAmount;
 		$data['varJustify']=$varJustify;
 		$data['time']=$this->choice[1];
+		$data['getBs']=$getBs;
 		$data['test']="";
 		}		
 		
 		return $data;
     		
+    }
+
+public function attachBs($cst,$icpNo,$month,$fy,$sbDate){
+  		$cname = $cst;//filter_input(INPUT_POST,"clst");
+       	$icpNo = $icpNo;//filter_input(INPUT_POST,"pNo");
+       	$month = $month;//filter_input(INPUT_POST,"childNo");
+       	$fy = $fy;//filter_input(INPUT_POST,"rec");
+       
+       if(!is_dir(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cname)){
+        mkdir(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cname);
+        if(!is_dir(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cname.DS.$icpNo)){
+            mkdir(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cname.DS.$icpNo);
+        }
+        }elseif(!is_dir(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cname.DS.$icpNo)) {
+            mkdir(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cname.DS.$icpNo);
+        }
+       
+       $target_dir = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cname.DS.$icpNo.DS;
+       //$randNo = rand(1,99999);
+       $newfilename = $icpNo."_".$month."_".$fy;
+       $target_dir = $target_dir . $newfilename.".pdf"; 
+
+        if (move_uploaded_file($_FILES["fileBs"]["tmp_name"], $target_dir)) {
+                //echo $this->_model->uploadReceipt($randNo,$rec,$newfilename);
+                $bs_arr = array();
+                $bs_arr['bsKeys']=$newfilename;
+               	$bs_arr['icpNo']=$icpNo;
+				$bs_arr['month']=$sbDate;
+				$this->_model->insertRecord($bs_arr,"bssubmitted");
+				
+        } else {
+            $data['error']= "Upload Error!";
+        }
+}
+    public function viewBs(){
+        $bsKey = $this->choice[1].".pdf";
+        $clst= $this->choice[3];
+        $icpNo = $this->choice[5];
+        //$childno_rand = substr($rct_raw,5);
+        //$rct = $icpNo."-".$childno_rand.".pdf";
+
+        $file = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$clst.DS.$icpNo.DS.$bsKey;
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $file . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($file));
+        header('Accept-Ranges: bytes');
+        @readfile($file);
     }
     public function submitMfr(){
     	 /**
@@ -1681,8 +1738,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		 * c) Bank reconciliation is incorrect
 		 */
 		 $file=$_FILES['fileBs']['tmp_name'];
-		 $_POST['file']=$file;
-		 //print_r($_POST);
+		 //$_POST['file']=$file;
+		
 		$cond_last_mfr=$this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
 		$maxMfrDate = $this->_model->maxMfrDate($cond_last_mfr);
 		$curClosuredate=date("Y-m-t",strtotime("+1 month",strtotime($maxMfrDate)));
@@ -1690,7 +1747,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		if(strtotime($curClosuredate)>strtotime($_POST['curDate'])){
 				print("Reporting dealine is not yet!");
 		}elseif(strtotime($curClosuredate)<strtotime($_POST['curDate'])){
-				print("You have previous unsubmitted report(s)!");
+				print("You have previous unsubmitted report(s) or missing funds closing balances for the previous month!");
 		}elseif(date("d")==="06"&&!Resources::session()->userlevel_backup===1){
 				print("Submission time elapsed!");
 		}else{
@@ -1743,11 +1800,14 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 				$varianceExplain['reportMonth'][]=date("Y-m-t",strtotime($_POST['curDate']));
 			}
 			$this->_model->insertArray($varianceExplain,"varjustify");
+			$this->attachBs(Resources::session()->cname, Resources::session()->fname,date("m",strtotime($_POST['curDate'])), Resources::func("get_financial_year",array(date("Y-m-t",strtotime($_POST['curDate'])))),date("Y-m-t",strtotime($_POST['curDate'])));
 			
 			
 			print("Report submitted Successfully!");
 			
 		}
+		  
+		 
     }
     public function statements($render=1,$path="",$tags=array("1")){
             return $data = "View Bank Statements";
@@ -2103,17 +2163,13 @@ public function oustChqBf($render=1,$path="",$tags=array("1")){
 }
 public function addOustChqBf(){
     //print_r($_POST);
-    $frmData = $_POST;
-    for($i=0;$i<count($frmData['chqNo']);$i++){
-        $frmData['icpNo'][$i]=$_SESSION['fname'];
-    }
-        $chks_cond = $this->_model->where(array(array("where","icpNo",$_SESSION['fname'],"=")));
+    //$frmData = $_POST;
+        $chks_cond = $this->_model->where(array(array("where","icpNo",$_POST['icpNo'],"=")));
         $chks = $this->_model->getAllRecords($chks_cond,"oschqbf"); 
         if(count($chks)>0){
             $this->_model->deleteQuery($chks_cond,"oschqbf");
         }
-        echo $this->_model->insertArray($frmData,"oschqbf");
-    //print_r($frmData);
+        echo $this->_model->insertArray($_POST,"oschqbf");
     
 }
 public function viewBal($render=2,$path="",$tags=array("All")){
@@ -2139,7 +2195,7 @@ public function cashBalBf($render=1,$path="",$tags=array("1")){
 public function addCash(){
 	$day = date("t",strtotime($_POST['cjCashOpBal']));	
 	
-	$cond = $this->_model->where(array(array("where","month",$_POST['cjCashOpBal'],"="),array("AND","icpNo",Resources::session()->fname,"=")));
+	$cond = $this->_model->where(array(array("where","month",$_POST['cjCashOpBal'],"="),array("AND","icpNo",$_POST['icpNo'],"=")));
 	$qry = $this->_model->getAllRecords($cond,"cashbal");
 	$cnt = count($qry);
 	if($cnt===0){
@@ -2149,7 +2205,7 @@ public function addCash(){
 			$arr=array();
 			for ($i=0; $i < $size; $i++) { 
 				$arr['month'][]=$_POST['cjCashOpBal'];
-				$arr['icpNo'][]=Resources::session()->fname;
+				$arr['icpNo'][]=$_POST['icpNo'];
 				$arr['accNo'][]=$accNos[$i];
 				$arr['amount'][]=$_POST['cashBal'][$i];
 				
@@ -2189,9 +2245,9 @@ public function opRecon($render=1,$path="",$tags=array("1")){
       
 }
 
-public function viewCashBal($render=2,$path="",$tags=array("1")){
-	$cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
-	$qry = $this->_model->getAllRecords($cond,"cashbal");
+public function viewCashBal($render=2,$path="",$tags=array("All")){
+	//$cond = $this->_model->where(array(array("where","icpNo",$this->choice[1],"=")));
+	$qry = $this->_model->getAllRecords("","cashbal");
 	return $qry;
 }
 public function viewCashStmtBal($render=2,$path="",$tags=array("1")){

@@ -44,34 +44,7 @@ label{
     top:140px;
     left:120px; 
 }
-#log{
-    width: 250px;
-    height: 200px;
-    background-color: lightblue;
-    opacity: 1;
-    position:fixed;
-    top: 200px;
-    left: 570px;
-    z-index: 15;
-    padding: 8px;
-    border-radius: 10px;
-    font-weight: bold;
-    color: white;
-    box-shadow: 10px 5px 10px #888888;
-    
-}
-#log input[type=text],#log input[type=password]{
-    border-radius: 4px;
-    height: 25px;
-    padding: 0px 5px 0px 5px;
-    width: 190px;
-}
 
-#logError{
-    color: red;
-    font-size: 9pt;
-    text-align: center;
-}
 #bg{
     position: fixed;
     margin: 0;

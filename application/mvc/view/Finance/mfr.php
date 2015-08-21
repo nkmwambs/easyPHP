@@ -221,6 +221,7 @@ if($data['state']===0){
 	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file' id='fileBs' name='fileBs'/></td></tr>";
 }else{
 	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";	
+	echo "<tr><td colspan='9' style='text-align:left;'>".Resources::a_href("",$data['getBs'][0]->bsKeys)."</td></tr>";	
 }
 
 //echo "<tr><td colspan='9'>&nbsp;</td></tr>";

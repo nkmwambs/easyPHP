@@ -223,7 +223,7 @@ echo "<table class='subTbl' style='white-space:nowrap;'>";
 echo "<tr><th colspan='6'>ICP CDC FINANCIAL PERFORMANCE PARAMETERS ANALYSIS FOR MONTH</th></tr>";
 echo "<tr><th>Accum. Fund Ratio</th><th>Budget variance</th><th>Survival Ratio</th><th>Cash Balance</th><th>Operating Ratio</th><th>Reports</th></th></tr>";
 echo "<tr><th>AFC<2</th><th>OBV<=10%</th><th>SR>6</th><th>PCB<Kes. 20,000</th><th>OR<30%</th><th>R=1</th></th></tr>";
-echo "<tr><th>".number_format($data['param']['afc'],2)."</th><th>".number_format($data['param']['obv'])."%</th><th>".number_format($data['param']['sr'])."%</th><th>".number_format($data['param']['pcb'],2)."</th><th>".number_format($data['param']['or'])."%</th><th id='recon'>".number_format($data['param']['r'])."</th><input type='hidden' id='reconTxt' name='reconTxt' value='".$data['param']['r']."'/></tr>";
+echo "<tr><th>".number_format($data['param']['afc'],2)."</th><th>".number_format($data['param']['obv'])."%</th><th>".number_format($data['param']['sr'])."%</th><th>".number_format($data['param']['pcb'],2)."</th><th>".number_format($data['param']['or'])."%</th><th id='recon'>0</th><input type='hidden' id='reconTxt' name='reconTxt' value='0'/></tr>";
 echo "</table>";
 echo "</tr>";
 
@@ -231,7 +231,8 @@ echo "</tr>";
 if($data['state']===0){
 	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file' id='fileBs' name='fileBs'/></td></tr>";
 }else{
-	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";	
+	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";
+	echo "<tr><td colspan='9' style='text-align:left;'>".Resources::a_href("Finance/viewBs/bsKey/".$data['getBs'][0]->bsKeys."/clst/".Resources::session()->cname."/icp/".Resources::session()->fname,$data['getBs'][0]->bsKeys,array("target"=>'__blank'))."</td></tr>";	
 }
 
 echo "<tr><td colspan='9'>&nbsp;</td></tr>";

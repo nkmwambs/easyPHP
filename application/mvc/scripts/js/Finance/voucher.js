@@ -274,6 +274,19 @@ function validateVType(){
             }
         }
 function postVoucher(){
+		var validate = document.getElementsByClassName('validate');
+		var cntFlds =0;
+		for(var z=0;z<validate.length;z++){
+			if(validate.item(z).value===""){
+				validate.item(z).style.backgroundColor='red';
+				cntFlds++;
+			}
+		}
+		if(cntFlds>0){
+			alert("Date or Voucher Number Fields cannot be empty! Please reset the voucher if this problem persists!");
+			exit();
+		}
+		
            var x = document.forms["myform"]["Payee"];
                     var y = document.forms["myform"]["TDescription"];
                     var accs = document.getElementsByClassName("accNos");

@@ -142,6 +142,7 @@ a:active{
     border-top-right-radius: 10px;
     width:220px;
     padding-top: 0px;
+    margin-top: 30px;
 }
 #rt-bar{
     position: relative;

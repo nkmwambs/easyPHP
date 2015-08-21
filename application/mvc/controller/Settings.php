@@ -43,9 +43,20 @@ public function userslist($render=1,$path='',$tags=array("9")){
     
     //Positions Methods
     
-    public function lists($render=1,$path='',$tags=array("9")){       
-        $data = $this->_model->getAllRecords("","Positions");
-		return $data;         
+    public function lists(){
+    	$data=array();      
+		
+		if(Resources::session()->userlevel==='2'){
+			$rst=$this->showUsersList();
+			$this->dispatch($render=1,$path='showUsersList',$results=$rst,$tags=array("All"));
+		}else{
+			$all_positions = $this->_model->getAllRecords("","Positions");
+			$data['all']=$all_positions;
+			$this->dispatch($render=1,$path='',$results='',$tags=array("All"));	
+		} 
+        
+		//return $data;   
+		      
     }
     
     public function newPosition($render=1,$path='',$tags=array("9")) {
@@ -346,6 +357,67 @@ public function changeExchangeRate(){
 				//print_r($rec_body);
 		
 	}
+public function massCashBalUpload(){
+		$closureDate = $_POST['closureDate'];
+		$file = $_FILES['fundsCsv']['tmp_name'];
+		$handle = fopen($file, "r");
+				$rec=array();
+				$rec2=array();
+				$rec_body=array();
+				$recNum=0;
+
+				$this->_model->deleteQuery("","cashbal");
+				//$this->_model->deleteQuery("","opfundsbal");					
+				
+				while($data=fgetcsv($handle,1000,",","'")){
+						$rec['month']=$closureDate;
+						$rec['icpNo']=$data[0];
+						$rec['accNo']="BC";
+						$rec['amount']=$data[1];
+						
+						$rec2['month']=$closureDate;
+						$rec2['icpNo']=$data[0];
+						$rec2['accNo']="PC";
+						$rec2['amount']=$data[2];
+						
+						$this->_model->insertRecord($rec,"cashbal");
+						$this->_model->insertRecord($rec2,"cashbal");
+											
+					}
+				print_r("Upload successful!");
+				//print_r($rec_body);
+		
+}
+public function massOcBalUpload(){
+		//$icpNo = $_POST['icpNo'];
+		$file = $_FILES['fundsCsv']['tmp_name'];
+		$handle = fopen($file, "r");
+				$rec=array();
+				$rec2=array();
+				$rec_body=array();
+				$recNum=0;
+
+				$this->_model->deleteQuery("","oschqbf");
+				//$this->_model->deleteQuery("","opfundsbal");					
+				
+				while($data=fgetcsv($handle,1000,",","'")){
+						$rec['icpNo']=$data[0];
+						$rec['chqNo']=$data[2];
+						$rec['chqDate']=$data[1];
+						$rec['Details']="None";
+						$rec['VNumber']=0;
+						$rec['amount']=$data[3];
+						$rec['chqState']=0;
+
+						
+						$this->_model->insertRecord($rec,"oschqbf");
+
+											
+					}
+				print_r("Upload successful!");
+				//print_r($rec_body);
+		
+}
 	public function viewPlansHeader($render=2,$path="",$tags=array("3","9")){
 		$fy = $this->choice[1];
 		$cond = $this->_model->where(array(array("where","fy",$fy,"=")));
@@ -444,8 +516,16 @@ public function siteOff(){
 }
 
 public function showUsersList($render=2,$path='',$tags=array("All")){
-	$grp =  $this->choice[1];
-	$cond = $this->_model->where(array(array("where","users.userlevel",$grp,"=")));
+	$grp ='1';
+	if(isset($this->choice[1])){
+		$grp =  $this->choice[1];
+	}
+	if(Resources::session()->userlevel==='2'){
+		$cond = $this->_model->where(array(array("where","users.userlevel",$grp,"="),array("AND","users.cname",Resources::session()->cname,"=")));
+	}else{
+		$cond = $this->_model->where(array(array("where","users.userlevel",$grp,"=")));
+	}
+	
 	$qry = $this->_model->getUsersByPosition($cond);
 	
 	$data = array();
@@ -465,6 +545,41 @@ public function addUserToCategory($render=2,$path='',$tags=array("All")){
 	
 	return $data;
 	
+}
+
+public function hvcSettings($render=1,$path='',$tags=array("All")){
+	$data=array();
+	$cspLimit=0;
+	$cdspLimit=0;
+	//Get Limits
+	$limits_arr = $this->_model->getAllRecords("","hvc_limit");
+	foreach ($limits_arr as $value) {
+		if($value->prg==='1'){
+			$cspLimit = $value->limit;
+		}elseif($value->prg==='2'){
+			$cdspLimit = $value->limit;
+		}
+	}
+	
+	$data['csp']=$cspLimit;
+	$data['cdsp']=$cdspLimit;
+	return $data;
+}
+
+public function changeLimits(){
+	$cspLimit=$this->choice[1];
+	$cdspLimit=$this->choice[3];
+	
+	$sets_csp = array("limit"=>$cspLimit);
+	$sets_cdsp = array("limit"=>$cdspLimit);
+	
+	$csp_cond = $this->_model->where(array(array("where","prg",1,"=")));
+	$cdsp_cond = $this->_model->where(array(array("where","prg",2,"=")));
+	
+	$this->_model->updateQuery($sets_csp,$csp_cond,"hvc_limit");
+	$cdsp=$this->_model->updateQuery($sets_cdsp,$cdsp_cond,"hvc_limit");
+	
+	echo $cdsp;
 }
 
 }

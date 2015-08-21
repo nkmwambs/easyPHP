@@ -376,12 +376,17 @@ function inactivateCase(cid){
 				location.reload();
           }
         };
-		
-      	xmlhttp.open("GET",path+"mvc/Reports/inactivateCase/cid/"+cid,true);      
+var cnf = confirm("Want to Inactivate this record? Note, Once you inactivate a record, only the HVC specialist can re-activate it!. Click Ok to activate or Cancel to Abort");		
+if(!cnf){
+	alert("Action aborted!");	
+}else{
+     	xmlhttp.open("GET",path+"mvc/Reports/inactivateCase/cid/"+cid,true);      
         xmlhttp.send();
+}
 }
 function stateSort(){
 	var state = document.getElementById('stateSort').value;
+	var keno =document.getElementById('keno').value;
 	//alert(state);
 			xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
@@ -397,7 +402,7 @@ function stateSort(){
           }
         };
 		
-      	xmlhttp.open("GET",path+"mvc/Reports/manageHvc/state/"+state,true);      
+      	xmlhttp.open("GET",path+"mvc/Reports/manageHvc/state/"+state+"/icpNo/"+keno,true);      
         xmlhttp.send();
 }
 function isInt(value) {
@@ -432,3 +437,20 @@ function completeChildNo(elem){
 		document.getElementById('childNo').value=icp+cnum;
 	}
 }
+
+function toogleHvcView(cst){
+	var rwCst = cst.replace("-","_");
+	//alert(rwCst);
+		xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("GET",path+"mvc/Reports/manageHvc/cst/"+rwCst,true);      
+        xmlhttp.send();
+}
+
+

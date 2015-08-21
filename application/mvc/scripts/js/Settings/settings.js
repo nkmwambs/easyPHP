@@ -92,17 +92,42 @@ function massFundsUpload(frmid){
                 document.getElementById('overlay').style.display='none';
                 alert(xmlhttp.responseText);
             }
-        };
-    //if(fy===""){
-    	//alert('FY cannot be empty!');
-    	//document.getElementById('fy').style.backgroundColor='red';
-    //}else{         
-    	//document.getElementById('fy').style.backgroundColor='white';                                  
+        };                                
          xmlhttp.open("POST",path+"/mvc/Settings/massFundsUpload/public/0",true);
          xmlhttp.send(frmData);
-     //}
 }
-
+function massCashBalUpload(frmid){
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+            }
+        };                                
+         xmlhttp.open("POST",path+"/mvc/Settings/massCashBalUpload/public/0",true);
+         xmlhttp.send(frmData);
+}
+function massOcBalUpload(frmid){
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+            }
+        };                                
+         xmlhttp.open("POST",path+"/mvc/Settings/massOcBalUpload/public/0",true);
+         xmlhttp.send(frmData);
+}
 function dateControl(elem){
 	if(elem.checked===true){
 		var flag=0;
@@ -250,4 +275,21 @@ function addUserToCategory(cat){
 
       xmlhttp.open("GET",path+"mvc/Settings/addUserToCategory/cat/"+cat,true);      
       xmlhttp.send();
+}
+function changeLimits(){
+	//alert("Hello");
+	var cspLimit = document.getElementById('cspLimit').value;
+	var cdspLimit = document.getElementById('cdspLimit').value;
+	xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				//document.write(xmlhttp.responseText);
+				alert(xmlhttp.responseText);
+				location.reload();
+				
+          }
+        };
+		
+     xmlhttp.open("GET",path+"mvc/Settings/changeLimits/cspLimit/"+cspLimit+"/cdspLimit/"+cdspLimit,true);      
+     xmlhttp.send();
 }

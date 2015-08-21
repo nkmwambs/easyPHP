@@ -25,7 +25,7 @@ class Settings_Model extends E_Model
 	}
 		
 public function getUsersByPosition($cond){
-		$sql = "SELECT users.ID,users.username,users.userfirstname,users.userlastname,users.fname,users.cname,users.email,users.admin,users.delegated_role,users.department,users.logs_after_register,users.reffererID FROM users LEFT JOIN positions ON users.userlevel=positions.pstID $cond";
+		$sql = "SELECT users.ID,users.username,users.userfirstname,users.userlastname,users.fname,users.cname,users.email,users.admin,users.delegated_role,users.department,users.logs_after_register,users.auth,users.reffererID FROM users LEFT JOIN positions ON users.userlevel=positions.pstID $cond";
 		$qry = $this->conn->prepare($sql);
 		$qry->execute();
 		$rst=array();

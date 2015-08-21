@@ -23,16 +23,8 @@ Date Control <input type='checkbox' name='dateControl' onclick='dateControl(this
 Dollar Rate:<input type="text" id='dollar_rate' name="dollar_rate" value='<?php echo $data['rates']['dollar_rate'];?>'/> FY:<input type='text' id='dollar_rate_fy' name='dollar_rate_val' value='<?php echo $data['rates']['fy'];?>'/><div style="color:blue;cursor: pointer;width:50px;" onclick="changeDollarRate();">Change</div><br>
 Exchange Rate:<input type="text" id='exchange_rate' name="exchange_rate" value='<?php echo $data['rates']['exchange_rate'];?>'/> FY:<input type='text' id='exchange_rate_fy' name='dollar_rate_val' value='<?php echo $data['rates']['fy'];?>'/> <div style="color:blue;cursor: pointer;width:50px;" onclick="changeExchangeRate();">Change</div>
 </fieldset>
-<?php
-}elseif(Resources::session()->userlevel==='1'){
-?>
-<fieldset style="border-color: blue;">
-	<legend><b>PPBF Settings</b></legend>
-	Beneficiaries Population:<input type="text" id="icpNoPop" name="icpNoPop"  value='<?php echo $data['icpPopulation']['noOfBen'];?>'/> # Of Months: <input type="text" id="noOfMonths" name="noOfMonths"  value='<?php echo $data['icpPopulation']['noOfMonths'];?>'/> FY: <input type="text" id="icpFy" name="icpFy"   value='<?php echo $data['icpPopulation']['fy'];?>'/><div style="color:blue;cursor: pointer;width:50px;" onclick="changeIcpPopulation();">Change</div>
-</fieldset>
-<?php	
-}
-?>
+
+
 
 <!-- PPBF Uploads-->
 
@@ -80,8 +72,18 @@ echo "<BUTTON onclick='massFundsUpload(\"frmFundsUpload\");'>Upload</BUTTON><BUT
 
 <fieldset style="border:2px blue solid;">
     <legend><b>Closing Cash Balance as Per the Cash Journal</b></legend>
-<div style="margin-left:250px;margin-bottom: 50px;"><button id='btnCashBalDel' style="display: none;">Delete Row</button><button onclick='addCash("frmCashBf");'>Post</button><?php echo Resources::a_href("Finance/cashBalBf","<button>Refresh</button>");?><button onclick="viewCashBal();">View</button></div>
+<?php
+echo "<b>Mass Cash Balance Upload</b><br>";
+echo "<form id='frmCashBalUpload'>";
+echo "Closure Date: <INPUT TYPE='text' id='closureDateCash' name='closureDate' readonly='readonly'/>";
+echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
+echo "</form>";
+echo "<BUTTON onclick='massCashBalUpload(\"frmCashBalUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
+?>    
+<br><br><b>Single Cash Balances Upload</b>   
+<div style="margin-left:250px;margin-bottom: 50px;"><button id='btnCashBalDel' style="display: none;">Delete Row</button><button onclick='addCash("frmCashBf");'>Post</button><?php echo Resources::a_href("Settings/financeSettings","<button>Refresh</button>");?><button onclick="viewCashBal();">View</button></div>
 <form id="frmCashBf">
+ICP Number:<input type="text" id="icpNo" name="icpNo"/>
 <table id="tblCashBf" style="max-width: 60%;border:1px wheat solid;margin-left: auto;margin-right: auto;">
     <tr><th colspan="2">Date: <input type="text" id="cjCashOpBal" name="cjCashOpBal" readonly/></th></tr>
     <tr><th>Details</th><th>Amount</th></tr>
@@ -104,3 +106,51 @@ echo "<BUTTON onclick='massFundsUpload(\"frmFundsUpload\");'>Upload</BUTTON><BUT
 </form>
 <div id='viewCashStmtBal'></div>
 </fieldset>
+
+<!-- OC BF-->
+<fieldset style="border:2px blue solid;">
+    <legend><b>Oustanding Cheques B/F</b></legend>
+    <?php
+echo "<b>Mass Closing Oustanding Cheque Upload</b><br>";
+echo "<form id='frmOcUpload'>";
+//echo "Closure Date: <INPUT TYPE='text' id='closureDateOc' name='closureDate' readonly='readonly'/>";
+echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
+echo "</form>";
+echo "<BUTTON onclick='massOcBalUpload(\"frmOcUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
+?>  
+<br><br><hr>
+<div style="margin-left:250px;margin-bottom: 50px;"><button  onclick='addChqOSRow("tblOSBf");'>Add Row</button><button id='btnOSRowDel' style="display: none;">Delete Row</button><button onclick='addOS("frmOSBf");'>Post</button><?php echo Resources::a_href("Finance/oustChqBf","<button>Refresh</button>");?><button onclick="ocView();">View</button></div>
+<form id="frmOSBf">
+ICP Number:<input type="text" id="icpNo" name="icpNo"/>
+<table id="tblOSBf" style="max-width: 60%;border:1px wheat solid;margin-left: auto;margin-right: auto;">
+    <!--<tr><th colspan="4">Oustanding Date: <input type="text" id="osDate" name="" readonly/></th></tr>-->
+    <tr><th><input type="checkbox" id="" onclick="chkAll(this);showDel();"/></th><th>Cheque Number</th><th>Date</th><th>Amount</th></tr>
+</table>
+</form>
+<div id="balView"></div>
+</fieldset>
+
+<!--Statement Balances-->
+<fieldset>
+	<legend>Statement Balances</legend>
+	<?php
+		echo "<b>Mass Closing Bank Stamement Upload</b><br>";
+		echo "<form id='frmOcUpload'>";
+		//echo "Closure Date: <INPUT TYPE='text' id='closureDateOc' name='closureDate' readonly='readonly'/>";
+		echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
+		echo "</form>";
+		echo "<BUTTON onclick='massOcBalUpload(\"frmOcUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
+	?>  
+</fieldset>
+
+<?php
+}elseif(Resources::session()->userlevel==='1'){
+?>
+<fieldset style="border-color: blue;">
+	<legend><b>PPBF Settings</b></legend>
+	Beneficiaries Population:<input type="text" id="icpNoPop" name="icpNoPop"  value='<?php echo $data['icpPopulation']['noOfBen'];?>'/> # Of Months: <input type="text" id="noOfMonths" name="noOfMonths"  value='<?php echo $data['icpPopulation']['noOfMonths'];?>'/> FY: <input type="text" id="icpFy" name="icpFy"   value='<?php echo $data['icpPopulation']['fy'];?>'/><div style="color:blue;cursor: pointer;width:50px;" onclick="changeIcpPopulation();">Change</div>
+</fieldset>
+<?php	
+}
+?>
+

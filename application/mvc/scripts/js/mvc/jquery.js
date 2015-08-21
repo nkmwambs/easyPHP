@@ -12,4 +12,6 @@
 				$("#bookedToDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
 				$(".dateSelector").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//childDOB
 				$("#childDOB").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//childDOB
+				$("#closeIndexing").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//childDOB
+				$("#closureDateCash").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
 		});

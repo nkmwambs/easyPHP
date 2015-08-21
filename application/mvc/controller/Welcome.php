@@ -18,6 +18,7 @@ public $_model;
 		
 	}
 public function updateLogs(){
+	//Update number of logs after register	
 	$log_calc=0;
 	$log_cond = $this->_model->where(array(array("where","username",Resources::session()->username,"=")));
 	$logs = $this->_model->getAllRecords($log_cond,"users");
@@ -25,7 +26,32 @@ public function updateLogs(){
 	
 	$log_set = array("logs_after_register"=>$log_calc);
 	$this->_model->updateQuery($log_set,$log_cond,"users");
+	
+	//Check there is the current user active session
+	$this->end_session();
+	
+	//Record a Session
+	$sess_arr = array();
+	$sess_arr['user_id']=Resources::session()->ID;
+	if(Resources::session()->userfirstname===""){
+		$sess_arr['user_fname']=Resources::session()->fname;
+	}else{
+		$sess_arr['user_fname']=Resources::session()->userfirstname;
+	}
+	$sess_arr['sess_start']=time();
+	$sess_arr['sess_end']=0;
+	$sess_arr['sess_state']=1;
+	if(Resources::session()->ID!=='0'){
+		$this->_model->insertRecord($sess_arr,"user_sessions");
+	}
+	
 }
+public function end_session(){
+	$set = array("sess_state"=>0,"sess_end"=>time());
+	$sess_cond = $this->model->where(array(array("where","user_id",Resources::session()->ID,"="),array("AND","sess_state",1,"=")));
+	$this->_model->updateQuery($set,$sess_cond,"user_sessions");
+}
+
 public function show(){
 		$siteOff_cond = $this->_model->where(array(array("where","info","offline","=")));
 		$siteOff_arr = $this->_model->getAllRecords($siteOff_cond,"extras");
@@ -104,17 +130,20 @@ public function newPassReset(){
             	echo "Error Occurred!";
             }
 }
-public function login($render=1,$path='',$tags=array("0")){
+public function login($render=2,$path='',$tags=array("0")){
 	users::unset_log_sessions();
+	
 }
     
 public function logout($render=1,$path="show",$tags=array("0")){
+		$this->end_session();
 		users::unset_log_sessions();
 		$siteOff_cond = $this->_model->where(array(array("where","info","offline","=")));
 		$siteOff_arr = $this->_model->getAllRecords($siteOff_cond,"extras");
 		$siteOff_flag = $siteOff_arr[0]->flag;
 		$msg = $siteOff_arr[0]->other;
 		
+
 		$data['msg']="<div id='error_div'>".$msg."</div>";
 		return $data;
 }
@@ -169,6 +198,51 @@ public function searchUser(){
         }
     }
 public function passwordReset($render=1,$path='',$tags=array("0","All")){ 
+	
+}
+public function forgotPass($render=1,$path='',$tags=array("0")){
+	$data=array();
+	
+	//Security Questions
+	$qstns = $this->_model->getAllRecords("","securityqueries");
+	
+	$data['qstns']=$qstns;
+	$data['test']="";
+	return $data;
+}
+public function forgotPassReset(){
+	//print_r($_POST);
+	$email = $_POST['email'];
+	$qstn = $_POST['securityQstnID'];
+	$qAns = $_POST['qAns'];
+	$fPassword = $_POST['password'];
+	$newPass="";
+	$sets="";
+	
+	if($email){
+		//echo "Email Present";
+		$email_cond = $this->_model->where(array(array("where","email",$email,"="),array("AND","auth",1,"=")));
+		$email_arr = $this->_model->getAllRecords($email_cond,"users");
+		if(!empty($email_arr)){
+			$newPass=Resources::func("generateRandomString");
+			$sets = array("password"=>$newPass);
+			$this->_model->updateQuery($sets,$email_cond,"users");
+			$subject = "New Login details";
+			$msg="You have been provided with new login details as follows:<br>";
+			$msg.="Username: ".$email_arr[0]->username."<br>";
+			$msg.="Password: ".$newPass."<br>";
+			Resources::mailing($email, $subject, $msg);
+			echo "<div id='error_div'>A new password has been mailed to you</div>";
+		}else{
+			echo "<div id='error_div'>Email Missing</div>";
+		}
+	}elseif($qstn){
+		echo "<div id='error_div'>This feature is not functional:- Use Email option only!</div>";
+	}elseif($fPassword){
+		echo "<div id='error_div'>This feature is not functional:- Use Email option only!</div>";
+	}else{
+		echo "<div id='error_div'>Please provide atmost one item or User blocked</div>";
+	}
 	
 }
 }
