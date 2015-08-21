@@ -84,8 +84,8 @@ class Reports_Controller extends E_Controller
 		//if(isset($this->choice[1])){
 			//$period=$this->choice[1];
 		//}else{
-			$fy =  Resources::func(get_financial_year,array(date("Y-m-d")));	
-			$qtr = Resources::func(financial_quarter,array(date("Y-m-d")));
+			$fy =  Resources::func('get_financial_year',array(date("Y-m-d")));	
+			$qtr = Resources::func('financial_quarter',array(date("Y-m-d")));
 			$period = "FY20".$fy."Q".$qtr;
 		//}
 		$rpt_cond="";

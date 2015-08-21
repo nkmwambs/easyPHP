@@ -1,6 +1,6 @@
   <section class="container">
     <div class="login">
-      <h1>Login to Web App</h1>
+      <h1>Login to Toolkit</h1>
      <form id='frmLogin'>
         <p><input type="text" name="username" id='username' value="" placeholder="Username"></p>
         <p><input type="password" name="password" value="" placeholder="Password"></p>

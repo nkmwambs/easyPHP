@@ -1,7 +1,7 @@
 <?php
 class Resource_Model extends E_Model
 {
-    function chatHeartbeat() {
+public function chatHeartbeat() {
 	
 	$sql = "select * from chatting where (chatchatting.to = '".mysql_real_escape_string($_SESSION['username'])."' AND recd = 0) order by id ASC";
 	$query = mysql_query($sql);
@@ -92,7 +92,7 @@ header('Content-type: application/json');
 			exit(0);
 }
 
-function chatBoxSession($chatbox) {
+public function chatBoxSession($chatbox) {
 	
 	$items = '';
 	
@@ -103,7 +103,7 @@ function chatBoxSession($chatbox) {
 	return $items;
 }
 
-function startChatSession() {
+public function startChatSession() {
 	$items = '';
 	if (!empty($_SESSION['openChatBoxes'])) {
 		foreach ($_SESSION['openChatBoxes'] as $chatbox => $void) {
@@ -116,14 +116,23 @@ function startChatSession() {
 		$items = substr($items, 0, -1);
 	}
 
-
-$rs = array("username"=>$_SESSION['username'],"items"=>$items);
-
-return json_encode($rs);
-	//exit(0);
+header('Content-type: application/json');
+?>
+{
+		"username": "<?php echo $_SESSION['username'];?>",
+		"items": [
+			<?php echo $items;?>
+        ]
 }
 
-function sendChat() {
+<?php
+
+
+	exit(0);
+}
+
+
+public function sendChat() {
 	$from = $_SESSION['username'];
 	$to = $_POST['to'];
 	$message = $_POST['message'];
@@ -153,7 +162,7 @@ EOD;
 	exit(0);
 }
 
-function closeChat() {
+public function closeChat() {
 
 	unset($_SESSION['openChatBoxes'][$_POST['chatbox']]);
 	
@@ -161,7 +170,7 @@ function closeChat() {
 	exit(0);
 }
 
-function sanitize($text) {
+public function sanitize($text) {
 	$text = htmlspecialchars($text, ENT_QUOTES);
 	$text = str_replace("\n\r","\n",$text);
 	$text = str_replace("\r\n","\n",$text);

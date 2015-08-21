@@ -159,7 +159,7 @@ function showLogin(){
 
             }
         };                                          
-         xmlhttp.open("GET",path+"/mvc/Welcome/Login",true);
+         xmlhttp.open("GET",path+"/mvc/Welcome/login",true);
          xmlhttp.send(); 
 }
 

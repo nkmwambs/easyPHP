@@ -975,11 +975,11 @@ class Finance_Controller extends E_Controller
 			foreach ($accs as $value) {
 				$sum_bud_to_date+=$value['BudToDate'];
 			}
+			
 		$obv=0;
 		if($sum_bud_to_date!==0){
 			$obv=($sum_var/$sum_bud_to_date)*100;	
-		}	
-		
+		}
 		
 		//Calculate Survival Ratio
 		$sum_500_inc=0;
@@ -1646,7 +1646,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		$bs_date_check=$this->_model->getAllRecords($bs_date_check_cond,"statementbal");
 		$statementDate = "";
 		$statementAmount=0;
-		if($state!==0){
+		if($state!==0&&!empty($bs_date_check)){
 			$statementDate=$bs_date_check[0]->statementDate;
 			$statementAmount=$bs_date_check[0]->amount;
 			

@@ -39,7 +39,7 @@ if(empty($data[0])){
 		                $charge = -75;
 		                $ex = 0.1*$charge; 
 		                $tc = $charge+$ex;
-		                $ta = $row2['Total']+$tc;
+		                $ta = $sum+$tc;
 		                echo $charge;
 		            }elseif($sum>1000000){
 		                $charge = -225;
