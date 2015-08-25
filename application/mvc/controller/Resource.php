@@ -13,7 +13,11 @@ class Resource_Controller extends E_Controller
     }
     
     public function listing($render=1,$path="",$tags=array("0")){
-        return $data = "Resource Listing!";
+    	$data=array();
+		$rst =$this->_model->getAllRecords("","users","");
+       	$data['test'] = $rst;
+		
+		return $data;
     }
     
     public function guides($render=1,$path="",$tags=array("0")){

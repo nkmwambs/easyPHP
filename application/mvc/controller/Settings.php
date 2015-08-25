@@ -8,8 +8,8 @@ public function __construct() {
             
     }
     
-    public function viewSettings($render=1,$path="",$tags=array("All")){
-		
+public function viewSettings($render=1,$path="",$tags=array("All")){
+
 }
    // Users Methods
     

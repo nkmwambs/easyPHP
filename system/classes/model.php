@@ -61,7 +61,7 @@ public function where($cond){
 
 
 
-    public function getAllRecords($cond="",$_table="",$extra="")
+    public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array())
 	{
       if($_table===""){$_table=$this->table;}
         //$this->getTitles();
@@ -78,12 +78,24 @@ public function where($cond){
                         }
       
       
+        //Selected Fields
+		$fields_final="*";
+		if(!empty($fields_arr)){
+				$fields = "";
+		            foreach ($fields_arr as $value) {
+		                $fields .="`".$value."`,";
+		            }
+		            $fields .= "";
+	  			$fields_final = substr_replace($fields,"",-1,1);
+		}
+		
         if($cond===""){
-                $sql ="SELECT * FROM `".$_table."` $extra";
+                $sql ="SELECT $fields_final FROM `".$_table."` $extra";
             }else{
                 
-                $sql ="SELECT * FROM `".$_table."` $cond $extra";
+                $sql ="SELECT $fields_final FROM `".$_table."` $cond $extra";
             }
+		
 
                         //$query = mysql_query($sql);
                         $r=$this->conn->prepare($sql);
