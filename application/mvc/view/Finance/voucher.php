@@ -20,7 +20,7 @@ if(isset($data['error'])){
             <table id='tblVch' style="width: 100%;">
                 <colgroup><col width="10%"/><col width="15%"/><col width="10%"/><col width="15%"/></colgroup>
                 <tr>
-                    <th colspan="4"><?php echo $_SESSION['username']; ?><br>COMPASSION ASSISTED PROJECT VOUCHER</th>
+                    <th colspan="4"><?php echo $_SESSION['fname']; ?><br>COMPASSION ASSISTED PROJECT VOUCHER</th>
                 </tr>
 
                 <tr>

@@ -98,11 +98,12 @@ function switchUser(el){
                 location.reload();
             }
         };
+        var username = document.getElementById('username').value;
        // if(el.tagName==="BUTTON"){
-            var frm=document.getElementById("frmSwitch");
-            var frmData = new FormData(frm);    
-            xmlhttp.open("POST",path+"/mvc/Welcome/switchUser/public/0",true);
-            xmlhttp.send(frmData); 
+           // var frm=document.getElementById("frmSwitch");
+            //var frmData = new FormData(frm);    
+            xmlhttp.open("GET",path+"/mvc/Welcome/switchUser/username/"+username,true);
+            xmlhttp.send(); 
         //}else{
             //xmlhttp.open("GET",path+"/mvc/Welcome/switchUser/username/"+el.id,true);
             //xmlhttp.send();             

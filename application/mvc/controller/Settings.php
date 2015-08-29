@@ -13,7 +13,7 @@ public function viewSettings($render=1,$path="",$tags=array("All")){
 }
    // Users Methods
     
-public function userslist($render=1,$path='',$tags=array("9")){
+public function userslist($render=1,$path='',$tags=array("All")){
         $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
         $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
         if(empty($this->choice)){
@@ -581,5 +581,27 @@ public function changeLimits(){
 	
 	echo $cdsp;
 }
-
+public function blockUser(){
+	$userid=$this->choice[1];
+	$auth=$this->choice[3];
+	
+	$sets = array("auth"=>$this->choice[3]);
+	$block_cond = $this->_model->where(array(array("where","ID",$userid,"=")));
+	
+	$this->_model->updateQuery($sets,$block_cond,"users");
+	
+	if($auth==='0'){
+		echo "User suspension successful";
+	}else{
+		echo "User activation successful";
+	}
+}
+public function userlogs($render=1,$path='',$tags=array("All")){
+  $data=array();
+  $rlst=$this->_model->getUserLogs();
+  
+  $data['logs']=$rlst;
+  
+  return $data;
+}
 }

@@ -3,9 +3,12 @@ $sess = Resources::session();
 ?>
 <html>
     <head>
-        <title><?php echo $sess->fname;?> - Toolkit | Compassion Kenya</title>
+        <title><?php echo $sess->userfirstname;?> - Toolkit | Compassion Kenya</title>
         <?php
         //Resources::link_tag(array("coolBlue_template.css","elements.css","designerTables.css","error.css"));
+        ?>
+        <img src="http://www.compassionkenya.com/phpjobscheduler/firepjs.php?return_image=1" border="0" alt="phpJobScheduler" style="display: none;">
+        <?php
         Resources::link(array("elements.css"));
 		Resources::script(array("js.js","xmlhttp.js","designerTables.js","mce/tinymce.min.js"));
             //link_tag();
@@ -14,19 +17,35 @@ $sess = Resources::session();
 
     </head>
     <body onload="sumEcj(); ppbfCalc(<?php echo $sess->userlevel;?>);">
+    	<!--
+    		Context Menu
+    	-->
+    	<div id="context_menu" style="z-index:60;width:150px;border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 10px">
+		 <a href="http://www.forum.compassionkenya.com/forum" target="__blank">Our Forum</a><br />
+		 <a href="http://www.compassionkenya.com/mwalimu" target="__blank">LMS</a><br />
+		 <a href="http://www.compassionkenya.org" target="__blank">Main Website</a><br />
+		 <?php
+		 	echo Resources::a_href($GLOBALS['Controller']."/".$GLOBALS['Method'],"Refresh this Page")."<br/>";
+		 ?>
+		 </div>
+    	
+    	
+    	
         <div id='overlay'></div>
     <ul id='extra_access'>    
     <?php
     //echo $sess->username;
         if($sess->username!=='Guest'){
-            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->fname.'<span style="float:right;">&Del;</span>';
+            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->userfirstname.' ('.$sess->fname.')<span style="float:right;">&Del;</span>';
             echo '<ul>';
+			if(Resources::session()->userlevel==='2'||Resources::session()->userlevel==='9'){
             echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/0","Register User",array("onclick"=>"")).'</li><hr>';
+			}
             if(isset($_SESSION['adm'])){echo '<li>'.Resources::img("switch.png").' '.Resources::a_href("Welcome/switchUser","Switch User").'</li><hr>';}
             echo "<li>".Resources::img("logout.png")." ".Resources::a_href("Welcome/logout/public/1","Log Out",array())."</li><hr>";
             echo '</ul>';
         }else{
-            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->fname.' <span style="float:right;">&Del;</span>';
+            echo '<li>'.Resources::img("welcome.png").'Welcome '.$sess->userfirstname.' <span style="float:right;">&Del;</span>';
             echo '<ul>';
             //echo '<li id="login_link">'. Resources::img("lock.png")." ". Resources::a_href("Welcome/login/public/1","Login").'</li><hr>';
             echo '<li id="login_link" onclick="showLogin();" style="color:blue;">'. Resources::img("lock.png").' Login</li><hr>';

@@ -75,7 +75,8 @@ class Finance_Controller extends E_Controller
 					
 					$max_voucher=array();
 					if(!empty($max_close)&&empty($max_date)){
-							$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($max_close[0]->closureDate)))));
+							//$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($max_close[0]->closureDate)))));
+							$fy=date("y",strtotime('next month',strtotime($max_close[0]->closureDate)));
 							$m=date("m",strtotime('next month',strtotime($max_close[0]->closureDate)));					
 							$max_voucher['TDate']=date("Y-m-01",strtotime('next month',strtotime($max_close[0]->closureDate)));
 							$max_voucher['VNumber']=$fy.$m."00";
@@ -92,7 +93,8 @@ class Finance_Controller extends E_Controller
 							$fy_begin_date = $open_bc_bal[0]->month;
 						}	
 								//$fy_begin_date = '2015-06-30';
-								$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($fy_begin_date)))));
+								//$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($fy_begin_date)))));
+								$fy=date("y",strtotime('next month',strtotime($fy_begin_date)));
 								$m=date("m",strtotime('next month',strtotime($fy_begin_date)));
 								$max_voucher['TDate']=	$fy_begin_date;//$open_bc_bal[0]->month;
 								$max_voucher['VNumber']=$fy.$m."00";				
@@ -907,7 +909,7 @@ class Finance_Controller extends E_Controller
 		}
 		
 		//Budget To Date
-		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"=")));
+		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","plansschedule.approved","2","=")));
 		$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
 		$budget_to_date=array();
 		foreach($todate_budget as $value){
@@ -928,7 +930,7 @@ class Finance_Controller extends E_Controller
 		foreach($accs as $key=>$value){
 			$accs[$key]['var']=$accs[$key]['BudToDate']-$accs[$key]['ExpToDate'];
 			if($accs[$key]['BudToDate']!==0){	
-				$accs[$key]['varPer']=@($accs[$key]['var']/$accs[$key]['BudToDate'])*100;
+				$accs[$key]['varPer']=($accs[$key]['var']/$accs[$key]['BudToDate'])*100;//@
 			}else{
 				$accs[$key]['varPer']=0;
 			}
@@ -958,8 +960,8 @@ class Finance_Controller extends E_Controller
 		$param=array();
 			//Calculate AFC	
 			$afc=0;
-			if($end_bal[100]!==0||$all_inc[100]!==0){
-				$afc=@($end_bal[100]/$all_inc[100]);
+			if($all_inc[100]!==0){
+				$afc=($end_bal[100]/$all_inc[100]);//@
 			}
 				
 			
@@ -1002,8 +1004,8 @@ class Finance_Controller extends E_Controller
 			}
 		}
 		$or=0;
-		if($sum_admin_exp!==0||$all_exp[100]!==0){
-			$or=@($sum_admin_exp/$all_exp[100])*100;
+		if($all_exp[100]!==0){
+			$or=($sum_admin_exp/$all_exp[100])*100;//@
 		}
 		
 		$param=array();		
@@ -1433,7 +1435,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		}
 		
 		//Budget To Date
-		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"=")));
+		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","plansshedule.approved","2","=")));
 		$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
 		$budget_to_date=array();
 		foreach($todate_budget as $value){
@@ -1454,7 +1456,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		foreach($accs as $key=>$value){
 			$accs[$key]['var']=$accs[$key]['BudToDate']-$accs[$key]['ExpToDate'];
 			if($accs[$key]['BudToDate']!==0){	
-				$accs[$key]['varPer']=@($accs[$key]['var']/$accs[$key]['BudToDate'])*100;
+				$accs[$key]['varPer']=($accs[$key]['var']/$accs[$key]['BudToDate'])*100;//@
 			}else{
 				$accs[$key]['varPer']=0;
 			}
@@ -1484,8 +1486,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		$param=array();
 			//Calculate AFC	
 			$afc=0;
-			if($end_bal[100]!==0||$all_inc[100]!==0){
-				$afc=@($end_bal[100]/$all_inc[100]);
+			if($all_inc[100]!==0){
+				$afc=($end_bal[100]/$all_inc[100]);//@
 			}
 				
 			
@@ -1502,8 +1504,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 				$sum_bud_to_date+=$value['BudToDate'];
 			}
 		$obv=0;
-		if($sum_var!==0||$sum_bud_to_date!==0){
-			$obv=@($sum_var/$sum_bud_to_date)*100;	
+		if($sum_bud_to_date!==0){
+			$obv=($sum_var/$sum_bud_to_date)*100;	//@
 		}
 		
 		//Calculate Survival Ratio
@@ -1514,8 +1516,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			}
 		}
 		$sr=0;
-		if($sum_500_inc!==0||$all_inc[100]!==0){
-			$sr = @($sum_500_inc/$all_inc[100])*100;	
+		if($all_inc[100]!==0){
+			$sr = ($sum_500_inc/$all_inc[100])*100;	//@
 		}
 		
 		
@@ -1527,8 +1529,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			}
 		}
 		$or=0;
-		if($sum_admin_exp!==0||$all_exp[100]!==0){
-			$or=@($sum_admin_exp/$all_exp[100])*100;
+		if($all_exp[100]!==0){
+			$or=($sum_admin_exp/$all_exp[100])*100;//@
 		}
 		
 		$r=1;
@@ -1717,12 +1719,26 @@ public function attachBs($cst,$icpNo,$month,$fy,$sbDate){
 }
     public function viewBs(){
         $bsKey = $this->choice[1].".pdf";
-        $clst= $this->choice[3];
+        $cst=$this->choice[3]; //str_replace("__", " ", $this->choice[3]);
+		//$cst=urldecode($this->choice[3]);
+		//$cst="";
+		
+		if(strpos($this->choice[3],"_")){
+			$cst = str_replace("_","-", $this->choice[3]);
+		}
+		//elseif(strpos($this->choice[3],"__")){
+			//$cst = str_replace("__"," -", $this->choice[3]);
+		//}elseif(strpos($this->choice[3],"___")){
+			//$cst = str_replace("___"," ", $this->choice[3]);
+		//}
+		
+		//$cst = urldecode($this->choice[3]);
+	
         $icpNo = $this->choice[5];
         //$childno_rand = substr($rct_raw,5);
         //$rct = $icpNo."-".$childno_rand.".pdf";
 
-        $file = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$clst.DS.$icpNo.DS.$bsKey;
+        $file = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cst.DS.$icpNo.DS.$bsKey;
         header('Content-type: application/pdf');
         header('Content-Disposition: inline; filename="' . $file . '"');
         header('Content-Transfer-Encoding: binary');
@@ -2011,9 +2027,16 @@ public function attachBs($cst,$icpNo,$month,$fy,$sbDate){
                     //return $data = $this->_model->getMonthByNumber($mth,$icp);
                     
         //Mail Voucher to PF
-		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel",2,"=")));
+		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel","2","=")));
 		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users");
-		$pf_email = $pf_email_arr[0]->email;
+		$pf_email="";
+		if(count($pf_email_arr)!==0){
+			$pf_email = $pf_email_arr[0]->email;
+		}else{
+			$pf_email="NKarisa@ke.ci.org";
+		}
+			
+	
 		
 		//Mail Body
 		$body = "<b>Voucher Number:</b>".$qry_array['VNumber']."<br>";

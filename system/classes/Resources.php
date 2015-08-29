@@ -33,7 +33,13 @@ public static function includes($path,$separator="."){
 		
 		require_once $fPath;
 }
-
+public static function load_mail_template($url,$params=array()){
+			$msg = file_get_contents(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."docs/mail_templates".DS.$url);
+			foreach($params as $key=>$value):
+				$msg = str_replace('%'.$key.'%', $value, $msg);
+			endforeach;
+			return $msg;
+}
 public static function mailing($mailto,$subject,$msg){
 
  	// use wordwrap() if lines are longer than 70 characters
@@ -44,6 +50,8 @@ public static function mailing($mailto,$subject,$msg){
 	$headers .= "From: admin@compassionkenya.com";
  	// send email
  	mail($mailto,$subject,$msg,$headers);
+	
+	//return "<div id='error_div'>A new password has been mailed to you.</div>";
 }	 
 public static function ie_detect()
 {

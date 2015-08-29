@@ -168,7 +168,9 @@ echo "<tr><td colspan='9'>";
 		}
 		}
 		$totVar=$totBud-$totAccum;
-		$totVarPer=($totVar/$totBud)*100;
+		if($totBud!==0){
+			$totVarPer=($totVar/$totBud)*100;
+		}
 		echo "<tr><th>E100</th><th>Total Program Expense (10-90)</th><th class='Totals'>".number_format($totCur,2)."</th><th class='Totals'>".number_format($totAccum,2)."</th><th class='Totals'>".number_format($totBud,2)."</th><th class='Totals'>".number_format($totVar,2)."</th><th class='Totals'>".number_format($totVarPer)."%</th></tr>";
 		$grandCur=0;
 		$grandAccum=0;

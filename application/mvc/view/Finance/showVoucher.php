@@ -5,6 +5,7 @@ echo Resources::img("print.png",array("title"=>"Print","onclick"=>'printData("tb
     echo "<tr><th colspan='5'>COMPASSION ASSISTED PROJECT</th></tr>";
     echo "<tr><th colspan='5'>".$data['details'][0]->icpNo."<br>Payment Voucher</th></tr>";
     echo "<tr><th colspan='3' align='left' style='padding-left:25px;'>Date: ".$data['details'][0]->TDate."</th><th colspan='2' align='left'>Voucher Number: ".$data['details'][0]->VNumber."</th></tr>";
+	echo "<tr><td colspan='5'><b>Payee/Source:<b> ".$data['details'][0]->Payee."</td></tr>";
     $rwChq=explode("-",$data['details'][0]->ChqNo);
     echo "<tr><th colspan='3' align='left' style='padding-left:25px;'>Voucher Type: ".$data['details'][0]->VType."</th><th colspan='3' align='left'>Cheque Number: ".$rwChq[0]."</th></tr>";
     echo "<tr><th colspan='1' align='left' style='padding-left:25px;'>Description:</th><td colspan='5' align='left'>".$data['details'][0]->TDescription."</td></tr>";

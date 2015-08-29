@@ -293,3 +293,18 @@ function changeLimits(){
      xmlhttp.open("GET",path+"mvc/Settings/changeLimits/cspLimit/"+cspLimit+"/cdspLimit/"+cdspLimit,true);      
      xmlhttp.send();
 }
+
+function blockUser(uid,auth){
+	var userid=uid;
+	var auth_code=auth;
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				//document.write(xmlhttp.responseText);
+				alert(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+     xmlhttp.open("GET",path+"mvc/Settings/blockUser/userid/"+userid+"/auth/"+auth_code,true);      
+     xmlhttp.send();
+}

@@ -95,12 +95,8 @@ function sumEcj(){
     if(document.getElementById("tblVoucher")){
         var tbl=document.getElementById("tblVoucher");
         var tbl_ht = tbl.rows.length;   
-        //var max_tbl_width = tbl.rows[6].cells.length;
-        //alert(max_tbl_width);
-        //alert(tbl.rows[tbl_ht-6].cells[1].innerHTML);
-        //alert(tbl.rows[6].cells[3].innerHTML);
         var vch_sum=0;
-        for(var t=6;t<tbl_ht-6;t++){
+        for(var t=7;t<tbl_ht-6;t++){
             vch_sum+=parseInt(tbl.rows[t].cells[3].innerHTML);
         }
         tbl.rows[tbl_ht-6].cells[1].innerHTML=vch_sum;

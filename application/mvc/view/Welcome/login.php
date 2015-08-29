@@ -10,8 +10,9 @@
             Remember me on this computer
           </label>
         </p>
-        <p class="submit"><button onclick="login();">Login</button></p>
+        
       </form>
+      <p class="submit"><button onclick="login();">Login</button></p>
     </div>
 
     <div class="login-help">

@@ -32,7 +32,18 @@ public function getUsersByPosition($cond){
 		while($row=$qry->fetch(PDO::FETCH_OBJ)){
 			$rst[]=$row;
 		}
-		return $rst;;
+		return $rst;
+}
+
+public function getUserLogs(){
+		$sql = "SELECT users.cname as Cluster,users.fname as KENo, from_unixtime(max(user_sessions.sess_start)) as log_time,users.logs_after_register as No_Of_Logs FROM user_sessions LEFT JOIN users ON user_sessions.user_id=users.ID GROUP BY users.fname ORDER BY users.cname";
+		$qry = $this->conn->prepare($sql);
+		$qry->execute();
+		$rst=array();
+		while($row=$qry->fetch(PDO::FETCH_OBJ)){
+			$rst[]=$row;
+		}
+		return $rst;
 }
      
 }

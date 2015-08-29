@@ -144,6 +144,7 @@ public function postVoucherBody($arr,$acc){
         //$getQry = mysql_query($getSql);
         $getQry = $this->conn->prepare($getSql);
 		$getQry->execute();
+		$rst=array();
         while ($row = $getQry->fetch(PDO::FETCH_OBJ)) {
             $rst[]=$row;
         }

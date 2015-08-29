@@ -125,6 +125,14 @@ public function newPassReset(){
 				
 				$this->_model->insertRecord($getPost,"pwdbackup");
 				
+				$subject="Password Reset";
+				
+				$datetime = date("Y_m_d_H_i_s");
+				
+				$msg=Resources::load_mail_template("passResetAfterLog.html",array("username"=>Resources::session()->username,"password"=>$_POST['password'],"firstname"=>Resources::session()->userfirstname,"datetime"=>$datetime));
+			
+				echo Resources::mailing(Resources::session()->email, $subject, $msg);
+				
 				echo "Password Reset Successful!";
             }else{
             	echo "Error Occurred!";
@@ -134,6 +142,7 @@ public function login($render=2,$path='',$tags=array("0")){
 	users::unset_log_sessions();
 	
 }
+
     
 public function logout($render=1,$path="show",$tags=array("0")){
 		$this->end_session();
@@ -169,13 +178,9 @@ public function newRecent(){
     }
 
 public function switchUser($render=1,$path="",$tags=array("All")){	
-            if(!isset($_POST)){
-                 $cond = $this->model->where(array(array("where","username",$this->choice[1],"=")));
-            }else{
-            	 $cond = $this->model->where(array(array("where","username",$_POST["username"],"=")));
-             }
-			      
-                    $results = $this->_model->getAllRecords($cond,"users");
+            if(isset($this->choice[1])){
+            	 $cond_users = $this->model->where(array(array("where","username",$this->choice[1],"=")));
+				  $results = $this->_model->getAllRecords($cond_users,"users");
         
                     if(is_array($results)&&sizeof($results)>0){
                             foreach($results[0] as $key=>$value):
@@ -183,7 +188,10 @@ public function switchUser($render=1,$path="",$tags=array("All")){
                             endforeach;
                     }
 
-                    return $_SESSION['fname'];                     
+                    
+             }
+			      
+                    return $_SESSION['fname']; 
     }
     
 public function searchUser(){
@@ -227,12 +235,24 @@ public function forgotPassReset(){
 			$newPass=Resources::func("generateRandomString");
 			$sets = array("password"=>$newPass);
 			$this->_model->updateQuery($sets,$email_cond,"users");
-			$subject = "New Login details";
-			$msg="You have been provided with new login details as follows:<br>";
-			$msg.="Username: ".$email_arr[0]->username."<br>";
-			$msg.="Password: ".$newPass."<br>";
+			//$subject = "New Login details";
+			//$msg="You have been provided with new login details as follows:<br>";
+			//$msg.="Username: ".$email_arr[0]->username."<br>";
+			//$msg.="Password: ".$newPass."<br>";
+						
+			//$msg = file_get_contents(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."docs/mail_templates".DS.'resetPass.html');
+			//$msg = str_replace('%username%', $email_arr[0]->username, $msg);
+			//$msg = str_replace('%password%', $newPass, $msg);
+			//$msg = str_replace('%firstname%', $email_arr[0]->userfirstname, $msg);
+			
+			$subject="Password Reset";
+			
+			$msg=Resources::load_mail_template("resetPass.html",array("username"=>$email_arr[0]->username,"password"=>$newPass,"firstname"=>$email_arr[0]->userfirstname));
+			
 			Resources::mailing($email, $subject, $msg);
-			echo "<div id='error_div'>A new password has been mailed to you</div>";
+			
+			echo "<div id='error_div'>A new password has been mailed to you.</div>";
+			
 		}else{
 			echo "<div id='error_div'>Email Missing</div>";
 		}
@@ -244,5 +264,21 @@ public function forgotPassReset(){
 		echo "<div id='error_div'>Please provide atmost one item or User blocked</div>";
 	}
 	
+}
+public function notifyPassChange($render=1,$path='',$tags=array("0")){
+			
+			$data=array();
+				
+			$username=$this->choice[1];
+			$datetime=$this->choice[3];
+			$subject="Anonymous Password Change Notification";
+			
+			$msg=Resources::load_mail_template("anonymousPassReset.html",array("username"=>$username,"datetime"=>$datetime));
+			
+			Resources::mailing("NKarisa@ke.ci.org", $subject, $msg);
+			
+			$data="<div id='error_div'>A notice has been mailed to the administrator</div>";
+			
+			return $data;
 }
 }
