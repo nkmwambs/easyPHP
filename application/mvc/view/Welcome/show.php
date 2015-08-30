@@ -13,6 +13,3 @@ print($data);
                     <li>Funds Disbursement System</li>
                     <li>HVC Management System</li>
                 </ul>
-              
-
-            

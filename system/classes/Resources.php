@@ -40,6 +40,7 @@ public static function load_mail_template($url,$params=array()){
 			endforeach;
 			return $msg;
 }
+
 public static function mailing($mailto,$subject,$msg){
 
  	// use wordwrap() if lines are longer than 70 characters
@@ -293,7 +294,7 @@ public static function render($render="1",$path="",$results=""){
 			$users_online_arr = $model->getAllRecords($users_online_cond,"user_sessions","ORDER BY sess_id DESC LIMIT 0,10");
 		}
 			
-		
+		 
 		
         /**
          * $menu - A multi-dimensional array with all rows of the menus table
@@ -391,6 +392,7 @@ public static function render($render="1",$path="",$results=""){
                 $inner['name']=  ucfirst($value->selfTitle);
                 $inner['url']=  ucfirst($value->url);
                 $inner['img']=$value->link_img;
+				$inner['langid']=$value->langid;
                 array_push($menu_data,$inner);
                 
             }  else {
@@ -399,6 +401,7 @@ public static function render($render="1",$path="",$results=""){
                 $inner_side['name']=  ucfirst($value->selfTitle);
                 $inner_side['url']=  ucfirst($value->url);
                 $inner_side['img']=$value->link_img;
+				$inner_side['langid']=$value->langid;
                 array_push($side_menu_data,$inner_side);
                 }
                
@@ -448,6 +451,42 @@ public static function render($render="1",$path="",$results=""){
 public static function session(){
 	return (object)$_SESSION;
 }
-
+public static function load_language($lang,$langid,$content=array()){
+	$cont = file_get_contents(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."docs\lang".DS.$lang.".lang");
+	$arr = (array)json_decode($cont);
+	$action_arr = $arr[$langid];
+	$action="";
+	if(!empty($content)){
+		foreach($content as $key=>$value):
+				$action = str_replace('%'.$key.'%', $value, $action_arr);
+			endforeach;
+	}else{
+		$action	=$action_arr;
+	}
+	return $action;
+}
+public static function user_history($userid,$langid,$lang="eng",$actionParam=array()){
+	$action = self::load_language($lang,$langid,$actionParam);
+			
+	$model = new E_Model("users");
+	$name_cond = $model->where(array(array("where","ID",$userid,"=")));
+	$user_arr = $model->getAllRecords($name_cond,"users");
+	$user_full_name = $user_arr[0]->userfirstname." ".$user_arr[0]->userlastname;
+	$icpNo = $user_arr[0]->fname;
+	
+	$new_array=array();
+	
+	$new_array['UserID']=$userid;
+	$new_array['user_full_name']=$user_full_name;
+	$new_array['user_tbl_fname']=$icpNo;
+	$new_array['action']=$action;
+	
+	
+	$model->insertRecord($new_array,"history");
+}
+public static function translate_item($langid){
+	$item=self::load_language($lang=$_SESSION['lang'], $langid);
+	return $item;
+}
 }
 ?>

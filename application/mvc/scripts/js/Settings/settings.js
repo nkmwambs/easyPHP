@@ -308,3 +308,4 @@ function blockUser(uid,auth){
      xmlhttp.open("GET",path+"mvc/Settings/blockUser/userid/"+userid+"/auth/"+auth_code,true);      
      xmlhttp.send();
 }
+

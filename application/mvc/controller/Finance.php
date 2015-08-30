@@ -101,7 +101,7 @@ class Finance_Controller extends E_Controller
 					}
 					
                     $mth = date('m');
-                    $icp = $_SESSION['username'];
+                    $icp = $_SESSION['fname'];
 					
 					$data['months'] = $this->_model->getMonthByNumber($mth,$icp);
 					$data['date_flag']=$date_control_flag;
@@ -2052,13 +2052,17 @@ public function attachBs($cst,$icpNo,$month,$fy,$sbDate){
 		
 		$title = $qry_array['icpNo']." Voucher Posting: V# ".$qry_array['VNumber'];
 		
-		Resources::mailing($pf_email, Resources::session()->email, $title, $body); 
+		Resources::mailing($pf_email, $title, $body); 
+		
+		//$action = "Posted voucher Number ".$qry_array['VNumber'];
+		//user_history($userid,$langid,$lang="eng",$actionParam=array())
+		Resources::user_history(Resources::session()->ID,"post_voucher",$lang="eng",$action=array("VNumber"=>$qry_array['VNumber']));
 		
     }
     public function showVoucher($render=1,$path="",$tags=array("All")){       
         $VNum=  $this->choice[1];
         if($_SESSION['userlevel']==="1"){
-            $icpNo = $_SESSION['username'];
+            $icpNo = $_SESSION['fname'];
         }  else {
             $icpNo = $_SESSION['fname_backup'];
         }  

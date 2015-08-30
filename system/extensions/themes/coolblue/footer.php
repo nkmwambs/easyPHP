@@ -3,7 +3,7 @@
                         
 			</div>  
             <div id="rt-bar" class="mid">
-                <div id="lt-block"><div id="hdr-lft">Recent Items</div><br>
+                <div id="lt-block"><div id="hdr-lft"><?php echo Resources::translate_item("recent_item_footer");?></div><br>
                     <div id="cnt-lt">
                         
                             <?php

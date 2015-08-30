@@ -16,6 +16,6 @@ $theme = "coolblue";
 $default_controller ="welcome";// Overwrite by setting $app_default_controller in the specific application config.php file
 $default_view ="logout";// Overwrite by setting $app_default_view in the specific application config.php file
 
-
-//if(isset($_SESSION['REDIRECT']))unset($_SESSION['REDIRECT']);
+//Default Language
+//$_SESSION['lang']='eng';
         

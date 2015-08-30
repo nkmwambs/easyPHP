@@ -604,4 +604,8 @@ public function userlogs($render=1,$path='',$tags=array("All")){
   
   return $data;
 }
+public function changeLang(){
+	$lng = $this->choice[1];
+	$_SESSION['lang']=$lng;
+}
 }

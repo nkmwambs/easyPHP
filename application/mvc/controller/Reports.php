@@ -280,4 +280,16 @@ class Reports_Controller extends E_Controller
 		$data['qryDetail']=$_POST['query'];
 		print($this->_model->insertRecord($data,"queries"));
 	}
+public function history($render=1,$path='',$tags=array("All")){
+	$user_cond = $this->_model->where(array(array("where","ID",Resources::session()->ID,"=")));
+	$user_arr = $this->_model->getAllRecords($user_cond,"users");
+	
+	$hist_cond=$this->_model->where(array(array("where","user_tbl_fname",$user_arr[0]->fname,"=")));
+	$hist_arr = $this->_model->getAllRecords($hist_cond,"history");
+	
+	$data=array();
+	$data['all_hist']=$hist_arr;
+	
+	return $data;
+}
 }

@@ -232,5 +232,15 @@ function forgotPassReset(frmid){
          xmlhttp.open("POST",path+"/mvc/Welcome/forgotPassReset",true);
          xmlhttp.send(frmData);   
 }
+function changeLang(elem){
+	//alert(elem.value);   
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				location.reload();
 
+            }
+        };                                       
+         xmlhttp.open("GET",path+"/mvc/Settings/changeLang/lang/"+elem.value,true);
+         xmlhttp.send(); 
+}
 

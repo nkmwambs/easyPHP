@@ -15,7 +15,7 @@ if(isset($data['error'])){
 <button id="btnAddRow" onclick="addRow('bodyTable');">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
 <br><br><div id='info_div'></div>
 <form id="myform" method='POST'>
-            <input type="hidden" value="<?php echo $_SESSION['username']; ?>" id="KENo" name="KENo"/>
+            <input type="hidden" value="<?php echo $_SESSION['fname']; ?>" id="KENo" name="KENo"/>
             
             <table id='tblVch' style="width: 100%;">
                 <colgroup><col width="10%"/><col width="15%"/><col width="10%"/><col width="15%"/></colgroup>
