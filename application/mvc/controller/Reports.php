@@ -292,4 +292,13 @@ public function history($render=1,$path='',$tags=array("All")){
 	
 	return $data;
 }
+public function malnutrition($render=1,$path='',$tags=array("All")){
+	
+}
+public function registerMalCase($render=1,$path='',$tags=array("All")){
+	
+}
+public function updateMalCase($render=1,$path='',$tags=array("All")){
+	
+}
 }
