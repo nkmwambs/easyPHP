@@ -128,6 +128,22 @@ function massOcBalUpload(frmid){
          xmlhttp.open("POST",path+"/mvc/Settings/massOcBalUpload/public/0",true);
          xmlhttp.send(frmData);
 }
+function childrenDbUpdate(frmid){
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+            }
+        };                                
+         xmlhttp.open("POST",path+"/mvc/Settings/childrenDbUpdate",true);
+         xmlhttp.send(frmData);
+}
 function dateControl(elem){
 	if(elem.checked===true){
 		var flag=0;
@@ -294,6 +310,193 @@ function changeLimits(){
      xmlhttp.send();
 }
 
+function hvcClosureDate(){
+   var frm = document.getElementById("frmcloseIndexing");  
+   var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+            }
+        };
+                                               
+    xmlhttp.open("POST",path+"/mvc/Settings/hvcClosureDate/",true);
+    xmlhttp.send(frmData);
+}
+
+function addNewHvcVul(){
+	var frm = document.getElementById("frmVul");  
+   	var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+                location.reload();
+            }
+        };
+                                               
+    xmlhttp.open("POST",path+"/mvc/Settings/addNewHvcVul/",true);
+    xmlhttp.send(frmData);
+}
+function addNewHvcIntvn(){
+	var frm = document.getElementById("frmIntvn");  
+   	var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+                location.reload();
+            }
+        };
+                                               
+    xmlhttp.open("POST",path+"/mvc/Settings/addNewHvcIntvn/",true);
+    xmlhttp.send(frmData);
+}
+function addNewOtherIntvn(){
+	var frm = document.getElementById("frmOtherIntvn");  
+   	var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+                location.reload();
+            }
+        };
+                                               
+    xmlhttp.open("POST",path+"/mvc/Settings/addNewOtherIntvn/",true);
+    xmlhttp.send(frmData);
+}
+function chkDel(){
+	var chk = document.getElementsByClassName('chk');
+	//alert(chk.length);
+	var cnt=0;
+	for(var i=0;i<chk.length;i++){
+		if(chk.item(i).checked===true){
+			cnt++;
+		}
+	}
+	//alert(cnt);
+	if(cnt>0){
+		document.getElementById('delBtn').style.display='block';
+	}else{
+		document.getElementById('delBtn').style.display='none';
+	}
+}
+function chkDelIntvn(){
+	var chk = document.getElementsByClassName('chkIntv');
+	//alert(chk.length);
+	var cnt=0;
+	for(var i=0;i<chk.length;i++){
+		if(chk.item(i).checked===true){
+			cnt++;
+		}
+	}
+	//alert(cnt);
+	if(cnt>0){
+		document.getElementById('delIntvnBtn').style.display='block';
+	}else{
+		document.getElementById('delIntvnBtn').style.display='none';
+	}
+}
+function chkDelOtherIntvn(){
+	var chk = document.getElementsByClassName('chkOtherIntv');
+	//alert(chk.length);
+	var cnt=0;
+	for(var i=0;i<chk.length;i++){
+		if(chk.item(i).checked===true){
+			cnt++;
+		}
+	}
+	//alert(cnt);
+	if(cnt>0){
+		document.getElementById('delOtherIntvnBtn').style.display='block';
+	}else{
+		document.getElementById('delOtherIntvnBtn').style.display='none';
+	}
+}
+function delVul(){ 
+	//alert("Hey"); 
+	var chk = document.getElementsByClassName('chk');
+	var obj=[];
+	var cnt=0;
+	var vul_arr;
+	for(var i=0;i<chk.length;i++){
+		if(chk.item(i).checked===true){
+			cnt++;
+			vul_arr=chk.item(i).id.split('_');
+			obj.push(vul_arr[1]);
+			chk.item(i).parentNode.parentNode.style.display='none';
+		}
+	}
+	//alert(JSON.stringify(obj));
+	var str = obj;
+	document.getElementById('delStr').value=str;
+	
+	var frm = document.getElementById("frmDelStr");  
+   	var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+            }
+        };
+                                               
+    xmlhttp.open("POST",path+"/mvc/Settings/delVul/",true);
+    xmlhttp.send(frmData);
+}
+function delIntvn(){ 
+	//alert("Hey"); 
+	var chk = document.getElementsByClassName('chkIntv');
+	var obj=[];
+	var cnt=0;
+	var vul_arr;
+	for(var i=0;i<chk.length;i++){
+		if(chk.item(i).checked===true){
+			cnt++;
+			vul_arr=chk.item(i).id.split('_');
+			obj.push(vul_arr[1]);
+			chk.item(i).parentNode.parentNode.style.display='none';
+		}
+	}
+	//alert(JSON.stringify(obj));
+	var str = obj;
+	document.getElementById('delStrIntvn').value=str;
+	
+	var frm = document.getElementById("frmDelStrIntvn");  
+   	var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+            }
+        };
+                                               
+    xmlhttp.open("POST",path+"/mvc/Settings/delIntvn/",true);
+    xmlhttp.send(frmData);
+}
+function delOtherIntvn(){ 
+	//alert("Hey"); 
+	var chk = document.getElementsByClassName('chkOtherIntv');
+	var obj=[];
+	var cnt=0;
+	var vul_arr;
+	for(var i=0;i<chk.length;i++){
+		if(chk.item(i).checked===true){
+			cnt++;
+			vul_arr=chk.item(i).id.split('_');
+			obj.push(vul_arr[1]);
+			chk.item(i).parentNode.parentNode.style.display='none';
+		}
+	}
+	//alert(JSON.stringify(obj));
+	var str = obj;
+	document.getElementById('delStrOtherIntvn').value=str;
+	
+	var frm = document.getElementById("frmDelStrOtherIntvn");  
+   	var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                alert(xmlhttp.responseText);
+            }
+        };
+                                               
+    xmlhttp.open("POST",path+"/mvc/Settings/delOtherIntvn/",true);
+    xmlhttp.send(frmData);
+}
 function blockUser(uid,auth){
 	var userid=uid;
 	var auth_code=auth;

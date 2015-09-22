@@ -397,7 +397,7 @@ public function massOcBalUpload(){
 				$rec_body=array();
 				$recNum=0;
 
-				$this->_model->deleteQuery("","oschqbf");
+				//$this->_model->deleteQuery("","oschqbf");
 				//$this->_model->deleteQuery("","opfundsbal");					
 				
 				while($data=fgetcsv($handle,1000,",","'")){
@@ -416,6 +416,29 @@ public function massOcBalUpload(){
 					}
 				print_r("Upload successful!");
 				//print_r($rec_body);
+		
+}
+public function childrenDbUpdate(){
+		$file = $_FILES['childdetails']['tmp_name'];
+		$handle = fopen($file, "r");
+				$rec=array();
+				$recNum=0;
+
+				$this->_model->deleteQuery("","childdetails");			
+				
+				while($data=fgetcsv($handle,1000,",","'")){
+						$rec['cstName']=$data[0];
+						$rec['pNo']=$data[1];
+						$rec['childNo']=$data[2];
+						$rec['childName']=$data[3];
+						$rec['dob']=$data[4];
+						$rec['sex']=$data[5];
+						
+						$this->_model->insertRecord($rec,"childdetails");
+
+											
+					}
+				print_r("Upload successful!");
 		
 }
 	public function viewPlansHeader($render=2,$path="",$tags=array("3","9")){
@@ -551,6 +574,7 @@ public function hvcSettings($render=1,$path='',$tags=array("All")){
 	$data=array();
 	$cspLimit=0;
 	$cdspLimit=0;
+	
 	//Get Limits
 	$limits_arr = $this->_model->getAllRecords("","hvc_limit");
 	foreach ($limits_arr as $value) {
@@ -561,11 +585,43 @@ public function hvcSettings($render=1,$path='',$tags=array("All")){
 		}
 	}
 	
+	//Get the Recent HVC Indexing Closure Date and FY
+	$max_closure_date = $this->_model->getAllRecords("","hvc_closure_dates","",array("MAX(fy)","fy","closureDate"));
+	
+	//Get Vulnerabilities
+	$vul_arr = $this->_model->getAllRecords("","vulnerability");
+	
+	//Get Interventions
+	$intvn_arr = $this->_model->getAllRecords("","intervention");
+	
+	//Get Non-HVC Intervention
+	$otherIntvn_arr = $this->_model->getAllRecords("","non_hvc_int");
+	
+	
 	$data['csp']=$cspLimit;
 	$data['cdsp']=$cdspLimit;
+	$data['current_closure_date']=$max_closure_date[0];
+	$data['vul']=$vul_arr;
+	$data['intvn']=$intvn_arr;
+	$data['otherIntvn']=$otherIntvn_arr;
 	return $data;
 }
 
+public function addNewHvcVul(){
+	$vul=array();
+	$vul['vul'] = $_POST['vul'];
+	echo $this->_model->insertRecord($vul,"vulnerability");
+}
+public function addNewHvcIntvn(){
+	$intvn=array();
+	$intvn['intervene'] = $_POST['hvcSup'];
+	echo $this->_model->insertRecord($intvn,"intervention");	
+}
+public function addNewOtherIntvn(){
+	$otherIntvn=array();
+	$otherIntvn['nonHvc'] = $_POST['otherHvcSup'];
+	echo $this->_model->insertRecord($otherIntvn,"non_hvc_int");	
+}
 public function changeLimits(){
 	$cspLimit=$this->choice[1];
 	$cdspLimit=$this->choice[3];
@@ -579,7 +635,62 @@ public function changeLimits(){
 	$this->_model->updateQuery($sets_csp,$csp_cond,"hvc_limit");
 	$cdsp=$this->_model->updateQuery($sets_cdsp,$cdsp_cond,"hvc_limit");
 	
-	echo $cdsp;
+	if($cdsp===1){
+		echo "Changes done successfully";
+	}
+}
+public function hvcClosureDate(){
+	$closureDate = $_POST['closeIndexing'];
+	$fy = $_POST['indexingFy'];//Resources::func("get_financial_year",array($closureDate));
+	
+	//Check if a record exist for the requested fy
+	$rec_cond = $this->_model->where(array(array("where","fy",$fy,"=")));
+	$rec_arr = $this->_model->getAllRecords($rec_cond,"hvc_closure_dates");
+	
+	if(count($rec_arr)>0){
+		//Update the record
+		echo "Closure date updated successfully!";
+	}else{
+		//Insert the new Record
+		$new_rec=array();
+		$new_rec['closureDate']=$closureDate;
+		$new_rec['fy']=$fy;
+		
+		$rst = $this->_model->insertRecord($new_rec,"hvc_closure_dates");
+		
+		echo $rst;
+	}
+	
+}
+public function delVul(){
+	$str = $_POST['delStr'];
+	$str_arr=explode(",", $str);
+	
+	for($i=0;$i<count($str_arr);$i++){
+		$del_cond = $this->_model->where(array(array("where","vulID",$str_arr[$i],"=")));
+		$del=$this->_model->deleteQuery($del_cond,"vulnerability");
+	}
+	echo "Record(s) deleted successfully!";
+}
+public function delIntvn(){
+	$str = $_POST['delStrIntvn'];
+	$str_arr=explode(",", $str);
+	
+	for($i=0;$i<count($str_arr);$i++){
+		$del_cond = $this->_model->where(array(array("where","intID",$str_arr[$i],"=")));
+		$del=$this->_model->deleteQuery($del_cond,"intervention");
+	}
+	echo "Record(s) deleted successfully!";
+}
+public function delOtherIntvn(){
+	$str = $_POST['delStrOtherIntvn'];
+	$str_arr=explode(",", $str);
+	
+	for($i=0;$i<count($str_arr);$i++){
+		$del_cond = $this->_model->where(array(array("where","nonID",$str_arr[$i],"=")));
+		$del=$this->_model->deleteQuery($del_cond,"non_hvc_int");
+	}
+	echo "Record(s) deleted successfully!";
 }
 public function blockUser(){
 	$userid=$this->choice[1];

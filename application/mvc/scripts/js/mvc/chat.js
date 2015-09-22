@@ -1,21 +1,3 @@
-/*
-
-Copyright (c) 2009 Anant Garg (anantgarg.com | inscripts.com)
-
-This script may be used for non-commercial purposes only. For any
-commercial purposes, please contact the author at 
-anant.garg@inscripts.com
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
-*/
 var path = 'http://'+location.hostname+'/easyPHP/';
 var windowFocus = true;
 var username;

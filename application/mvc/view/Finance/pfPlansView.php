@@ -3,7 +3,7 @@ if(isset($data['error'])){
 	echo $data['error'];
 	exit;
 }
-//print_r($data[1]);
+print_r($data[1]);
 echo "<table id='tblListOfAllItems' style='width:50%;'>";
 echo "<caption>Total Budget Summary</caption>";
 echo "<tr><th>Project</th><th>Views</th><th>Total Budget</th><th>Total Beneficiaries</th><th>Dollar Rate</th><th>Exchange Rate</th><th># Of Months</th><th>FY CDSP Projection Budget</th><th>Prev. FY Balance</th><th>CSP Grant</th><th>Total Expected Budget</th></tr>";

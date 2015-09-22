@@ -12,7 +12,7 @@ public static function import($path){
 		if(file_exists(BASE_PATH.DS."system".DS."libs".$path_str.".class.php")){
 			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".class.php";
 		}else{
-			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".php";
+			$fPath = BASE_PATH.DS."system".DS."libs".DS.$path_str.".php";
 		}
 		
 		require_once $fPath;

@@ -291,6 +291,7 @@ function getMthsforQtr(){
  	}
 
 }
+
 function submitHvcIndex(){
 	//alert("Hello");
 	var frm = document.getElementById('indexing');  
@@ -412,7 +413,20 @@ function isInt(value) {
 }
 function completeChildNo(elem){
 	//alert(elem.value);
-	var icp = document.getElementById('pNo').value;
+	if(document.getElementById('prg').value==='2'){
+		var icp = document.getElementById('pNo').value;
+		document.getElementById('prg').style.borderColor='';
+	}else if(document.getElementById('prg').value==='1'){
+		var icp = document.getElementById('csNo').value;
+		document.getElementById('prg').style.borderColor='';
+	}else{
+		document.getElementById('prg').style.borderColor='red';
+		document.getElementById('childNo').value="";
+		alert('Program type Cannot be empty!');
+		exit;
+	}
+	
+	
 	var cnum = elem.value;
 	if(isNaN(parseInt(cnum))){
 		alert("Enter numeric values only!");
@@ -427,17 +441,121 @@ function completeChildNo(elem){
 		exit;
 	}
 	
+	
+	var childNum="";
 	if(cnum.length===1){
-		document.getElementById('childNo').value=icp+"000"+cnum;
+		document.getElementById('childNo').value=icp+"-"+"000"+cnum;
+		childNum=icp+"-"+"000"+cnum;
 	}else if(cnum.length===2){
-		document.getElementById('childNo').value=icp+"00"+cnum;
+		document.getElementById('childNo').value=icp+"-"+"00"+cnum;
+		childNum=icp+"-"+"00"+cnum;
 	}else if(cnum.length===3){
-		document.getElementById('childNo').value=icp+"0"+cnum;
+		document.getElementById('childNo').value=icp+"-"+"0"+cnum;
+		childNum=icp+"-"+"0"+cnum;
 	}else{
-		document.getElementById('childNo').value=icp+cnum;
+		document.getElementById('childNo').value=icp+"-"+cnum;
+		childNum=icp+"-"+cnum;
+	}
+
+		xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				//alert(xmlhttp.responseText);
+				var obj = JSON.parse(xmlhttp.responseText);
+				//alert(obj.pNo);
+				document.getElementById('childName').value=obj.childName;
+				document.getElementById('newchildDOB').value=obj.dob;
+				
+				var date2=new Date(document.getElementById('newchildDOB').value);
+				var date1=new Date();
+				var noOfmonths	= monthDiff(date1,date2);				
+				var years=parseInt(noOfmonths)/12;
+				
+				document.getElementById('childAge').value=years.toFixed(2);
+				document.getElementById('childSex').value=obj.sex;
+				
+          }
+        };
+		
+    if(document.getElementById('prg').value==='2'){
+		var newNum = childNum.replace("-","_");
+      	xmlhttp.open("GET",path+"mvc/Reports/getChildrenDetails/cnum/"+newNum,true);      
+        xmlhttp.send();	
+     }
+	
+}
+function changeToText(elemid) {
+  var obj = document.getElementById(elemid);
+  document.getElementById('sexDiv').removeChild(obj);
+  var element = document.createElement('input');
+  element.setAttribute('type', 'text');
+  element.setAttribute('readonly', 'readonly');
+  element.setAttribute('id', elemid);
+  document.getElementById('sexDiv').appendChild(element); 
+}
+function changeToSelect(elemid) {
+  var obj = document.getElementById(elemid);
+  document.getElementById('sexDiv').removeChild(obj);
+  var element = document.createElement('select');
+  element.setAttribute('name', 'sex');
+  element.setAttribute('id', 'childSex');
+  var sel=document.createElement('OPTION');
+  sel.value='';
+  sel.innerHTML='Select Gender...';
+  element.appendChild(sel);
+  var male = document.createElement('OPTION');
+  male.value='Male';
+  male.innerHTML='Male';
+  element.appendChild(male);
+  var female = document.createElement('OPTION');
+  female.value='Female';
+  female.innerHTML='Female';
+  element.appendChild(female);  
+  document.getElementById('sexDiv').appendChild(element);
+}
+function showHvcBody(){
+	
+	document.getElementById("body_div").style.display='block';
+	var prg=document.getElementById('prg').value;
+	document.getElementById('childName').value = "";
+	document.getElementById("childAge").value = "";
+	document.getElementById('childNo').value='';
+	if(prg==='1'){
+		document.getElementById('childName').readOnly = false;	
+		if(document.getElementById('childDOB')){
+			document.getElementById('childDOB').value = "";
+		}else{
+			document.getElementById('newchildDOB').id = "childDOB";
+			document.getElementById('childDOB').value = "";
+		}
+		if(document.getElementById('childSex').tagName==='INPUT'){
+			document.getElementById('childSex').removeAttribute("type");
+			document.getElementById('childSex').removeAttribute("readonly");
+			changeToSelect('childSex');
+		}
+		//if(document.getElementById('childNo').hasAttribute('onblur')===true){
+			//document.getElementById('childNo').removeAttribute('onblur');
+		//}
+		
+	}else if(prg==='2'){
+		document.getElementById('childName').readOnly = true;
+		if(document.getElementById('childDOB')){
+			document.getElementById('childDOB').id='newchildDOB';
+			document.getElementById('newchildDOB').value = "";
+		}else{
+			document.getElementById('newchildDOB').value = "";
+		}
+		
+		if(document.getElementById('childSex').tagName==='SELECT'){
+			changeToText('childSex');
+		}
+		
+		//if(document.getElementById('childNo').hasAttribute('onblur')===false){
+			//document.getElementById('childNo').setAttribute('onblur','completeChildNo(this)');
+		//}
+		//alert(document.getElementById('childNo').hasAttribute('onblur'));
 	}
 }
-
 function toogleHvcView(cst){
 	var rwCst = cst.replace("-","_");
 	//alert(rwCst);
@@ -453,4 +571,223 @@ function toogleHvcView(cst){
         xmlhttp.send();
 }
 
+function newMalCase(frmid){
+	//alert(frmid);
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+                clrForm();
+            }
+        };
+        
+var validate = document.getElementsByClassName('validate');
 
+var cnt=0;
+for(var k=0;k<validate.length;k++){
+	if(validate.item(k).value===""){
+		cnt++;
+		validate.item(k).style.borderColor='red';
+	}
+}        
+
+if(cnt!==0){
+	alert(cnt +" mandatory fields are empty!");
+	exit;
+}
+        
+var cnf = confirm("Are you sure you want to submit this record!");
+
+if(!cnf){
+	alert("Record not submitted!");
+}else{
+                                               
+         xmlhttp.open("POST",path+"/mvc/Reports/newMalCase",true);
+         xmlhttp.send(frmData);
+}
+}
+function chkifNum(elem){
+	var cnum = elem.value;
+	
+	if(isNaN(parseInt(cnum))){
+		alert("Enter numeric values only!");
+		elem.value="";
+		elem.style.backgroundColor='red';
+		exit;
+	}
+		
+}
+function clrForm(){
+	var inputs = document.getElementsByClassName('validate');
+	for(var i=0;i<inputs.length;i++){
+		if(inputs.item(i).hasAttribute('readonly')===false){
+			inputs.item(i).value="";
+		}
+	}	
+}
+function tfiUpdate(childID,malID){
+	//var childID=document.getElementById('cNo').value;
+	//svar malID=document.getElementById('malID').value;
+	xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+		var childNo = childID.replace("-","");
+		//alert(childNo);
+      	xmlhttp.open("GET",path+"mvc/Reports/tfiUpdate/cNo/"+childNo+"/malID/"+malID,true);      
+        xmlhttp.send();
+}
+function newtfiUpdate(frmid){
+		var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+                frm.reset();
+            }
+        };
+        
+        xmlhttp.open("POST",path+"/mvc/Reports/newtfiUpdate",true);
+        xmlhttp.send(frmData);
+}
+function malmetricsUpdate(childID,malID){
+	//var childID=document.getElementById('cNo').value;
+	//svar malID=document.getElementById('malID').value;
+	xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+		var childNo = childID.replace("-","");
+		//alert(childNo);
+      	xmlhttp.open("GET",path+"mvc/Reports/malmetricsUpdate/cNo/"+childNo+"/malID/"+malID,true);      
+        xmlhttp.send();	
+}
+function newmalmetricsupdate(frmid){
+		var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+                frm.reset();
+            }
+        };
+        
+        xmlhttp.open("POST",path+"/mvc/Reports/newmalmetricsupdate",true);
+        xmlhttp.send(frmData);	
+}
+function malcaseview(malID){
+	xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				document.write(xmlhttp.responseText);
+				//location.reload();
+          }
+        };
+		
+      	xmlhttp.open("GET",path+"mvc/Reports/malcaseview/malID/"+malID,true);      
+        xmlhttp.send();		
+}
+function tfiEnrol(childID,malID){
+	xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+		var childNo = childID.replace("-","");
+      	xmlhttp.open("GET",path+"mvc/Reports/tfienrol/cNo/"+childNo+"/malID/"+malID,true);      
+        xmlhttp.send();	
+}
+function newothertfienrol(frmid){
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+                frm.reset();
+            }
+        };
+        
+        xmlhttp.open("POST",path+"/mvc/Reports/newothertfienrol",true);
+        xmlhttp.send(frmData);		
+}
+function exitMalCase(childID,malID){
+		xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+		var childNo = childID.replace("-","");
+      	xmlhttp.open("GET",path+"mvc/Reports/exitMalCase/cNo/"+childNo+"/malID/"+malID,true);      
+        xmlhttp.send();	
+}
+function exitRequest(frmid){
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+                frm.reset();
+            }
+        };
+        
+        xmlhttp.open("POST",path+"/mvc/Reports/exitRequest",true);
+        xmlhttp.send(frmData);
+}
+function declineRequest(frmid){
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+                frm.reset();
+            }
+        };
+        
+        xmlhttp.open("POST",path+"/mvc/Reports/declineRequest",true);
+        xmlhttp.send(frmData);	
+}

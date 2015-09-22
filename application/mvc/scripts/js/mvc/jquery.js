@@ -13,7 +13,14 @@
 				$(".dateSelector").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//childDOB
 				$("#childDOB").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//childDOB
 				$("#closeIndexing").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//childDOB
-				$("#closureDateCash").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
+				$("#closureDateCash").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//regDate
+				$("#regDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//diagDate
+				$("#diagDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//tfiDate
+				$("#tfiDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//metricDate
+				$("#metricDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//othertfienroldate
+				$("#othertfienroldate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//requestDate
+				$("#requestDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//exitDate
+				$("#exitDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//exitDate
 		});
 		
 	  //  if (document.addEventListener) {

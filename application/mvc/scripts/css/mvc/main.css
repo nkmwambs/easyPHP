@@ -11,6 +11,12 @@ label{
      font-size: 10pt;
      white-space: nowrap;
 }
+#info_tbl, td,th {
+     padding: 8px;
+ }
+#info_tbl, th, td {
+    border: 1px solid grey;
+ } 
 #sec_child{
     font-size: 10pt;
 }
@@ -34,6 +40,7 @@ label{
 #info_tbl tr:nth-child(odd){
     background-color: lightgray;
 }
+
 #loadimg{
     position: relative;
     top:290px;

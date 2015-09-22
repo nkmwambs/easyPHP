@@ -477,7 +477,8 @@ public function getRequestsQuery($cond){
     return $rst;
 }
 public function countNewSchedules($cond){
-    $s = "SELECT planheader.icpNo,count(plansschedule.approved) as cnt,sum(plansschedule.totalCost) as Cost,icppopulation.noOfBen as noOfBen,icppopulation.noOfMonths as noOfMonths,opfundsbal.amount as supportBal FROM planheader RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID LEFT JOIN users ON planheader.icpNo=users.fname LEFT JOIN icppopulation ON planheader.icpNo=icppopulation.icpNo LEFT JOIN opfundsbalheader ON planheader.icpNo=opfundsbalheader.icpNo LEFT JOIN opfundsbal ON opfundsbalheader.balHdID=opfundsbal.balHdID  $cond GROUP BY planheader.icpNo";
+	//SET SESSION SQL_BIG_SELECTS=1 SET GLOBAL max_join_size=18446744073709551615;
+    $s = "SELECT planheader.icpNo,count(plansschedule.approved) as cnt,sum(plansschedule.totalCost) as Cost,icppopulation.noOfBen as noOfBen,icppopulation.noOfMonths as noOfMonths FROM planheader RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID LEFT JOIN users ON planheader.icpNo=users.fname LEFT JOIN icppopulation ON planheader.icpNo=icppopulation.icpNo ".$cond." GROUP BY planheader.icpNo";
     //$q =  mysql_query($s);
     $q=$this->conn->prepare($s);
 	$q->execute();
@@ -487,6 +488,16 @@ public function countNewSchedules($cond){
     }
     return $rst;
     
+}
+public function getSupportFundsInCluster($cond){
+    $s = "SELECT opfundsbalheader.icpNo as icpNo,opfundsbal.amount as funds FROM opfundsbalheader LEFT JOIN opfundsbal ON opfundsbalheader.balHdID=opfundsbal.balHdID $cond";
+    $q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+        $rst[$row->icpNo]=$row->funds;
+    }
+    return $rst;	
 }
 public function viewFundsBal($cond){
     $s = "SELECT  opfundsbalheader.closureDate, opfundsbal.funds,opfundsbalheader.icpNo,opfundsbal.amount FROM opfundsbal LEFT JOIN opfundsbalheader ON opfundsbal.balHdID=opfundsbalheader.balHdID $cond";

@@ -281,4 +281,17 @@ public function notifyPassChange($render=1,$path='',$tags=array("0")){
 			
 			return $data;
 }
+public function test($render=1,$path='',$tags=array("0","All")){
+	$data=array();
+	$joins = $this->_model->tableJoins(array("LEFT JOIN"=>array("voucher_header"=>"hID","voucher_body"=>"hID")));
+	$test_cond = $this->_model->where(array(array("where","voucher_header.icpNo","KE381","=")));
+	$test_arr = $this->_model->getAllRecords($test_cond,"voucher_header","GROUP BY voucher_body.VNumber ORDER BY voucher_header.VNumber",array("voucher_header.icpNo","voucher_header.TDate","voucher_header.Payee as Payee","voucher_header.Fy","voucher_header.VNumber","sum(voucher_body.Cost)"),$joins);
+	
+	$data['cond']=$test_cond;
+	$data['arr']=$test_arr;
+	$data['join']=$joins;
+	
+	return $data;	
+}
+
 }

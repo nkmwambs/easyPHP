@@ -43,13 +43,13 @@ $sess = Resources::session();
 			}
             if(isset($_SESSION['adm'])){echo '<li>'.Resources::img("switch.png").' '.Resources::a_href("Welcome/switchUser","Switch User").'</li><hr>';}
             echo "<li>".Resources::img("logout.png")." ".Resources::a_href("Welcome/logout/public/1","Log Out",array())."</li><hr>";
-            echo "<li>";
-            	echo "<select onchange='changeLang(this);'>";
-				echo "<option value=''>Select Preferred Language ...</option>";
-				echo "<option value='eng'>English</option>";
-				echo "<option value='swa'>Swahili</option>";
-				echo "</select>";
-            echo "</li>";
+            //echo "<li>";
+            	//echo "<select onchange='changeLang(this);'>";
+				//echo "<option value=''>Select Preferred Language ...</option>";
+				//echo "<option value='eng'>English</option>";
+				//echo "<option value='swa'>Swahili</option>";
+				//echo "</select>";
+            //echo "</li>";
             echo '</ul>';
         }else{
             echo '<li>'.Resources::img("welcome.png").Resources::translate_item("welcome_welcome_menu").' '.Resources::translate_item("guest_welcome_menu").' <span style="float:right;">&Del;</span>';
@@ -57,13 +57,13 @@ $sess = Resources::session();
             //echo '<li id="login_link">'. Resources::img("lock.png")." ". Resources::a_href("Welcome/login/public/1","Login").'</li><hr>';
             echo '<li id="login_link" onclick="showLogin();" style="color:blue;">'. Resources::img("lock.png").Resources::translate_item("login_welcome_menu").'</li><hr>';
             //echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/0","Register User",array("onclick"=>"")).'</li><hr>';
-            echo "<li>";
-            	echo "<select onchange='changeLang(this);'>";
-				echo "<option value=''>Select Preferred Language ...</option>";
-				echo "<option value='eng'>English</option>";
-				echo "<option value='swa'>Swahili</option>";
-				echo "</select>";
-            echo "</li>";
+            //echo "<li>";
+            	//echo "<select onchange='changeLang(this);'>";
+				//echo "<option value=''>Select Preferred Language ...</option>";
+				//echo "<option value='eng'>English</option>";
+				//echo "<option value='swa'>Swahili</option>";
+				//echo "</select>";
+            //echo "</li>";
             echo '</ul>';
         }
         ?> 

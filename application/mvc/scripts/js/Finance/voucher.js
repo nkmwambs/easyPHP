@@ -614,6 +614,8 @@ function calcVNumber(){
 	var prevDateEpoch=new Date(prevDate);
 	var prevSTMP=prevDateEpoch.getTime();
 	
+	var prevMonth= prevDate.substr(5,2);
+	
 	var prevVNumber= document.getElementById('prevVNumber').value;
 	var fy=prevVNumber.substr(0,2);
 	var month=prevVNumber.substr(2,2);
@@ -623,12 +625,14 @@ function calcVNumber(){
 	if(rawNextVNumber<10){
 		nextVNumber='0'+rawNextVNumber;
 	}
+	
 	var curVNumber=fy+month+nextVNumber;
 	
-	
-	if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)!==parseInt(month)){
-		//error_div
-		//alert("Error");
+	if(parseInt(curMonth)!==parseInt(month)){
+		var curVNumber=fy+curMonth+"01";
+	}
+	//alert(month);
+	if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)!==parseInt(prevMonth)){
 		document.getElementById('info_div').setAttribute("id","error_div");
 		document.getElementById('error_div').innerHTML='Error <img id="" src= "'+path+'/system/images/error.png"/><br> Date not allowed! The next allowable date should equal to and beyond '+prevDate+" and a date in Month "+month+". To Proceed to the next month dates, please consider submitting month "+month+" Report";
 		document.getElementById('TDate').value="";
@@ -636,7 +640,6 @@ function calcVNumber(){
 		document.getElementById('TDate').style.backgroundColor='red';
 		document.getElementById('VNumber').style.backgroundColor='red';
 	}else{
-		//alert("Ok");
 		document.getElementById('TDate').style.backgroundColor='white';
 		document.getElementById('VNumber').style.backgroundColor='white';
 		if(document.getElementById('error_div')){

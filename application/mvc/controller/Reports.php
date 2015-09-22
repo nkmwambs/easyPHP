@@ -150,7 +150,17 @@ class Reports_Controller extends E_Controller
         $data = "Monthly PD's Report!";
 		return $data;
     }
-    
+public function getChildrenDetails(){
+	$str=$this->choice[1];
+	$newStr = str_replace("_","-",$str);
+	
+	//echo $newStr;
+	
+	$chk_cond = $this->_model->where(array(array("where","childNo",$newStr,"=")));
+	$chk_arr = $this->_model->getAllRecords($chk_cond,"childdetails");
+	
+	print(json_encode($chk_arr[0]));
+}
         
     public function hvcIndexing(){
         //$data = "Annual HVC Indexing Form!";
@@ -171,12 +181,55 @@ class Reports_Controller extends E_Controller
 		//non_hvc_int
 		$otherInt_arr = $this->_model->getAllRecords("","non_hvc_int");
 		
+		//Global Allowable Active Case count CSP
+		$cnt_csp_cond = $this->_model->where(array(array("where","prg","1","=")));
+		$cnt_csp_arr = $this->_model->getAllRecords($cnt_csp_cond,"hvc_limit");
+		$csp_limit = $cnt_csp_arr[0]->limit;
+		
+		//Active CSP cases count
+		$active_csp_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"="),array("AND","prg","1","="),array("AND","active","1","=")));
+		$active_csp_arr = $this->_model->getAllRecords($active_csp_cond,"indexing");
+		$active_csp = count($active_csp_arr);
+		
+		//Specific ICP allowable CSP cases
+		$allowable_csp = $csp_limit-$active_csp;
+		
+		
+		//Global Allowable Active Case count CSP
+		$cnt_cdsp_cond = $this->_model->where(array(array("where","prg","2","=")));
+		$cnt_cdsp_arr = $this->_model->getAllRecords($cnt_cdsp_cond,"hvc_limit");
+		$cdsp_limit = $cnt_cdsp_arr[0]->limit;
+		
+			//Active CDSP cases count
+		$active_cdsp_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"="),array("AND","prg","2","="),array("AND","active","1","=")));
+		$active_cdsp_arr = $this->_model->getAllRecords($active_cdsp_cond,"indexing");
+		$active_cdsp = count($active_cdsp_arr);
+		
+		//Specific ICP allowable CSP cases
+		$allowable_cdsp = $cdsp_limit-$active_cdsp;
+		
+		//Get the Recent HVC Indexing Closure Date and FY
+		$max_closure_date = $this->_model->getAllRecords("","hvc_closure_dates","",array("MAX(fy)","fy","closureDate"));
+		
+		//Check if ICP has CSP
+		$has_csp_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$has_csp_arr = $this->_model->getAllRecords($has_csp_cond,"csp_projects");
+		$has_csp = count($has_csp_arr);
+		
+		//Get CSP Number
+		if($has_csp===1){
+			$data['csp']=$has_csp_arr[0]->cspNo;
+		}
 		
 		$data['clst']=$clst;
 		$data['icp']=$icp;
 		$data['vul']=$vul_arr;
 		$data['int']=$int_arr;
 		$data['otherInt']=$otherInt_arr;
+		$data['csp_limit']=$allowable_csp;
+		$data['cdsp_limit']=$allowable_cdsp;
+		$data['current_closure_date']=$max_closure_date[0];
+		$data['has_csp']=$has_csp;
 		
 		$data['test']="";
 		//return $data;
@@ -202,14 +255,56 @@ class Reports_Controller extends E_Controller
 		$arr = $_POST;
 		//print_r($_POST);
 		
-		//Count duplicated
-		$duplicate_cond = $this->_model->where(array(array("where","childNo",$_POST['childNo'],"=")));
-		$duplicate_arr = $this->_model->getAllRecords($duplicate_cond,"indexing");
+		//Check if deadline
+		$deadline_arr = $this->_model->getAllRecords("","hvc_closure_dates","",array("MAX(fy)","fy","closureDate"));
+		$max_date = $deadline_arr[0]->closureDate;
 		
-		if(!empty($duplicate_arr)){
-			echo "You are posting a duplicate record. A beneficiary can only be re-indexed after a period not less than one Year";
+		//Check allowable slots
+		
+				//Global Allowable Active Case count CSP
+				$cnt_csp_cond = $this->_model->where(array(array("where","prg","1","=")));
+				$cnt_csp_arr = $this->_model->getAllRecords($cnt_csp_cond,"hvc_limit");
+				$csp_limit = $cnt_csp_arr[0]->limit;
+				
+				//Active CSP cases count
+				$active_csp_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"="),array("AND","prg","1","="),array("AND","active","1","=")));
+				$active_csp_arr = $this->_model->getAllRecords($active_csp_cond,"indexing");
+				$active_csp = count($active_csp_arr);
+				
+				//Specific ICP allowable CSP cases
+				$allowable_csp = $csp_limit-$active_csp;
+				
+				
+				//Global Allowable Active Case count CSP
+				$cnt_cdsp_cond = $this->_model->where(array(array("where","prg","2","=")));
+				$cnt_cdsp_arr = $this->_model->getAllRecords($cnt_cdsp_cond,"hvc_limit");
+				$cdsp_limit = $cnt_cdsp_arr[0]->limit;
+				
+					//Active CDSP cases count
+				$active_cdsp_cond = $this->_model->where(array(array("where","pNo",Resources::session()->fname,"="),array("AND","prg","2","="),array("AND","active","1","=")));
+				$active_cdsp_arr = $this->_model->getAllRecords($active_cdsp_cond,"indexing");
+				$active_cdsp = count($active_cdsp_arr);
+				
+				//Specific ICP allowable CSP cases
+				$allowable_cdsp = $cdsp_limit-$active_cdsp;
+		
+		
+		if($max_date<date("Y-m-d")){
+			echo "Indexing deadline has passed! Case not Indexed";
+		}elseif($allowable_csp===0&&$_POST['prg']==='1'){
+			echo "You have reached the maximum number allowable to be indexed for CSP program. Record not posted!";
+		}elseif($allowable_cdsp===0&&$_POST['prg']==='2'){
+			echo "You have reached the maximum number allowable to be indexed for CDSP program. Record not posted!";
 		}else{
-		echo $this->_model->insertRecord($arr,"indexing");
+			//Count duplicated
+			$duplicate_cond = $this->_model->where(array(array("where","childNo",$_POST['childNo'],"="),array("AND","active",1,"=")));
+			$duplicate_arr = $this->_model->getAllRecords($duplicate_cond,"indexing");
+			
+			if(!empty($duplicate_arr)){
+				echo "You are posting a duplicate record. A beneficiary can only be re-indexed after a period not less than one Year";
+			}else{
+			echo $this->_model->insertRecord($arr,"indexing");
+			}
 		}
 	}
 	public function manageHvc($render=1,$path="",$tags=array("All")){
@@ -296,9 +391,184 @@ public function malnutrition($render=1,$path='',$tags=array("All")){
 	
 }
 public function registerMalCase($render=1,$path='',$tags=array("All")){
+	$data=array();
+	//Get ICP Cluster
+		$clst_cond = $this->_model->where(array(array("where","fname",Resources::session()->fname,"=")));
+		$clst_arr = $this->_model->getAllRecords($clst_cond,"users");
+		$clst = $clst_arr[0]->cname;
+		$icp = $clst_arr[0]->fname;
+		
+	//Check if ICP has CSP
+		$has_csp_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$has_csp_arr = $this->_model->getAllRecords($has_csp_cond,"csp_projects");
+		$has_csp = count($has_csp_arr);
+		
+		//Get CSP Number
+		if($has_csp===1){
+			$data['csp']=$has_csp_arr[0]->cspNo;
+		}
 	
+	$data['cst']=$clst;
+	$data['icp']=$icp;
+	$data['has_csp']=$has_csp;
+	
+	return $data;
 }
 public function updateMalCase($render=1,$path='',$tags=array("All")){
+	$icpNo = Resources::session()->fname;
+	//Get All Cases
+	$mal_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"=")));
+	$mal_arr = $this->_model->getAllRecords($mal_cond,"malnutrition","",array("malID","childNo","childName","childDOB","sex"));
 	
+	$data=array();
+	$data['mal']=$mal_arr;
+	return $data;
+}
+public function newMalCase(){
+	//Check for Duplicates
+	$childNo = $_POST['childNo'];
+	$chk_dups_cond = $this->_model->where(array(array("where","childNo",$childNo,"=")));
+	$chk_dups_arr = $this->_model->getAllRecords($chk_dups_cond,"malnutrition","",array("icpNo","childNo"));
+	$chk_if_exists = count($chk_dups_arr);
+	
+	if($chk_if_exists===0){
+		echo $this->_model->insertRecord($_POST,"malnutrition");	
+	}else{
+		echo "Record already exists";
+	}
+	
+}
+public function tfiUpdate($render=1,$path='',$tags=array("All")){
+	//Get records posted
+	$malID=$this->choice[3];
+	$rec_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$rec_arr = $this->_model->getAllRecords($rec_cond,"malupdatetfi");
+	
+	$data=array();
+	$data['childNo']=$this->choice[1];
+	$data['malID']=$this->choice[3];
+	$data['rec']=$rec_arr;
+	return $data;
+}
+public function newtfiUpdate(){
+	echo $this->_model->insertRecord($_POST,"malupdatetfi");
+}
+public function malmetricsUpdate($render=1,$path='',$tags=array("All")){
+	//Get records posted
+	$malID=$this->choice[3];
+	$rec_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$rec_arr = $this->_model->getAllRecords($rec_cond,"malmetricsupdate");
+	
+	$data=array();
+	$data['childNo']=$this->choice[1];
+	$data['malID']=$this->choice[3];
+	$data['rec']=$rec_arr;
+	return $data;
+}
+public function newmalmetricsupdate(){
+	echo $this->_model->insertRecord($_POST,"malmetricsupdate");
+}
+public function malcaseview($render=1,$path='',$tags=array("All")){
+	$malID=$this->choice[1];
+	
+	//Get Mal Indentifier Record
+	$mal_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$mal_arr = $this->_model->getAllRecords($mal_cond,"malnutrition");
+	
+	//Enrol Date
+	$enrolDate = "";
+	$enrol_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$enrol_arr = $this->_model->getAllRecords($enrol_cond,"othertfienrol");
+	if(!empty($enrol_arr)){
+		$enrolDate=$enrol_arr[0]->othertfienroldate;
+	}
+	
+	//TFI Requests
+	$tfi_req_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$tfi_req_arr = $this->_model->getAllRecords($tfi_req_cond,"malupdatetfi");
+	
+	//Metric Update
+	$metrics_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$metrics_arr = $this->_model->getAllRecords($metrics_cond,"malmetricsupdate");
+	
+	//Beneficiary Exit Status
+	$exitStatus="Active";//Others: Exit Requested, Exited
+	$exitParams=array();;
+	$exit_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$exit_arr = $this->_model->getAllRecords($exit_cond,"malcaseexit");
+	if(!empty($exit_arr)){
+		if($exit_arr[0]->exitStatus==='0'){
+			$exitStatus='Exit Requested';
+		}elseif($exit_arr[0]->exitStatus==='1'){
+			$exitStatus='Exited';
+		}
+		$exitParams=$exit_arr[0];
+	}
+	
+	
+	$data=array();
+	
+	$data['case']=$mal_arr[0];
+	$data['enrolDateOther']=$enrolDate;
+	$data['tfiReq']=$tfi_req_arr;
+	$data['metricsUpdate']=$metrics_arr;
+	$data['exitParamaters']=$exitParams;
+	$data['exitStatus']=$exitStatus;
+	$data['test']="";
+	
+	return $data;
+}
+public function tfienrol($render=1,$path='',$tags=array("All")){
+	//Get records posted
+	$malID=$this->choice[3];
+	$rec_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$rec_arr = $this->_model->getAllRecords($rec_cond,"othertfienrol");
+			
+	$data=array();
+	$data['childNo']=$this->choice[1];
+	$data['malID']=$this->choice[3];
+	$data['rec']=$rec_arr;
+	return $data;
+}
+public function newothertfienrol(){
+	//Find if Duplicate
+	$malID=$_POST['malID'];
+	$dup_cond=$this->_model->where(array(array("where","malID",$malID,"=")));
+	$dup_arr = $this->_model->getAllRecords($dup_cond,"othertfienrol");
+	if(count($dup_arr)>0){
+		echo "The beneficiary is already registered to be enrolled to a supplementary feeding program on ".$dup_arr[0]->othertfienroldate;
+	}else{
+		echo $this->_model->insertRecord($_POST,"othertfienrol");
+	}
+}
+public function exitMalCase($render=1,$path='',$tags=array("All")){
+	$malID = $this->choice[3];
+	//Exit Reasons
+	$reason_arr = $this->_model->getAllRecords("","exitreasons");
+	
+	//Get exit requests
+	$exitParams=array();
+	$exit_req_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	$exit_req_arr = $this->_model->getAllRecords($exit_req_cond,"malcaseexit");
+	if(!empty($exit_req_arr)){
+		$exitParams=$exit_req_arr[0];
+	}
+		
+	$data=array();
+	$data['childNo']=$this->choice[1];
+	$data['malID']=$this->choice[3];
+	$data['reasons']=$reason_arr;
+	$data['exitParams'] =$exitParams;
+	return $data;
+}
+public function exitRequest(){
+	//print_r($_POST);
+	echo $this->_model->insertRecord($_POST,"malcaseexit");
+}
+public function declineRequest(){
+	//print_r($_POST);
+	$malID=$_POST['malID'];
+	$del_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
+	echo $this->_model->deleteQuery($del_cond,"malcaseexit");
 }
 }

@@ -24,7 +24,7 @@ if((Resources::session()->userlevel==='2'&&!isset($data['setPF']))||isset($data[
 			echo Resources::a_href("Reports/hvcIndexing","<button>Back</button>");
 			
 			echo "Sort By Active State:";
-			echo "<SELECT id='stateSort'>";
+			echo "<SELECT id='stateSort' onchange='stateSort();'>";
 				echo "<option value=''>Select State ... </option>";
 				echo "<option value='1'>Active</option>";
 				echo "<option value='0'>Inactive</option>";

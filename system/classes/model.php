@@ -59,20 +59,42 @@ public function where($cond){
     }
     }
 
+public function tableJoins($joins=array()){
+	//array(JoinType=>array(table1=>table1Key,table2=>table2Key))
+	
+	//Output String
+	$join_str="";
+	
+	//Joined Tables array
+	$joinTables = array();
+	
+	//Join Fields
+	$joinFields = array();
+	
+	//Join Fields Number
+	$joinCount = sizeof($joins);
+	
+	foreach ($joins as $key => $value) {
+		$join_str.=$key;
+		$joinTables=array_keys($value);
+		$joinFields=array_values($value);	
+		
+		$join_str .=" ".$joinTables[1]." ON ".$joinTables[0].".".$joinFields[0]."=".$joinTables[1].".".$joinFields[1]." ";
+	}
+	
+	
+	return $join_str;
+}
 
-
-    public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array())
+    public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array(),$joins="")
 	{
       if($_table===""){$_table=$this->table;}
-        //$this->getTitles();
+       
                         $s = "SHOW FULL COLUMNS FROM `".$_table."` FROM `".$this->dbase."`";
-                        //$q = mysql_query($s);
                         $q = $this->conn->prepare($s);
 						$q->execute();
-                        //$this->num_fields = mysql_num_rows($q);
 						$this->num_fields=$q->rowCount();
                         $this->comments=  array();
-
                         while($rows= $q->fetch(PDO::FETCH_OBJ)){
                                 array_push($this->comments,$rows->Field);
                         }
@@ -81,32 +103,54 @@ public function where($cond){
         //Selected Fields
 		$fields_final="*";
 		if(!empty($fields_arr)){
-				$fields = "";
-		            foreach ($fields_arr as $value) {
-		                $fields .="`".$value."`,";
-		            }
-		            $fields .= "";
-	  			$fields_final = substr_replace($fields,"",-1,1);
+			$fields_final = " ";
+			$count=1;
+			$final_fld_arr = array();
+			foreach ($fields_arr as $value) {
+			
+				if($count<count($fields_arr)){
+					if(substr_count($value,":")>0){
+						$rwfld = explode(":", $value);
+						$fields_final .= $rwfld[0]." as ".$rwfld[1].",";
+						$final_fld_arr[]= $rwfld[1];
+					}else{
+						$fields_final .=$value.",";
+						$final_fld_arr[]=$value;
+					}
+						
+				}else{
+					if(substr_count($value,":")>0){
+						$rwfld = explode(":", $value);
+						$fields_final .= $rwfld[0]." as ".$rwfld[1];
+						$final_fld_arr[]= $rwfld[1];
+					}else{
+						$fields_final .=$value;
+						$final_fld_arr[]=$value;
+					}
+						
+				}
+				
+				$count++;	
+			}
+				//$fields_final = implode(",", $fields_arr);
+				$this->num_fields = sizeof($fields_arr);
+				$this->comments=$final_fld_arr;
 		}
 		
         if($cond===""){
-                $sql ="SELECT $fields_final FROM `".$_table."` $extra";
+                $sql ="SELECT $fields_final FROM `".$_table."` $joins $extra";
             }else{
                 
-                $sql ="SELECT $fields_final FROM `".$_table."` $cond $extra";
-            }
-		
-
-                        //$query = mysql_query($sql);
+                $sql ="SELECT $fields_final FROM `".$_table."` $joins $cond $extra";
+            }	
+			
+	//echo $sql;
                         $r=$this->conn->prepare($sql);
 						$r->execute();
-                        //$num_rows = mysql_num_rows($query);
                         $num_rows = $r->rowCount();
                         if($extra!==""){
                             $sql .= $extra;
                         }
-                        
-                        //$qry = mysql_query($sql);
 
                         if($r){
                             $this->value_arr = array();
@@ -115,10 +159,10 @@ public function where($cond){
                                 for($i=0;$i<$this->num_fields;$i++){
                                     array_push($this->inner_arr,$row[$i]);
                                  }
-                                 $this->combined = array_combine($this->comments,$this->inner_arr);
-                               $this->value_arr[]=$this->combined;
+                                 	$this->combined = array_combine($this->comments,$this->inner_arr);
+                               		$this->value_arr[]=$this->combined;
                             }
-
+							
                             return json_decode(json_encode($this->value_arr),FALSE);
 
                         }else {

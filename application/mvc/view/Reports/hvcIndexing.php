@@ -4,6 +4,7 @@ if(is_array($data['test'])){
 }else{
 	print($data['test']);
 }
+//echo $data['has_csp'];
 ?>
 
         <style>
@@ -11,10 +12,18 @@ if(is_array($data['test'])){
             input[type='text']{width:200px}
             .otherFld{width: 600px;}
         </style>
-        
-
-
-        <?php 
+        	
+		<?php
+			if($data['has_csp']===1){
+		?>	
+	        	<div id="error_div">You have a maximum of <?php echo $data['csp_limit'];?> CSP and <?php echo $data['cdsp_limit'];?> CDSP cases allowable for Indexing.</div>	
+		<?php
+			}else{
+		?>
+				<div id="error_div">You have a maximum of <?php echo $data['cdsp_limit'];?> CDSP cases allowable for Indexing.</div>
+		<?php
+			}
+		        
         echo Resources::a_href("Reports/manageHvc","<button>View/Manage</button>")."<br><br>";
         $limit = 3;//DLookup1("limit","hvc_limit","prg='2'"); $msg = $limit+1;?>
         <!--<input type="text" value="<?php echo $limit ?>"/>-->
@@ -26,7 +35,7 @@ if(is_array($data['test'])){
                     <li>Read through the Items before filling them</li>
                     <li>First identify children that you would regard as vulnerable among Compassion registered children before filling this form</li>
                     <li>Fill this form for every identified vulnerable child from the registered children</li>
-                    <li>Submit this form before 15th September</li>
+                    <li>Submit this form before <?php echo $data['current_closure_date']->closureDate;?></li>
                     <li>This is a new recruitment for the next financial year and only those children that have not benefited from the HVC support 
                         should be included in this recruitment. Incase you want to include a child who has already benefited from HVC kindly 
                         confirm with the PF before hand</li>
@@ -42,41 +51,52 @@ if(is_array($data['test'])){
                     <span>Project's Number <span style="color:red;">*</span><br><input type="text" name="pNo" id="pNo" value="<?php echo $data['icp'];?>"   class='validate' readonly="readOnly"/></span>
                 </p>
                 <p>
+                	<?php
+                		if($data['has_csp']===1){
+                	?>
+                		<span>CS Number <span style="color:red;">*</span><br><input type="text"  id="csNo" value="<?php echo $data['csp'];?>"   class='validate' readonly="readOnly"/></span>
+                	<?php
+                	}
+                	?>
+                </p>
+                <p>
                 	<span>Program<span style="color:red;">*</span></span><br>
-                	<select name="prg"  class='validate' >
+                	<select name="prg" id="prg" class='validate' onchange="showHvcBody();">
                 		<option value="">Select Program</option>
-                		<option value="1">CSP</option>
+                		<?php
+                			if($data['has_csp']===1){
+                		?>
+                			<option value="1">CSP</option>
+                		<?php
+							}
+                		?>
+                		
                 		<option value="2">CDSP</option>
                 	</select>
                 </p>
+                
+                <div style="display: none;" id="body_div">
+                
                 <p>
-                    <span>Child's KE Number <span style="color:red;">*</span>Enter the number without <?php echo Resources::session()->fname; ?> prefix and the leading Zeroes!<br><input type="text" name="childNo"  class='validate'  id="childNo" onchange="changeClr(this.id);"  onblur="completeChildNo(this);" placeholder="Child Number" style=""/></span>
+                    <span>Child's KE/CSP Number <span style="color:red;">*</span>Enter the number without <?php echo Resources::session()->fname; ?> or CS prefix and the leading Zeroes!<br><input type="text" name="childNo"  class='validate'  id="childNo"  onchange="changeClr(this.id);"  onblur="completeChildNo(this);" placeholder="Child Number" style=""/></span>
                 </p>
                 <p>
-                    <span>Child's Name <span style="color:red;">*</span><br><input placeholder="Child Name as Per the S and G" type="text" name="childName" id="childName"  class='validate' /></span>
+                    <span>Child's Name <span style="color:red;">*</span><br><input placeholder="Child Name as Per the S and G" type="text" name="childName" id="childName"  class='validate' readonly="readonly"/></span>
                 </p>
                 <p>
-                    <span>Child's Date of Birth <span style="color:red;">*</span><br><input placeholder="Child date of birth" type="text" name="dob" id="childDOB" readonly="readOnly"  class='validate'  onchange="calcAge(this);"/></span>
+                    <span>Child's Date of Birth <span style="color:red;">*</span><br><input placeholder="Child date of birth" type="text" name="dob" id="childDOB" readonly="readOnly"  class='validate' readonly="readonly" onchange="calcAge(this);"/></span>
                 </p>                
                 <p>
-                    <span>Child's Age (Years)<span style="color:red;">*</span><br><input placeholder="Child Current Age" type="text" name="age" id="childAge" readonly="readOnly"  class='validate' /></span>
+                    <span>Child's Age (Years)<span style="color:red;">*</span><br><input placeholder="Child Current Age" type="text" name="age" id="childAge" readonly="readOnly"  class='validate'/></span>
                 </p>
                 <p>
                     <span>Child's Sex <span style="color:red;">*</span></span><br>
-                    <select name="sex" id="childSex"  class='validate' >
-                    	<option value="M">Male</option>
-                    	<option value="F">Female</option>
-                    	<option value="" selected="">Select Gender</option>
-                    </select>
-                    
-                    <!--<input placeholder="Child Gender" type="text" name="sex" id="childSex" readonly="readOnly"/>-->
+                    <div id="sexDiv"><input type="text" name="sex" id="childSex" class="validate" readonly="readonly"/></div>                 
                 </p>
                 <p>
                             <span>Type of Vulnerability<span style="color:red;">*</span></span><br>
 
                                     <?php 
-                                   // $sql = "SELECT * FROM vulnerability";
-                                   // $qry = mysql_query($sql);
                                     foreach ($data['vul'] as $rows) {    
                                   	
                                     echo "<input type='checkbox' name='vul[]' value='".$rows->vul."'/><span style='font-weight:normal;'>".$rows->vul."</span><br>";
@@ -140,6 +160,9 @@ if(is_array($data['test'])){
                                                             <!--<input type="submit" value="Submit" name="submit"/>-->
                                                     </p>
                 </div>
+        </div>
+        
+        
         </div>
         
 <?php

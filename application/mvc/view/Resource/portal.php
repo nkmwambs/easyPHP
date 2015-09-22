@@ -1,6 +1,9 @@
 <?php
 echo "<h4>External Links</h4>";
 echo "<a href='http://www.compassionkenya.com/mwalimu' target='__blank'>Learning Management System</a>"; 
+if(Resources::session()->userlevel!=='1'){
+	echo "<a href='http://www.compassionkenya.com/helpdesk' target='__blank'>Training and Support Ticketing</a>"; 	
+}
 //print_r($data);
 
 //echo "<ul>";
