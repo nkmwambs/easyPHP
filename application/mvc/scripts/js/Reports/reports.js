@@ -826,6 +826,43 @@ function viewPdsReports(){
       	xmlhttp.open("GET",path+"mvc/Reports/viewPdsReports/",true);      
         xmlhttp.send();	
 }
+function viewpdsreporters(elem){
+	//alert(elem.innerHTML);
+	var icp = elem.innerHTML;
+		xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('pdsRptWelcome').innerHTML=xmlhttp.responseText;
+				//location.reload();
+          }
+        };
+		var frmData = new FormData();
+		frmData.append("icp",icp);
+      	xmlhttp.open("POST",path+"mvc/Reports/viewPdsReports/",true);      
+        xmlhttp.send(frmData);
+}
+function selectpdsreport(tym){
+
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		var frmData = new FormData();
+		frmData.append("cdate",tym);
+      	xmlhttp.open("POST",path+"mvc/Reports/pdsreportview/",true);      
+        xmlhttp.send(frmData);
+}
 function savePdsReport(frmid){
 	var frm = document.getElementById(frmid);  
     var frmData = new FormData(frm);

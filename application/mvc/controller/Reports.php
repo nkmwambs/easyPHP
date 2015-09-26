@@ -12,20 +12,19 @@ class Reports_Controller extends E_Controller
 		return $this->_model->getAllRecords("","queries");
     }
 	public function queryView($render=2,$path='',$tags=array("All")){
-		//$sql = "SELECT ".$_POST['query'];
-		//return $this->_model->queryTables($sql);
+		$data=array();
 		$sql = $_POST['query'];
 		$okQry = substr_count($sql,"SELECT",0);
-		if($okQry>0){
-			$data =  $this->_model->queryTables($sql);
+		$okQryTwo = substr_count($sql,"SHOW",0);
+		$finSql = str_replace("'", "\"", $sql);
+		if($okQry>0||$okQryTwo){
+			$data['rst'] =  $this->_model->queryTables($sql);
+			$data['sql']=$finSql;
 		}else{
-			$data = "Query denied. Contact the administrator!";
+			$data['rst'] = "Query denied. Contact the administrator!";
 		}
-		//if(empty($data)){
-			//return "Invalid Query";
-		//}else{
-			return $data;
-		//}
+		
+		return $data;
 		
 	}
     public function csp($render=1,$path="",$tags=array("1")){
@@ -145,11 +144,31 @@ class Reports_Controller extends E_Controller
         $data = "HVC Report!";
 		return $data;
     }
-    public function pdsreportview($render=1,$path="",$tags=array("All")){
+    public function pdsreportview(){
     	$data=array();
-		$rec_arr=array();
-    	if(Resources::session()->userlevel==='2'){
-    			$cst = Resources::session()->cname;
+		$cdate=date("Y-m-01");
+		
+		if(isset($_POST['cdate'])){
+				$cdate=date('Y-m-d',$_POST['cdate']);
+		}
+		
+		if(Resources::session()->userlevel==='1'){
+			$path='';
+		}elseif(Resources::session()->userlevel==='2'){
+			$data = $this->pdsreportviewpf();
+			$path="pdsreportviewpf";
+		}elseif(Resources::session()->userlevel==='12'){	
+			$data = $this->pdsreportviewers($cdate);
+			$path="pdsreportviewers";
+		}
+		
+		$this->dispatch($render=1,$path, $data,$tags=array("All"));
+    }
+public function pdsreportviewpf(){
+    		$data=array();
+			$rec_arr=array();	
+			$cst = Resources::session()->cname;
+			
     		//Get Selected Month PDs Reports
     		$get_rpts_cond = $this->_model->where(array(array("where","cstName",$cst,"=")));
 			$get_rpts_arr = $this->_model->getAllRecords($get_rpts_cond,"pdsreport","",array("icpNo","rptMonth","status"));
@@ -163,9 +182,33 @@ class Reports_Controller extends E_Controller
 			
 			$data['test']=$get_rpts_arr;
 			$data['rec']=$rec_arr;
-    	}
-		return $data;
-    }
+			
+			return $data;
+}
+public function pdsreportviewers($cdate=""){
+	    	$data=array();
+			$rec_arr=array();
+			$curdate=date('Y-m-01');
+			if($cdate!==""){
+				$curdate=$cdate;
+			}
+			
+			//Get Selected Month PDs Reports
+    		$get_rpts_cond = $this->_model->where(array(array("where","rptMonth",$curdate,"=")));
+			$get_rpts_arr = $this->_model->getAllRecords($get_rpts_cond,"pdsreport","",array("cstName","icpNo","rptMonth","status"));
+			
+			foreach ($get_rpts_arr as $value) {
+				$rw = (array)$value;
+				$arr = array_shift($rw);
+				$rec_arr[$value->cstName][]=$rw;
+			}
+			
+			$data['test']=$get_rpts_arr;
+			$data['rec']=$rec_arr;
+			$data['rptMonth']=$curdate;
+			
+			return $data;
+}
 	public function createpdsreport(){
 		$dt = date("Y-m-d",$this->choice[1]);
 		$prev_dt = date("Y-m-d",strtotime('-1 month',$this->choice[1]));
@@ -206,8 +249,12 @@ class Reports_Controller extends E_Controller
 	public function viewPdsReports($render=2,$path="",$tags=array("All")){
 		$icp=Resources::session()->fname;
 		
+		if(isset($_POST['icp'])){
+			$icp=$_POST['icp'];
+		}
+		
 		$rpt_cond = $this->_model->where(array(array("WHERE","icpNo",$icp,"=")));
-		$rpt_arr = $this->_model->getAllRecords($rpt_cond,"pdsreport","",array("rptMonth"));
+		$rpt_arr = $this->_model->getAllRecords($rpt_cond,"pdsreport","",array("rptMonth","status"));
 		$rpt="";
 		if(!empty($rpt_arr)){
 			$rpt=$rpt_arr;
@@ -216,6 +263,7 @@ class Reports_Controller extends E_Controller
 		$data=array();
 		
 		$data['rec']=$rpt;
+		$data['icp']=$icp;
 		
 		return $data;
 	}
