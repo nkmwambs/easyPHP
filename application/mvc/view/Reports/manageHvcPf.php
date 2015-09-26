@@ -4,9 +4,15 @@ if(is_array($data['test'])){
 }else{
 	print($data['test']);
 }
+echo Resources::a_href("Reports/hvcIndexing","<button>Back</button>")."<br><br>";
+
+echo "<fieldset>";
+echo "<legend style='font-weight:bold;'>Download</legend>";
+echo "<span style='font-weight:bold;'>Download (All ".$data['cst']." Active): </span><a href='".HOST_NAME."/easyPHP/application/mvc/docs/exceldownloads/hvclist.php?cst=".$data['cst']."'>".Resources::img("excel.png")."</a>";
+echo "</fieldset>";
 
 echo "<table id='info_tbl' style='margin-top:25px;'>";
-echo "<caption>HVC Statics Per ICP</caption>";
+echo "<caption>HVC Statics for ".$data['cst']."</caption>";
 echo "<tr><th>No. Of ICPs</th><th>No. Indexed iby the ICP</th></tr>";
 
 $caseCnt=0;

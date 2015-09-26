@@ -530,6 +530,7 @@ public function manageHvcPf($render=1,$path="",$tags=array("All")){
 	
 	$data['test']="";
 	$data['rec']=$hvc_arr;
+	$data['cst']=$cst;
 	return $data;
 }
 public function manageHvcIcp($render=1,$path="",$tags=array("All")){
