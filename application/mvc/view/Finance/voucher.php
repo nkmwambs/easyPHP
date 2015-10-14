@@ -41,7 +41,7 @@ if(isset($data['error'])){
 		              		
 							?>
 		               
-		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class='dateSelector validate' onchange="calcVNumber();" name="TDate" style="width:95%;" value="" readonly="readOnly"/><input type='text' id="previousDate" value="<?php echo $data['cDate'];?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='' readonly="readOnly"/><input type="text" id="prevVNumber" value="<?php echo $data['maxRec']['VNumber'];?>"/></td>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class='dateSelector validate' onchange="calcVNumber();" name="TDate" style="width:95%;" value="" readonly="readOnly"/><input type='hidden' id="previousDate" value="<?php echo $data['cDate'];?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='' readonly="readOnly"/><input type="hidden" id="prevVNumber" value="<?php echo $data['maxRec']['VNumber'];?>"/></td>
 		                    <?php
   	
 		              } 

@@ -26,15 +26,10 @@ if(empty($data)){
 	}
 	echo "</SELECT>";
 	echo "<SELECT id='showMnth' name='showMnth' style='float:left;'><OPTION value='0'>Select Month ...</OPTION>";
-		//foreach($month_array as $num => $name):
-          //     $option = (number_format($num,0)===number_format(date('m'),0))?                                 
-            //   "<option value='".number_format($num,0)."' selected>".$name."</option>":
-              // "<option value='".$num."'>".$name."</option>";  
-              // echo $option;
-        //endforeach;
+
 	echo "</SELECT>";
 	echo Resources::img("go.png",array("title"=>"Show","onclick"=>'showCspRpt();',"style"=>'cursor:pointer'));
-//print_r($data[1]);
+
 ?>
 	 	<div id='topDiv'>
                     

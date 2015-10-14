@@ -145,11 +145,202 @@ class Reports_Controller extends E_Controller
         $data = "HVC Report!";
 		return $data;
     }
-    
-    public function pds($render=1,$path="",$tags=array("All")){
-        $data = "Monthly PD's Report!";
+    public function pdsreportview($render=1,$path="",$tags=array("All")){
+    	$data=array();
+		$rec_arr=array();
+    	if(Resources::session()->userlevel==='2'){
+    			$cst = Resources::session()->cname;
+    		//Get Selected Month PDs Reports
+    		$get_rpts_cond = $this->_model->where(array(array("where","cstName",$cst,"=")));
+			$get_rpts_arr = $this->_model->getAllRecords($get_rpts_cond,"pdsreport","",array("icpNo","rptMonth","status"));
+			
+			$rawArr = array();
+			foreach ($get_rpts_arr as $value) {
+				$rawArr['month']=$value->rptMonth;
+				$rawArr['status']=$value->status;
+				$rec_arr[$value->icpNo][]=$rawArr;
+			}
+			
+			$data['test']=$get_rpts_arr;
+			$data['rec']=$rec_arr;
+    	}
 		return $data;
     }
+	public function createpdsreport(){
+		$dt = date("Y-m-d",$this->choice[1]);
+		$prev_dt = date("Y-m-d",strtotime('-1 month',$this->choice[1]));
+		$icp = Resources::session()->fname;
+		$cstName=Resources::session()->cname;
+		
+		//Check if report exists for the current month
+		$chk_cur_month_rpt_cond = $this->_model->where(array(array("where","rptMonth",$dt,"="),array("AND","icpNo",$icp,"=")));
+		$chk_cur_month_rpt_arr = $this->_model->getAllRecords($chk_cur_month_rpt_cond,"pdsreport");
+		$cur_report_present=0;
+		if(count($chk_cur_month_rpt_arr)>0){
+			$cur_report_present=1;
+		}
+		
+		//Check if the is previous unsubmitted Report
+		$chk_prev_submitted_month_rpt_cond = $this->_model->where(array(array("where","rptMonth",$prev_dt,"="),array("AND","status",'0',"="),array("AND","icpNo",$icp,"=")));
+		$chk_prev_submitted_month_rpt_arr = $this->_model->getAllRecords($chk_prev_submitted_month_rpt_cond,"pdsreport");
+		$prev_unsubmitted=0;
+		if(count($chk_prev_submitted_month_rpt_arr)>0){
+			$prev_unsubmitted=1;
+		}
+		
+		if($cur_report_present===0&&$prev_unsubmitted===0){		
+			$newRec=array();
+			$newRec['icpNo']=$icp;
+			$newRec['cstName']=$cstName;
+			$newRec['rptMonth']=$dt;
+			
+			echo $this->_model->insertRecord($newRec,"pdsreport");
+		}elseif($cur_report_present===1){
+			echo "Cannot create a duplicate report for the current month!";
+		}elseif($prev_unsubmitted===1){
+			echo "You cannot create a new report. You have a previous month unsubmitted report";
+		}	
+		
+		
+	}
+	public function viewPdsReports($render=2,$path="",$tags=array("All")){
+		$icp=Resources::session()->fname;
+		
+		$rpt_cond = $this->_model->where(array(array("WHERE","icpNo",$icp,"=")));
+		$rpt_arr = $this->_model->getAllRecords($rpt_cond,"pdsreport","",array("rptMonth"));
+		$rpt="";
+		if(!empty($rpt_arr)){
+			$rpt=$rpt_arr;
+		}
+		
+		$data=array();
+		
+		$data['rec']=$rpt;
+		
+		return $data;
+	}
+    public function pds($render=1,$path="",$tags=array("All")){
+        $data=array();
+		$month=date('Y-m-d',$this->choice[1]);
+		//Get ICP identifier
+		$icp=Resources::session()->fname;
+		if(isset($this->choice[3])){
+			$icp=$this->choice[3];
+		}
+		$cst=$data['cst']=Resources::session()->cname;
+		
+		//Get Attendance
+		$flds = range(1, 31);
+		$att_cond = $this->_model->where(array(array("where","rptMonth",$month,"="),array("AND","icpNo",$icp,"=")));
+		$att_arr = $this->_model->getAllRecords($att_cond,"pdsreport","",array("day1","day2","day3","day4","day5","day6","day7","day8","day9","day10","day11","day12","day13","day14","day15","day16","day17","day18","day19","day20","day21","day22","day23","day24","day25","day26","day27","day28","day29","day30","day31"));
+		$att="";
+		if(!empty($att_arr)){
+			$att = (array)$att_arr[0];;
+		}
+		
+		//Get Non Attendance Fields
+		$non_att_arr = $this->_model->getAllRecords($att_cond,"pdsreport");
+		$non_att="";
+		if(!empty($non_att_arr)){
+			$non_att=(array)$non_att_arr[0];
+		}
+		
+		
+		$data['month']=date('m');
+		$data['year']=date('y');
+		$data['icp']=$icp;
+		$data['cst']=$cst;
+		$data['attendance']=$att;
+		$data['nonattflds']=$non_att;
+		return $data;
+    }
+public function validatepdsreport(){
+	$rid = $_POST['rptID'];
+	$state = $_POST['status'];
+	$rsn = $_POST['declineReason'];
+	
+	//echo $state;
+	$recUpdateSet=array();
+	$recUpdateSet=array("status"=>$state,"declineReason"=>$rsn);
+	
+	$recUpdateCond = $this->_model->where(array(array("where","rptID",$rid,"=")));
+	$this->_model->updateQuery($recUpdateSet,$recUpdateCond,"pdsreport");
+	
+	if($state==='2'){
+		echo "Report declined successfully";	
+	}elseif($state==='3'){
+		echo "Report validation successfully";
+	}
+	
+}
+public function savePdsReport(){
+	//print_r($_POST);
+	$icp = $_POST['icpNo'];
+	$month = date('Y-m-d',strtotime($_POST['rptMonth']));
+	
+	//Updating
+	$rng = range(1, 31);
+	$update_set_sec=array();
+	foreach ($rng as $value) {
+		if(isset($_POST['day'.$value])){
+			$update_set_sec['day'.$value]=$_POST['day'.$value];
+		}
+	}
+	//$update_set = array("day1"=>$_POST['day1'],"day2"=>$_POST['day2'],"day3"=>$_POST['day3'],"day4"=>$_POST['day4'],"day5"=>$_POST['day5'],"day6"=>$_POST['day6'],"day7"=>$_POST['day7'],"day8"=>$_POST['day8'],"day9"=>$_POST['day9'],"day10"=>$_POST['day10'],"day11"=>$_POST['day11'],"day12"=>$_POST['day12'],"day13"=>$_POST['day13'],"day14"=>$_POST['day14'],"day15"=>$_POST['day15'],"day16"=>$_POST['day16'],"day17"=>$_POST['day17'],"day18"=>$_POST['day18'],"day19"=>$_POST['day19'],"day20"=>$_POST['day20'],"day21"=>$_POST['day21'],"day22"=>$_POST['day22'],"day23"=>$_POST['day23'],"day24"=>$_POST['day24'],"day25"=>$_POST['day25'],"day26"=>$_POST['day26'],"day27"=>$_POST['day27'],"day28"=>$_POST['day28'],"day29"=>$_POST['day29'],"day30"=>$_POST['day30'],"day31"=>$_POST['day31']);
+	$other_sets = array(
+		"communityActivitiesParticipation"=>"".$_POST['communityActivitiesParticipation']."",
+		"firstTimeSaved"=>"".$_POST['firstTimeSaved']."",
+		"practiseSpiritualDiscipline"=>"".$_POST['practiseSpiritualDiscipline']."",
+		"receivedFirstBibles"=>"".$_POST['receivedFirstBibles']."",
+		"shareVerses"=>"".$_POST['shareVerses']."",
+		"childrenCounselled"=>"".$_POST['childrenCounselled']."",
+		"plantedTrees"=>"".$_POST['plantedTrees']."",
+		"participateinoutrreach"=>"".$_POST['participateinoutrreach']."",
+		"baselinecdpr"=>"".$_POST['baselinecdpr']."",
+		"finalcdpr"=>"".$_POST['finalcdpr']."",
+		"cdspbencompleted"=>"".$_POST['cdspbencompleted']."",
+		"cdspexitbeforecomplete"=>"".$_POST['cdspexitbeforecomplete']."",
+		"collegestudents"=>"".$_POST['collegestudents']."",
+		"completenondegreeeducation"=>"".$_POST['completenondegreeeducation']."",
+		"completedegreeeducation"=>"".$_POST['completedegreeeducation']."",
+		"completedvocational"=>"".$_POST['completedvocational']."",
+		"utilizediga"=>"".$_POST['utilizediga']."",
+		"attainmpftgoals"=>"".$_POST['attainmpftgoals']."",
+		"updatedmpft"=>"".$_POST['updatedmpft']."",
+		"beneficiariesincompassionsunday"=>"".$_POST['beneficiariesincompassionsunday']."",
+		"celebratedbirthday"=>"".$_POST['celebratedbirthday']."",
+		"boardingchildren"=>"boardingchildren",
+		"volunteerchildprotection"=>"volunteerchildprotection",
+		"caregiverchildprotection"=>"caregiverchildprotection",
+		"beneficiarychildprotection"=>"beneficiarychildprotection",
+		"caregiverearning"=>"caregiverearning"	
+	
+	);
+	if(isset($_POST['submitting'])){
+		$other_sets['status']=1;
+	}
+	$update_set=array_merge($update_set_sec,$other_sets);
+	$update_cond = $this->_model->where(array(array("where","icpNo",$icp,"="),array("AND","rptMonth",$month,"=")));
+	
+	//Check if Report is already submitted before Updating
+	$flag='0';
+	$chk_submit_cond = $this->_model->where(array(array("where","icpNo",$icp,"="),array("AND","rptMonth",$month,"="),array("AND","status",1,"=")));
+	$chk_submit_arr = $this->_model->getAllRecords($chk_submit_cond,"pdsreport");
+	if(empty($chk_submit_arr)){
+		$this->_model->updateQuery($update_set,$update_cond,"pdsreport");
+		$flag='1';
+	}
+	
+	//print_r($chk_submit_arr);
+	
+	if(isset($_POST['submitting'])&&$flag==='1'){
+		echo "Report Submitted successfully";
+	}elseif(isset($_POST['submitting'])&&$flag==='0'){
+		echo "Report could not be submitted. There is already a report submitted for this period";
+	}else{
+		echo "Report Saved Successfully";
+	}
+	}
 public function getChildrenDetails(){
 	$str=$this->choice[1];
 	$newStr = str_replace("_","-",$str);

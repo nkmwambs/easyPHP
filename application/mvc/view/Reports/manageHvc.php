@@ -82,7 +82,7 @@ if((Resources::session()->userlevel==='2'&&!isset($data['setPF']))||isset($data[
 }elseif(Resources::session()->userlevel>2&&!isset($data['setOther'])){
 			echo "<table id='info_tbl' style='margin-top:25px;'>";
 		echo "<caption>Statistics Of Indexed ICPs</caption>";
-		echo "<tr><th>KE No.</th><th>Index Count</th></tr>";
+		echo "<tr><th>Cluster</th><th>Index Count</th></tr>";
 		foreach ($data['caseGrpByCst'] as $key => $value) {
 			//echo "<tr><td>".Resources::a_href("Reports/manageHvc/cst/".$key, $key)."</td><td>".count($data['caseGrpByCst'][$key])."</td></tr>";
 			echo "<tr><td onclick='toogleHvcView(\"".$key."\");' style='color:blue;cursor:pointer;text-decoration:underline;'>".$key."</td><td>".count($data['caseGrpByCst'][$key])."</td></tr>";

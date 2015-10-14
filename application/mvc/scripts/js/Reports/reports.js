@@ -559,6 +559,7 @@ function showHvcBody(){
 function toogleHvcView(cst){
 	var rwCst = cst.replace("-","_");
 	//alert(rwCst);
+	var frmData = new FormData();
 		xmlhttp.onreadystatechange=function() {
 
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
@@ -566,9 +567,9 @@ function toogleHvcView(cst){
 				location.reload();
           }
         };
-		
-      	xmlhttp.open("GET",path+"mvc/Reports/manageHvc/cst/"+rwCst,true);      
-        xmlhttp.send();
+	frmData.append("cst",cst);
+      	xmlhttp.open("POST",path+"mvc/Reports/manageHvc",true);      
+        xmlhttp.send(frmData);
 }
 
 function newMalCase(frmid){
@@ -790,4 +791,119 @@ function declineRequest(frmid){
         
         xmlhttp.open("POST",path+"/mvc/Reports/declineRequest",true);
         xmlhttp.send(frmData);	
+}
+function addAttendance(input,mth,yr){
+	//alert(input);
+	
+}
+function viewPdsReports(){
+		xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				document.getElementById('pdsRptWelcome').innerHTML=xmlhttp.responseText;
+				//location.reload();
+          }
+        };
+		
+      	xmlhttp.open("GET",path+"mvc/Reports/viewPdsReports/",true);      
+        xmlhttp.send();	
+}
+function savePdsReport(frmid){
+	var frm = document.getElementById(frmid);  
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                alert(xmlhttp.responseText);
+                location.reload();
+                //frm.reset();
+            }
+        };
+        
+        xmlhttp.open("POST",path+"/mvc/Reports/savePdsReport",true);
+        xmlhttp.send(frmData);	
+}
+function showReport(dt){
+			xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				//document.getElementById('pdsRptWelcome').innerHTML=xmlhttp.responseText;
+				//location.reload();
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("GET",path+"mvc/Reports/pds/dt/"+dt,true);      
+        xmlhttp.send();	
+}
+function createpdsreport(tym){
+	xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				alert(xmlhttp.responseText);
+          }
+        };
+		
+      	xmlhttp.open("GET",path+"mvc/Reports/createpdsreport/tym/"+tym,true);      
+        xmlhttp.send();	
+}
+function submitpdsreport(curdate,enddate,frmid){
+	if(parseInt(curdate)>=18&&parseInt(curdate)<=parseInt(enddate)){
+				//alert("Report submitted successfully");
+				var frm = document.getElementById(frmid);  
+		   		 var frmData = new FormData(frm);
+		            xmlhttp.onreadystatechange=function() {
+		            if(xmlhttp.readyState!==4){
+		                document.getElementById('overlay').style.display='block';
+		                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+		            }
+		            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+		                document.getElementById('overlay').style.display='none';
+		                alert(xmlhttp.responseText);
+		                location.reload();
+		                //frm.reset();
+		            }
+		        };
+		        frmData.append("submitting", "1");
+		        var cnf = confirm("Are you sure you want to submit this report? Once a report is submitted, changes will not be allowed. Please Cancel and  save the changes if not sure");
+		        if(!cnf){
+		        	alert("Operation aborted. Report not submitted");
+		        	exit;
+		        }else{
+			        xmlhttp.open("POST",path+"/mvc/Reports/savePdsReport",true);
+			        xmlhttp.send(frmData);	
+		        }
+	}else if(curdate<18){
+		alert("You cannot submit a report before 18th of the month or after the end of the month");
+	}
+}
+
+function validatepdsreport(rid,state){
+		//alert(state);
+	var rsn = "";
+	if(state==='2'){
+		rsn = document.getElementById('declineReason').value;
+	}	
+	//alert(rsn);
+	var frmData = new FormData();
+	frmData.append("rptID",rid);
+	frmData.append("status",state);
+	frmData.append("declineReason",rsn);
+	
+		xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+				alert(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/validatepdsreport",true);      
+        xmlhttp.send(frmData);	
+	
 }
