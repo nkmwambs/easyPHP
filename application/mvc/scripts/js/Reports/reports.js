@@ -852,8 +852,15 @@ function createpdsreport(tym){
       	xmlhttp.open("GET",path+"mvc/Reports/createpdsreport/tym/"+tym,true);      
         xmlhttp.send();	
 }
-function submitpdsreport(curdate,enddate,frmid){
-	if(parseInt(curdate)>=18&&parseInt(curdate)<=parseInt(enddate)){
+
+function submitpdsreport(startdate,curdate,enddate,frmid){
+	//if(parseInt(curdate)>=parseInt(startdate)&&parseInt(curdate)<=parseInt(enddate)){
+		//alert("Ok");
+	//}else{
+		//alert("Nope");
+	//}
+
+	if(parseInt(curdate)>=parseInt(startdate)&&parseInt(curdate)<=parseInt(enddate)){
 				//alert("Report submitted successfully");
 				var frm = document.getElementById(frmid);  
 		   		 var frmData = new FormData(frm);
@@ -878,9 +885,10 @@ function submitpdsreport(curdate,enddate,frmid){
 			        xmlhttp.open("POST",path+"/mvc/Reports/savePdsReport",true);
 			        xmlhttp.send(frmData);	
 		        }
-	}else if(curdate<18){
-		alert("You cannot submit a report before 18th of the month or after the end of the month");
+	}else{
+		alert("You cannot submit this report before "+timeConverter(startdate)+" of the month or after "+timeConverter(enddate)+" of the next reporting month");
 	}
+
 }
 
 function validatepdsreport(rid,state){

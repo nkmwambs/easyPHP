@@ -286,7 +286,7 @@ public function savePdsReport(){
 			$update_set_sec['day'.$value]=$_POST['day'.$value];
 		}
 	}
-	//$update_set = array("day1"=>$_POST['day1'],"day2"=>$_POST['day2'],"day3"=>$_POST['day3'],"day4"=>$_POST['day4'],"day5"=>$_POST['day5'],"day6"=>$_POST['day6'],"day7"=>$_POST['day7'],"day8"=>$_POST['day8'],"day9"=>$_POST['day9'],"day10"=>$_POST['day10'],"day11"=>$_POST['day11'],"day12"=>$_POST['day12'],"day13"=>$_POST['day13'],"day14"=>$_POST['day14'],"day15"=>$_POST['day15'],"day16"=>$_POST['day16'],"day17"=>$_POST['day17'],"day18"=>$_POST['day18'],"day19"=>$_POST['day19'],"day20"=>$_POST['day20'],"day21"=>$_POST['day21'],"day22"=>$_POST['day22'],"day23"=>$_POST['day23'],"day24"=>$_POST['day24'],"day25"=>$_POST['day25'],"day26"=>$_POST['day26'],"day27"=>$_POST['day27'],"day28"=>$_POST['day28'],"day29"=>$_POST['day29'],"day30"=>$_POST['day30'],"day31"=>$_POST['day31']);
+	
 	$other_sets = array(
 		"communityActivitiesParticipation"=>"".$_POST['communityActivitiesParticipation']."",
 		"firstTimeSaved"=>"".$_POST['firstTimeSaved']."",
@@ -330,8 +330,6 @@ public function savePdsReport(){
 		$this->_model->updateQuery($update_set,$update_cond,"pdsreport");
 		$flag='1';
 	}
-	
-	//print_r($chk_submit_arr);
 	
 	if(isset($_POST['submitting'])&&$flag==='1'){
 		echo "Report Submitted successfully";
