@@ -160,9 +160,10 @@ function changePwd(frmid){
                     
           }
         };
-
-      xmlhttp.open("GET",path+"mvc/Register/getICPs/clst/"+clst,true);      
-      xmlhttp.send();
+	var frmData = new FormData();
+	frmData.append("cstName",clst);	
+      xmlhttp.open("POST",path+"mvc/Register/getICPs",true);      
+      xmlhttp.send(frmData);
  }
 
 

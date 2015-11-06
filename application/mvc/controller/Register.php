@@ -27,18 +27,23 @@ private $_model;
 			return $data;        
         }
 
-    public function submitUsers(){
-
-            //array_pop($_POST);
+public function submitUsers(){
+			$icp = $_POST['fname'];
+			
 			$arr = array();
             $cond = $this->_model->where(array(array("where","username",$_POST['username'],"=")));
             $rst = $this->_model->getAllRecords($cond,"users");
+			
+			//Get ICP fullname
+			$icp_cond = $this->_model->where(array(array("where","fname",$icp,"=")));
+			$icp_arr = $this->_model->getAllRecords($icp_cond,"users","",array("lname"));
+			
 		    if(count($rst)===0){
 		    	$arr['username']=$_POST['username'];	
 				$arr['userfirstname']=$_POST['userfirstname'];
 				$arr['userlastname']=$_POST['userlastname'];
 				$arr['fname']=$_POST['fname'];
-				$arr['lname']=$_POST['fname'];
+				$arr['lname']=$icp_arr[0]->lname;
 				$arr['cname']=$_POST['cname'];
 				$arr['email']=$_POST['email'];
 				$arr['password']=$_POST['password'];
@@ -51,24 +56,17 @@ private $_model;
 				$arr['securityQstnID']=$_POST['securityQstnID'];
 				$arr['qAns']=$_POST['qAns'];
 				$arr['reffererID']=Resources::session()->ID;
-					
-		    	
-		    	//$_POST['lname']=$_POST['fname'];
-               // $_POST['admin']='0';
-				//$_POST['delegated_role']='0';
-			//	$_POST['log_after_register']='0';
-				//$_POST['reffererID']=Resources::session()->ID;
-               	echo $this->_model->insertRecord($_POST,"users");
-               print_r($_POST);
+				
+               	echo $this->_model->insertRecord($arr,"users");
             }  else {
                 echo "The username {$_POST['username']} is already used!";
             }
 		    
         }
 	public function getICPs(){
-		$clst = $this->choice[1];
+		$clst = $_POST['cstName'];
 		//echo $clst;
-		$icps_cond = $this->_model->where(array(array("where","cname",$clst,"="),array("AND","userlevel",1,"=")));
+		$icps_cond = $this->_model->where(array(array("where","cname",$clst,"="),array("AND","userlevel",1,"="),array("AND","department","0","=")));
 		$icps_arr = $this->_model->getAllRecords($icps_cond,"users");
 		echo  json_encode($icps_arr);
 	}

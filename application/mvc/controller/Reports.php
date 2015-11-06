@@ -351,8 +351,7 @@ public function getChildrenDetails(){
 	print(json_encode($chk_arr[0]));
 }
         
-    public function hvcIndexing(){
-        //$data = "Annual HVC Indexing Form!";
+public function hvcIndexing(){
         $data = array();
 		$path='';
 		//Get ICP Cluster
@@ -424,9 +423,12 @@ public function getChildrenDetails(){
 		//return $data;
 		if(Resources::session()->userlevel==='1'){
 			$path='';
+		}elseif(Resources::session()->userlevel==='2'){
+			$data = $this->manageHvcPf();
+			$path="manageHvcPf";
 		}else{
-			$data = $this->manageHvc();
-			$path="manageHvc";
+			$data = $this->manageHvcSpecialist();
+			$path="manageHvcSpecialist";
 		}
 		
 		$this->dispatch($render=1,$path, $data,$tags=array("All"));
@@ -496,69 +498,68 @@ public function getChildrenDetails(){
 			}
 		}
 	}
-	public function manageHvc($render=1,$path="",$tags=array("All")){
+public function manageHvcSpecialist($render=1,$path="",$tags=array("All")){
+		//SELECT cst,pNo,count(pNo) as noOfCases FROM `indexing` GROUP BY cst,pNo
+		$hvc_cond = $this->_model->where(array(array("where","active",'1',"=")));
+		$hvc_arr = $this->_model->getAllRecords($hvc_cond,"indexing"," GROUP BY cst,pNo",array("cst","pNo","count(pNo):noOfCases"));
+		
+		$grp_arr=array();
+		foreach ($hvc_arr as $value) {
+			$arr = (array)$value;
+			array_shift($arr);
+			$grp_arr[$value->cst][$arr['pNo']]=array($arr['pNo'],$arr['noOfCases']);;
+		}
+		
 		$data=array();
-		$cases_cond='';
-		$active=1;
-		$icpNo=Resources::session()->fname;
-		$cst=Resources::session()->cname;
 		
-		if(isset($this->choice[1])&&$this->choice[0]==='state'){
-			$active=$this->choice[1];
-		}
-		
-		if(isset($this->choice[3])){
-			$icpNo=$this->choice[3];
-			$data['setPF']=1;	
-			$data['icpNo']=$icpNo;
-		}
-		
-		if(isset($this->choice[1])&&$this->choice[0]==='cst'){
-			$cst=str_replace("_","-",$this->choice[1]);
-			$data['setOther']=1;
-		}
-		
-		if(Resources::session()->userlevel==='1'||isset($data['setPF'])){
-			$cases_cond = $this->_model->where(array(array("where","pNo",$icpNo,"="),array("AND","active",$active,"=")));
-		}elseif(Resources::session()->userlevel==='2'||isset($data['setOther'])){
-			$cases_cond = $this->_model->where(array(array("where","cst",$cst,"="),array("AND","active",$active,"=")));
-		}else{
-			$cases_cond='';
-		}
-		
-		//All HVC Cases
-		$cases_arr = $this->_model->getAllRecords($cases_cond,"indexing");
-		
-		//ICP with Indexed Beneficiaries
-		$icp_arr = array();
-		foreach ($cases_arr as $value) {
-			$icp_arr[$value->pNo][]=$value;
-		}
-		
-		//Clusters With Indexed Beneficiaries
-		$clst_arr = array();
-		foreach ($cases_arr as $value) {
-			$clst_arr[$value->cst][$value->pNo][]=$value;
-			
-		}
-		
-		
-		$data['allCases']=$cases_arr;
-		$data['caseGrpByIcp']=$icp_arr;
-		$data['caseGrpByCst']=$clst_arr;
-		
+		$data['rec']=$grp_arr;
 		$data['test']="";
 		
 		return $data;
+}
+public function manageHvcPf($render=1,$path="",$tags=array("All")){
+	$cst=Resources::session()->cname;	
+	if(isset($_POST['cst'])){
+		$cst=$_POST['cst'];
 	}
-
-	public function inactivateCase(){
-		$cid = $this->choice[1];
+	
+	$hvc_cond = $this->_model->where(array(array("where","active",'1',"="),array("AND","cst",$cst,"=")));
+	$hvc_arr = $this->_model->getAllRecords($hvc_cond,"indexing"," GROUP BY pNo",array("pNo","count(pNo):noOfCases"));
+	
+	$data=array();
+	
+	$data['test']="";
+	$data['rec']=$hvc_arr;
+	return $data;
+}
+public function manageHvcIcp($render=1,$path="",$tags=array("All")){
+	$icp=Resources::session()->fname;
+	$state=1;
+	if(isset($_POST['icp'])){
+		$icp=$_POST['icp'];
+	}
+	if(isset($_POST['state'])){
+		$state=$_POST['state'];
+	}
+	
+	$hvc_cond = $this->_model->where(array(array("where","active",$state,"="),array("AND","pNo",$icp,"=")));
+	$hvc_arr = $this->_model->getAllRecords($hvc_cond,"indexing");
+	
+	$data=array();
+	
+	$data['test']="";
+	$data['icpNo']=$icp;
+	$data['rec']=$hvc_arr;
+	return $data;
+	
+}
+public function inactivateCase(){
+		$cid = $_POST['cid'];
 		$inactivate_cond = $this->_model->where(array(array("where","indID",$cid,"=")));
 		$sets = array("active"=>0);
 		echo $this->_model->updateQuery($sets,$inactivate_cond,"indexing");
 	}
-	public function newQuery(){
+public function newQuery(){
 		//print_r($_POST);
 		$data['qryName']=$_POST['qryName'];
 		$data['qryDetail']=$_POST['query'];

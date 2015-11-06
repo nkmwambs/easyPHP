@@ -33,7 +33,7 @@ function queryView(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -63,7 +63,7 @@ function queryView(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -90,7 +90,7 @@ function queryView(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -156,7 +156,7 @@ function submitCsp(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -174,7 +174,7 @@ function deleteCsp(rid){
 		      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -192,7 +192,7 @@ function showCspRpt(){
 	      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -225,7 +225,7 @@ function editCspFromGrid(el){
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -244,7 +244,7 @@ function selectCspRpts(){
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -363,17 +363,13 @@ function calcAge(elem){
 	document.getElementById('childAge').value=years.toFixed(2);
 }
 function inactivateCase(cid){
-	//alert(cid);	
-		//var period = document.getElementById('showQtr').value;
-	//var mth = document.getElementById('showMnth').value;
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                document.getElementById('overlay').style.display='none';
-				//document.getElementById("rptsDiv").innerHTML=xmlhttp.responseText;
+            	document.getElementById('overlay').style.display='none';
 				location.reload();
           }
         };
@@ -381,8 +377,10 @@ var cnf = confirm("Want to Inactivate this record? Note, Once you inactivate a r
 if(!cnf){
 	alert("Action aborted!");	
 }else{
-     	xmlhttp.open("GET",path+"mvc/Reports/inactivateCase/cid/"+cid,true);      
-        xmlhttp.send();
+		frmData=new FormData();
+		frmData.append("cid",cid);
+     	xmlhttp.open("POST",path+"mvc/Reports/inactivateCase",true);      
+        xmlhttp.send(frmData);
 }
 }
 function stateSort(){
@@ -396,15 +394,15 @@ function stateSort(){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-				//document.getElementById("rptsDiv").innerHTML=xmlhttp.responseText;
-				//location.reload();
 				document.write(xmlhttp.responseText);
 				location.reload();
           }
         };
-		
-      	xmlhttp.open("GET",path+"mvc/Reports/manageHvc/state/"+state+"/icpNo/"+keno,true);      
-        xmlhttp.send();
+		var frmData = new FormData();
+		frmData.append("state",state);
+		frmData.append("icp",keno);
+      	xmlhttp.open("POST",path+"mvc/Reports/manageHvcIcp",true);      
+        xmlhttp.send(frmData);
 }
 function isInt(value) {
   return !isNaN(value) && 
@@ -556,19 +554,39 @@ function showHvcBody(){
 		//alert(document.getElementById('childNo').hasAttribute('onblur'));
 	}
 }
-function toogleHvcView(cst){
-	var rwCst = cst.replace("-","_");
-	//alert(rwCst);
+function toogleHvcViewSpecialist(cst){
 	var frmData = new FormData();
 		xmlhttp.onreadystatechange=function() {
-
+			if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            	document.getElementById('overlay').style.display='none';
 				document.write(xmlhttp.responseText);
 				location.reload();
           }
         };
 	frmData.append("cst",cst);
-      	xmlhttp.open("POST",path+"mvc/Reports/manageHvc",true);      
+      	xmlhttp.open("POST",path+"mvc/Reports/manageHvcPf",true);      
+        xmlhttp.send(frmData);
+}
+function toogleHvcViewPf(icp){
+	var frmData = new FormData();
+		xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            	document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+	frmData.append("icp",icp);
+      	xmlhttp.open("POST",path+"mvc/Reports/manageHvcIcp",true);      
         xmlhttp.send(frmData);
 }
 
@@ -579,7 +597,7 @@ function newMalCase(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
