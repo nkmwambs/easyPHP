@@ -12,7 +12,7 @@ public static function import($path){
 		if(file_exists(BASE_PATH.DS."system".DS."libs".$path_str.".class.php")){
 			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".class.php";
 		}else{
-			$fPath = BASE_PATH.DS."system".DS."libs".DS.$path_str.".php";
+			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".php";
 		}
 		
 		require_once $fPath;
@@ -412,11 +412,18 @@ public static function render($render="1",$path="",$results=""){
         //$recent = $model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
 		//echo $render;
 		if($render===1){
-			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php")){
+			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."header.php")){
+				$data = $menu_data;		
+				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."header.php";
+			}else{
 				$data = $menu_data;		
 				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php";
 			}
-	        if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
+	        if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."side_bar.php")){
+				$data['side'] = $side_menu_data;
+				$data['users']=$users_online_arr;
+				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."side_bar.php";
+			}else{
 				$data['side'] = $side_menu_data;
 				$data['users']=$users_online_arr;
 				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php";
@@ -440,7 +447,10 @@ public static function render($render="1",$path="",$results=""){
 				include BASE_PATH.DS."system".DS."logs".DS."error.php";
 			}
 		if($render===1){
-			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php")){
+			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."side_bar.php")){
+				$data = $recent;
+				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."footer.php";
+			}else{
 				$data = $recent;
 				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."footer.php";
 			}
@@ -452,9 +462,9 @@ public static function session(){
 	return (object)$_SESSION;
 }
 public static function load_language($lang,$langid,$content=array()){
-	$cont = file_get_contents(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."docs\lang".DS.$lang.".lang");
+	$cont = file_get_contents(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."docs".DS."lang".DS.$lang.".lang");
 	$arr = (array)json_decode($cont);
-	$action_arr = $arr[$langid];
+	$action_arr = $arr[$langid]; 
 	$action="";
 	if(!empty($content)){
 		foreach($content as $key=>$value):

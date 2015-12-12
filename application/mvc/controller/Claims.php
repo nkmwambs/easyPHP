@@ -1,55 +1,101 @@
 <?php
 class Claims_Controller extends E_Controller
 {
-    public $pagination;
-    public $limit;
-    public $offset;
     public $_model;
     public function __construct(){
         parent::__construct();
 
-        $this->_model=new Claims_Model("chat");
+        $this->_model=new Claims_Model("claims");
 
     }
     
     public function viewClaims($render=1,$path="",$tags=array("All")) {
 
     }
-    
     public function viewMedicalClaims($render=1,$path='',$tags=array("1","2","5")){
-    	Resources::import('easyphp.paginator');
-        $rec_cond=  $this->_model->where(array(array("where","userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords( $rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        $this->limit = 4;
-        $this->pagination=new Paginator("claims",$this->limit);
-        $this->offset = $this->pagination->set_offset();
-        
-        //echo "Records #: ".$this->pagination->get_num_records()."<br>";
-        //echo "Page No: ".$this->pagination->set_page()."<br>";
-        //echo "Offset: ".$this->pagination->set_offset();
-        
-        if($_SESSION['userlevel']==='1'){
-            $cond = $this->model->where(array(array("where","proNo",$_SESSION['username'],"=")));
-            $dt = $this->model->getAllRecords($cond,"claims","LIMIT $this->offset,$this->limit");
-        }elseif($_SESSION['userlevel']==='2'){
-            $cond = $this->model->where(array(array("where","cluster",$_SESSION['cname'],"=")));
-            $dt = $this->model->getAllRecords($cond,"claims","LIMIT $this->offset,$this->limit");
-        }  else {
-            
-            $dt = $this->model->getAllRecords("","claims","LIMIT $this->offset,$this->limit");
-        }
-        $pages = $this->pagination->paginate();
-        $data = array($dt,$pages);
+		$data=array();
+		$error="";
+		$limit=10;//Records Per Page
+		$offset=0;
+		$pageNum = $offset*$limit;
+		if(isset($this->choice[2])&&$this->choice[0]==='limit'){
+			$limit=$this->choice[3];
+		}
+		if(isset($this->choice[0])&&$this->choice[0]==='offset'){
+			$offset=$this->choice[1]-1;
+			$pageNum = $offset*$limit;
+		}
+		
+		//Set Date Conditions
+		$frmDate = date("Y-m-01");
+		$toDate = date("Y-m-t");
+		if(isset($_POST['frmDate'])||isset($_POST['toDate'])){
+			$frmDateRaw = $_POST['frmDate'];
+			$toDateRaw = $_POST['toDate'];
+			if(($frmDateRaw===""&&$toDateRaw!=="")||($frmDateRaw!==""&&$toDateRaw==="")){
+				$error='<div id="error_div">Date fields should be filled in pairs</div>';
+			}else{
+				$frmDate = $frmDateRaw;
+				$toDate = $toDateRaw;
+			}
+		}
+		
+		
+		//Active Claims
+		$rmk=2;
+		if(isset($_POST['rmk'])){
+				$rmk=$_POST['rmk'];
+			}
+		$cond_claim=$cond_claim = $this->_model->where(array(array("WHERE","rmks",$rmk,"="),array("AND","date",$frmDate,">"),array("AND","date",$toDate,"<")));
+		if(Resources::session()->userlevel==='1'){
+			$rmk=0;
+			if(isset($_POST['rmk'])){
+				$rmk=$_POST['rmk'];
+			}else{
+				$rmk=0;
+			}
+			$cond_claim = $this->_model->where(array(array("WHERE","proNo",Resources::session()->fname,"="),array("AND","rmks",$rmk,"="),array("AND","date",$frmDate,">"),array("AND","date",$toDate,"<")));
+		}elseif(Resources::session()->userlevel==='2'){
+			if(isset($_POST['rmk'])){
+				$rmk=$_POST['rmk'];
+			}else{
+				$rmk=0;
+			}
+			$cond_claim = $this->_model->where(array(array("WHERE","cluster",Resources::session()->cname,"="),array("AND","rmks",$rmk,"="),array("AND","date",$frmDate,">"),array("AND","date",$toDate,"<")));
+		}
+		
+		$claim_arr = $this->_model->getAllRecords($cond_claim,"claims","LIMIT $pageNum,$limit");
+		
+		//Total Pages
+		$totalPages_arr = $this->_model->getAllRecords($cond_claim,"claims");
+		$cnt=count($totalPages_arr)/$limit;
+		
+		$data['claims']=$claim_arr;
+		$data['totalPages']=ceil($cnt);
+		$data['pageNum']=$offset;
+		$data['rmk']=$rmk;
+		$data['error']=$error;
+		
 		return $data;
         
     }
     public function newMedicalClaim($render=1,$path='',$tags=array("1")){
-  
+  	$data=array();
+  	//Check if ICP has CSP
+  	$icpNo = Resources::session()->fname;
+  	$chk_csp_cond = $this->_model->where(array(array("WHERE","icpNo",$icpNo,"=")));
+	$chk_csp_arr = $this->_model->getAllRecords($chk_csp_cond,"csp_projects","",array("cspNo"));
+	
+	if(!empty($chk_csp_arr)){
+		$data['csp']=$chk_csp_arr;
+	}
+	
+	return $data;
     }
     public function getCname() {
-        $_cond = $this->model->where(array("where"=> array("childNo",$this->choice[1],"=")));
-        $rst = $this->model->getAllRecords($_cond,"childdetails");
-        if(sizeof($rst)!==0){
+        $claim_cond = $this->_model->where(array(array("where","childNo",$_POST['cNo'],"=")));
+        $rst = $this->_model->getAllRecords($claim_cond,"childdetails");
+        if(count($rst)!==0){
             foreach ($rst as $value) {
                 $data = $value->childName;
                 $data .= ",";
@@ -64,21 +110,37 @@ class Claims_Controller extends E_Controller
                 $data .= ",";
                 $data .= "Date of Birth Missing!";
         }
-        echo $data;
+        echo $data; 
     }
     
-    function medicalClaimEntry($render=1,$path='',$tags=array("1")){
-        //$rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        //$recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");        
-        //$menu = $this->model->getAllRecords("","menu");
-        //$this->load_menu->menu($menu);
-        $data=$this->model->insertArray(filter_input_array(INPUT_POST),"claims");
-        return $data;
-        //$this->template->view("",$data);
-        //$this->template->view("welcome/footer",$recent);
+    public function medicalClaimEntry(){
+        $this->_model->insertArray($_POST,"claims");
+		
+		    //Mail Voucher to PF
+		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel","2","=")));
+		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users","",array("email"));
+		$pf_email="";
+		if(count($pf_email_arr)!==0){
+			$pf_email = $pf_email_arr[0]->email;
+		}else{
+			$pf_email="NKarisa@ke.ci.org";
+		}
+			
+	
+		
+		//Mail Body
+		$body = "<br>You have new claim(s) posted by ".Resources::session()->fname;		
+		
+		//Mail Header
+		
+		$title = Resources::session()->fname." Medical Claims";
+		
+		Resources::mailing($pf_email, $title, $body); 
+
+        echo "Claims(s) Posted successfully";
     }
     
-    function remarkMedicalClaim(){
+    public function remarkMedicalClaim(){
         if($this->choice[5]>0){
             $del=Resources::img("diskdel.png",array("title"=>"Delete Receipt","style"=>"border:2px red solid;margin:2px;"));
             $rnd =$this->choice[5];      
@@ -86,9 +148,10 @@ class Claims_Controller extends E_Controller
             $del="";
             $rnd=0;
         }
-        $set = array("rmks"=>$this->choice[1]);
-        $cond = $this->model->where(array("where"=>  array("rec",  $this->choice[3],"=")));
-        $rlst = $this->model->updateQuery($set,$cond,"claims");
+        $c_set = array("rmks"=>$this->choice[1]);
+        //$cond = $this->_model->where(array("where"=>  array("rec",  $this->choice[3],"=")));
+        $c_cond = $this->_model->where(array(array("where","rec",$this->choice[3],"=")));
+        $rlst = $this->_model->updateQuery($c_set,$c_cond,"claims");
         
         if($rlst===1&&$this->choice[1]==='0'&&$_SESSION['userlevel']==='2'){echo Resources::img("waiting.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Unapproved","id"=>"rmk_".$this->choice[3],"onclick"=>"editRemarks(this,2,$rnd);"))."".Resources::img("reject.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Reject","id"=>"rmk_".$this->choice[3]."","onclick"=>"editRemarks(this,1,$rnd);"))."".$del;} 
 
@@ -252,7 +315,7 @@ class Claims_Controller extends E_Controller
         }
 
     }
-    public function newTVSClaim($render=1,$path='',$tags=array("All")){
+   public function newTVSClaim($render=1,$path='',$tags=array("All")){
         
     }
    public function newMedicalRequest($render=1,$path='',$tags=array("All")){

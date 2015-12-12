@@ -70,6 +70,7 @@ function submitMfr(frmid){
 }
 function selectMFR(val){
 	//alert(val);
+	var icp=document.getElementById('icpNo').value;
       xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
@@ -81,12 +82,12 @@ function selectMFR(val){
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Finance/mfrNav/time/"+val,true);      
+      xmlhttp.open("GET",path+"mvc/Finance/mfrNav/time/"+val+"/icp/"+icp,true);      
       xmlhttp.send();
 }
 
-function clearDepInTransit(rid,source,type,elem){
-	//alert(rid);
+function clearDepInTransit(rid,source,type,elem,tdate){
+	//alert(tdate);
 	var tbl = elem.parentNode.parentNode.parentNode;
 	var rwIndex = elem.parentNode.parentNode.rowIndex;
 	      xmlhttp.onreadystatechange=function() {
@@ -112,7 +113,7 @@ function clearDepInTransit(rid,source,type,elem){
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Finance/changeState/rid/"+rid+"/source/"+source+"/type/"+type,true);      
+      xmlhttp.open("GET",path+"mvc/Finance/changeState/rid/"+rid+"/source/"+source+"/type/"+type+"/tdate/"+tdate,true);      
       xmlhttp.send();
 }
 function stateRestore(rid,source,type){
@@ -214,4 +215,53 @@ function downloadMfr(){
 
       xmlhttp.open("GET",path+"mvc/Finance/downloadMfr",true);      
       xmlhttp.send();
+}
+
+function viewBs(bsKey,clst,icp){
+	//alert(bsKey);	
+  	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4) {
+                document.getElementById('overlay').style.display='none';
+                    document.write(xmlhttp.responseText);                 
+                    
+          }
+        };
+	var frmData = new FormData();
+	frmData.append("bsKey",bsKey);	
+	frmData.append("clst",clst);
+	frmData.append("icp",icp);
+    xmlhttp.open("POST",path+"mvc/Finance/viewBs",true);      
+    xmlhttp.send(frmData);
+}
+
+function postMfrNotes(tym,realname,groupname,icp){
+	  	  xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('viewMfrNotes').innerHTML=xmlhttp.responseText;                 
+                    
+          }
+        };
+    if(document.getElementById('mfrNotes').value===""){
+    	alert("Note cannot be empty!");
+    	exit;
+    } 
+    var notes = document.getElementById('mfrNotes').value;
+    var frmData = new FormData();
+    frmData.append("notes",notes);
+    frmData.append("userfirstname",realname);
+    frmData.append("groupname",groupname);
+    frmData.append("period",tym);
+    frmData.append("noteto",icp);
+        
+    xmlhttp.open("POST",path+"mvc/Finance/postMfrNotes",true);      
+    xmlhttp.send(frmData);
 }

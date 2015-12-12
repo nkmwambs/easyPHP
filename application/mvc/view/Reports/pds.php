@@ -7,7 +7,7 @@ $monthNames = Array("January", "February", "March", "April", "May", "June", "Jul
 
 $cMonth=$data['month'];
 $cYear=$data['year'];
- 
+
 $prev_year = $cYear;
 $next_year = $cYear;
 $prev_month = $cMonth-1;
@@ -23,15 +23,24 @@ if ($next_month == 13 ) {
 }
 //print_r($data['nonattflds']);
 $dates_with_attendance_array=array();
+$prevdates_with_attendance_array=array();
 
 $cnt=1;
 foreach($data['attendance'] as $value):
-	if($value!=='0'){
-		$dates_with_attendance_array[]=$cnt;	
+	if($value!=='0'&&$cnt<32){
+		$prevdates_with_attendance_array[]=$cnt;	
 	}
 	$cnt++;
 endforeach;
 
+$cnt2=1;
+foreach($data['attendance'] as $value):
+	if($value!=='0'&&$cnt2>31){
+		$dates_with_attendance_array[]=$cnt2-31;	
+	}
+	$cnt2++;
+endforeach;
+//print_r($dates_with_attendance_array);
 //Set readonly
 $readonly='';
 $status='';
@@ -67,6 +76,68 @@ echo "<tr><th colspan='2' style='text-align:left;'>What was the total attendance
 echo "<tr><td colspan='2'>";
 
 ?>
+
+<!-- Previous Month -->
+
+<div style="min-width:100%;">
+<table width="200" style="border:2px orange solid;">
+<tr>
+<td align="center">
+<table width="100%" border="0" cellpadding="2" cellspacing="2">
+<tr align="center">
+<td colspan="7" bgcolor="#999999" style="color:#FFFFFF"><strong><?php echo $monthNames[$cMonth-2].' '.$cYear; ?></strong></td>
+</tr>
+<tr>
+<td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>S</strong></td>
+<td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>M</strong></td>
+<td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>T</strong></td>
+<td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>W</strong></td>
+<td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>T</strong></td>
+<td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>F</strong></td>
+<td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>S</strong></td>
+</tr>
+<?php
+//print_r($dates_with_attendance_array);
+$prevtimestamp = mktime(0,0,0,$cMonth-1,1,$cYear);
+$prevmaxday = date("t",$prevtimestamp);
+$prevthismonth = getdate ($prevtimestamp);
+$prevstartday = $prevthismonth['wday'];
+for ($i=0; $i<($prevmaxday+$prevstartday); $i++) {
+    if(($i % 7) == 0 ){echo "<tr>&nbsp;&nbsp;";}
+    if($i < $prevstartday){echo "<td></td>&nbsp;&nbsp;";}
+    else {
+        $prevtdy = $i - $prevstartday + 1;
+        $prevnow_day = (int)date('j',strtotime("last month"));
+        $prevnow_mth=date('n',strtotime("last month"));
+        $prevnow_yr=date('Y',strtotime("last month"));
+        if(isset($prevdates_with_attendance_array)){
+            if(in_array($prevtdy, $prevdates_with_attendance_array)){
+               $prevbgColor="title='".$data['attendance']['fday'.$prevtdy]."' style='background-color:green;";
+            }  else {
+               $prevbgColor="";
+           }
+        }else{
+            $prevbgColor="style='";
+        }
+       if($prevtdy===$prevnow_day&&$cMonth===$prevnow_mth&&$cYear=$prevnow_yr){
+        	echo "<td align='center' valign='middle' height='20px'  $prevbgColor;border:2px red solid;'>". ($i - $prevstartday + 1) . "<INPUT TYPE='text' $readonly onclick='addAttendance(this,$cMonth,$cYear);' style='width:60px;margin-left:10px;' name='fday".$prevtdy."' value='".$data['attendance']['fday'.$prevtdy]."'/></td>&nbsp;&nbsp;";
+       }else{
+          echo "<td align='center' valign='middle' height='20px'  $prevbgColor'>". ($i - $prevstartday + 1) . "<br><INPUT TYPE='text' $readonly onclick='addAttendance(this,$cMonth,$cYear);' style='width:60px;margin-left:10px;' name='fday".$prevtdy."'  value='".$data['attendance']['fday'.$prevtdy]."'/></td>&nbsp;&nbsp;";
+
+       }
+    }
+    if(($i % 7) == 6 ) {echo "</tr>&nbsp;&nbsp;";}
+}
+?>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+
+<!--Current Month-->
+
 
 <div style="min-width:100%;">
 <table width="200" style="border:2px orange solid;">
@@ -192,7 +263,7 @@ echo "</form>";
 
 
 if(Resources::session()->userlevel==='1'&&($data['nonattflds']['status']==='0'||$data['nonattflds']['status']==='2')){
-	echo "<button onclick='savePdsReport(\"frmPdsReport\");'>Save</button><button onclick='submitpdsreport(".strtotime(date('Y-m-d',strtotime('last saturday of this month',strtotime($data['nonattflds']['rptMonth'])))).",".strtotime(date('Y-m-d')).",". strtotime('+1 month 4 days',strtotime($data['nonattflds']['rptMonth'])).",\"frmPdsReport\");'>Submit</button>";
+	echo "<button onclick='savePdsReport(\"frmPdsReport\");'>Save</button><button onclick='submitpdsreport(".mktime(0,0,0,date('m',strtotime($data['nonattflds']['rptMonth'])),21,date('Y',strtotime($data['nonattflds']['rptMonth']))).",".strtotime(date('Y-m-d')).",". strtotime('+1 month 4 days',strtotime($data['nonattflds']['rptMonth'])).",\"frmPdsReport\");'>Submit</button>";
 }elseif(Resources::session()->userlevel==='2'){
 	echo "<div id='declineDiv' style=''>";
 		echo "<textarea style='float:left;' id='declineReason' name='declineReason' cols='80' rows='5' placeholder='Decline Reason'>".$data['nonattflds']['declineReason']."</textarea>";
@@ -201,6 +272,6 @@ if(Resources::session()->userlevel==='1'&&($data['nonattflds']['status']==='0'||
 	
 	echo "<button onclick='validatepdsreport(".$data['nonattflds']['rptID'].",\"3\");'>Accept</button>";
 }
-
+//echo mktime(0,0,0,11,21,2015);
 //echo date('Y-m-d',strtotime('last saturday of this month',strtotime($data['nonattflds']['rptMonth'])));
 ?>

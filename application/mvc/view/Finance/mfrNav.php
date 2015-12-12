@@ -5,8 +5,10 @@ if(is_array($data)){
 	print($data['test']);
 }
 
-//print_r($data['expenses']);
-
+print_r($data['chk']);
+//echo date('Y-m-t',$data['time']);
+$curSelect="";
+$cur="";
 if(isset($data['time'])){
 	$curSelect=date('F-Y',$data['time']);
 	$cur = $data['time'];
@@ -16,13 +18,16 @@ if(isset($data['time'])){
 	exit;
 }
 
-$str ="Meet Me";
+$str ="";
     
 echo "<button onclick='selectMFR(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectMFR(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectMFR(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
 //echo Resources::img("print.png",array("onclick"=>'downloadMfr();'));
 echo "<button onclick='downloadMfr();'>Download</button>";
 
-echo "<form id='frmMfr'>";
+//echo "<form id='frmMfr'>";
+
+echo "<INPUT TYPE='hidden' value='".$data['icp']."' id='icpNo'/>";
+
 echo "<table id='tblMfr' style='text-align:right;'>";
 echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>MONTHLY FINANCIAL REPORT";
 	echo "<br><br><div id='error_div'>Report Status: ";
@@ -34,7 +39,7 @@ echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>M
 	    	echo "Report submitted and validated by PF";
 	    }
     echo "</div><br></caption>";
-echo "<tr><th colspan='6'>1. PROJECT NAME: {$_SESSION['username']} - {$_SESSION['lname']}</th><th>Date</th><th colspan='2'>".date("t-m-Y",$data['time'])."<input type='hidden' id='curDate' name='curDate' value='".date("Y-m-t",$data['time'])."'/></th></tr>";
+echo "<tr><th colspan='6'>1. PROJECT NAME: {$data['icp']}</th><th>Date</th><th colspan='2'>".date("t-m-Y",$data['time'])."<input type='hidden' id='curDate' name='curDate' value='".date("Y-m-t",$data['time'])."'/></th></tr>";
 echo "<tr><th colspan='6'>CDC FINANCE REPORT FOR THE MONTH OF: </th><th>".date("F",$data['time'])."</th><th>YEAR</th><th>".date("Y",$data['time'])."</th></tr>";
 
 //Funds Balance Report
@@ -97,7 +102,7 @@ echo "<tr><td colspan='4'>";
         $sum_dep_in_transit=0;
         foreach($data['transit'] as $value){
         	if($data['state']===0){
-        			echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","dep",this);'))."</td><td>".$value['TDate']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
+        			echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","dep",this,"'.$data['time'].'");'))."</td><td>".$value['TDate']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
         	}else{
         		echo "<tr><td>".Resources::img("unreject.png",array("style"=>"cursor:pointer;"))."</td><td>".$value['TDate']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
         	}
@@ -115,7 +120,7 @@ echo "<td colspan='5'>";
         $sum_oc=0;
         foreach ($data['oc'] as $value) {
         	if($data['state']===0){
-            	echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","oc",this);'))."</td><td>".$value['TDate']."</td><td>".$value['ChqNo']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
+            	echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","oc",this,"'.$data['time'].'");'))."</td><td>".$value['TDate']."</td><td>".$value['ChqNo']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
             }else{
             	echo "<tr><td>".Resources::img("unreject.png",array("style"=>"cursor:pointer;"))."</td><td>".$value['TDate']."</td><td>".$value['ChqNo']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";	
             }
@@ -238,22 +243,38 @@ if($data['state']===0){
 	if(strpos(Resources::session()->cname," ")){
 		$cst = str_replace(" ","___", Resources::session()->cname);
 	}
-	//elseif(strpos(Resources::session()->cname," -")){
-		//$cst = str_replace(" -","__", Resources::session()->cname);
-	//}elseif(strpos(Resources::session()->cname," ")){
-		//$cst = str_replace(" ","___", Resources::session()->cname);
-	//}
-	//$cst = urlencode(Resources::session()->cname);
-	echo "<tr><td colspan='9' style='text-align:left;'>".Resources::a_href("Finance/viewBs/bsKey/".$data['getBs'][0]->bsKeys."/clst/".$cst."/icp/".Resources::session()->fname,$data['getBs'][0]->bsKeys,array("target"=>'__blank'))."</td></tr>";	
+
+	//echo "<tr><td colspan='9' style='text-align:left;'>".Resources::a_href("Finance/viewBs/bsKey/".$data['getBs'][0]->bsKeys."/clst/".$cst."/icp/".Resources::session()->fname,$data['getBs'][0]->bsKeys,array("target"=>'__blank'))."</td></tr>";	
+//echo "<tr><td colspan='9' style='text-align:left;'><span onclick='viewBs(\"".$data['getBs'][0]->bsKeys."\",\"".Resources::session()->cname."\",\"".Resources::session()->fname."\");' style='color:blue;cursor:pointer;'>".$data['getBs'][0]->bsKeys."</span></td></tr>";
+echo "<tr><td colspan='9' style='text-align:left;'>";
+	echo "<form method='post' action='".HOST_NAME."/easyPHP/application/mvc/docs/pdfdownloads/bsdownload.php'>";
+		echo "<INPUT TYPE='hidden' name='bsKey' value='".$data['getBs'][0]->bsKeys."'/>";
+		echo "<INPUT TYPE='hidden' name='cst' value='".Resources::session()->cname."'/>";
+		echo "<INPUT TYPE='hidden' name='icpNo' value='".Resources::session()->fname."'/>";
+		echo "<INPUT TYPE='submit' value='Download ".$curSelect." Bank Statement'/>";
+	echo "</form>";
+echo "</td></tr>";
 }
 
 echo "<tr><td colspan='9'>&nbsp;</td></tr>";
 echo "</table>";
-echo "</form>";
+//echo "</form>";
+//echo $data['state'];
+
+//Notes area
+	echo "<br><TEXTAREA id='mfrNotes' name='mfrNotes' cols=90 rows=10 placeholder='Put notes for this Report here'></TEXTAREA><br><br>";
+	echo "<button onclick='postMfrNotes(\"".date("Y-m-t",$cur)."\",\"".Resources::session()->userfirstname."\",\"".Resources::session()->fname."\",\"".$data['icp']."\");'>Post Notes</button><br><br>";
+echo "<div id='viewMfrNotes'>";
+	echo "<span style='font-weight:bold;'>View Notes Here</span>";
+		foreach ($data['notes'] as $value) {
+			echo "<div class='footnotes_header'>Note From: {$value->userfirstname} : {$value->stmp}</div>";
+			echo "<div style='background-color: #FBD850;border-bottom-left-radius: 5px;	border-bottom-right-radius: 5px;padding-left:10px;'>{$value->notes}</div><br>";
+		}
+echo "</div>";
 
 if($data['state']===0){
 	echo "<button onclick='submitMfr(\"frmMfr\");'>Submit</button>";
-}elseif($data['state']===1&&Resources::session()->userlevel_backup==='2'){
+}elseif($data['state']===1&&Resources::session()->userlevel==='2'){
 	echo "<button onclick='validateMFR(\"".$data['stateID']."\");'>Validate</button>";
 }
 

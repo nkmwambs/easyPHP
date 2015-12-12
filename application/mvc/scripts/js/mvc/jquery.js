@@ -20,7 +20,8 @@
 				$("#metricDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//othertfienroldate
 				$("#othertfienroldate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//requestDate
 				$("#requestDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//exitDate
-				$("#exitDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//exitDate
+				$("#exitDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//assessDate
+				$("#assessDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//assessDate
 		});
 		
 	  //  if (document.addEventListener) {
@@ -36,30 +37,30 @@
 	    //}
 	    
 
- var mozilla=document.getElementById && !document.all
- var ie=document.all
- var contextisvisible=0
+ var mozilla=document.getElementById && !document.all;
+ var ie=document.all;
+ var contextisvisible=0;
 
  function iebody(){
- return (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+ return (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body;
  }
 
  function displaymenu(e){
- el=document.getElementById("context_menu")
- contextisvisible=1
- if (mozilla){
- el.style.left=pageXOffset+e.clientX+"px"
- el.style.top=pageYOffset+e.clientY+"px"
- el.style.visibility="visible"
- e.preventDefault()
- return false
- }
- else if (ie){
- el.style.left=iebody().scrollLeft+event.clientX
- el.style.top=iebody().scrollTop+event.clientY
- el.style.visibility="visible"
- return false
- }
+	 el=document.getElementById("context_menu");
+	 contextisvisible=1;
+	 if (mozilla){
+	 el.style.left=pageXOffset+e.clientX+"px";
+	 el.style.top=pageYOffset+e.clientY+"px";
+	 el.style.visibility="visible";
+	 e.preventDefault();
+	 return false;
+	 }
+	 else if (ie){
+	 el.style.left=iebody().scrollLeft+event.clientX;
+	 el.style.top=iebody().scrollTop+event.clientY;
+	 el.style.visibility="visible";
+	 return false;
+	 }
  }
 
  function hidemenu(){

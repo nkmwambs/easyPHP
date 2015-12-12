@@ -8,8 +8,9 @@ class Reports_Controller extends E_Controller
     }
     public function viewAll($render=1,$path="",$tags=array("All")){
         //$data = "All Reports!";
-		//return $data;
-		return $this->_model->getAllRecords("","queries");
+		$data=array();
+		$data['rec'] = $this->_model->getAllRecords("","queries");
+		return $data;
     }
 	public function queryView($render=2,$path='',$tags=array("All")){
 		$data=array();
@@ -280,7 +281,7 @@ public function pdsreportviewers($cdate=""){
 		//Get Attendance
 		$flds = range(1, 31);
 		$att_cond = $this->_model->where(array(array("where","rptMonth",$month,"="),array("AND","icpNo",$icp,"=")));
-		$att_arr = $this->_model->getAllRecords($att_cond,"pdsreport","",array("day1","day2","day3","day4","day5","day6","day7","day8","day9","day10","day11","day12","day13","day14","day15","day16","day17","day18","day19","day20","day21","day22","day23","day24","day25","day26","day27","day28","day29","day30","day31"));
+		$att_arr = $this->_model->getAllRecords($att_cond,"pdsreport","",array("fday1","fday2","fday3","fday4","fday5","fday6","fday7","fday8","fday9","fday10","fday11","fday12","fday13","fday14","fday15","fday16","fday17","fday18","fday19","fday20","fday21","fday22","fday23","fday24","fday25","fday26","fday27","fday28","fday29","fday30","fday31","day1","day2","day3","day4","day5","day6","day7","day8","day9","day10","day11","day12","day13","day14","day15","day16","day17","day18","day19","day20","day21","day22","day23","day24","day25","day26","day27","day28","day29","day30","day31"));
 		$att="";
 		if(!empty($att_arr)){
 			$att = (array)$att_arr[0];;
@@ -294,8 +295,8 @@ public function pdsreportviewers($cdate=""){
 		}
 		
 		
-		$data['month']=date('m');
-		$data['year']=date('y');
+		$data['month']=date('m',$this->choice[1]);
+		$data['year']=date('y',$this->choice[1]);
 		$data['icp']=$icp;
 		$data['cst']=$cst;
 		$data['attendance']=$att;
@@ -333,6 +334,9 @@ public function savePdsReport(){
 		if(isset($_POST['day'.$value])){
 			$update_set_sec['day'.$value]=$_POST['day'.$value];
 		}
+		if(isset($_POST['fday'.$value])){
+			$update_set_sec_two['fday'.$value]=$_POST['fday'.$value];
+		}
 	}
 	
 	$other_sets = array(
@@ -367,7 +371,7 @@ public function savePdsReport(){
 	if(isset($_POST['submitting'])){
 		$other_sets['status']=1;
 	}
-	$update_set=array_merge($update_set_sec,$other_sets);
+	$update_set=array_merge($update_set_sec_two,$update_set_sec,$other_sets);
 	$update_cond = $this->_model->where(array(array("where","icpNo",$icp,"="),array("AND","rptMonth",$month,"=")));
 	
 	//Check if Report is already submitted before Updating
@@ -810,4 +814,286 @@ public function declineRequest(){
 	$del_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
 	echo $this->_model->deleteQuery($del_cond,"malcaseexit");
 }
+public function pfcdprview($render=1,$path='',$tags=array("All")){
+	//$path="c";
+		$cst = $_POST['cst'];
+		$cdpr_arr = array();
+				
+		//Complete CDPR
+		$comp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",$cst,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",1,"=")));
+		$comp_cdpr_pf_arr = $this->_model->getAllRecords($comp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($comp_cdpr_pf_arr)>0){
+			foreach ($comp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['comp_cnt']=$value->cnt;
+			}
+		}
+		
+		//Incomplete CDPR
+		$incomp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",$cst,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",0,"=")));
+		$incomp_cdpr_pf_arr = $this->_model->getAllRecords($incomp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($incomp_cdpr_pf_arr)>0){
+			foreach ($incomp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['incomp_cnt']=$value->cnt;	
+			}
+		}
+		
+		//Count of Beneficiaries
+		$ben_count_arr="";
+		$ben_count_cond="";
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				$ben_count_cond = $this->_model->where(array(array("WHERE","pNo",$key,"=")));
+				$ben_count_arr = $this->_model->getAllRecords($ben_count_cond,"childdetails","GROUP BY pNo",array("count(pNo):NoOfBen"));	
+				$cdpr_arr[$key]['NoOfBen']=$ben_count_arr[0]->NoOfBen;
+			}
+		}
+		
+		//Set default number of Completed Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['comp_cnt'])){
+				$cdpr_arr[$key]['comp_cnt']=0;
+			}
+		}
+		
+		//Set default number of Incompleted Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['incomp_cnt'])){
+				$cdpr_arr[$key]['incomp_cnt']=0;
+			}
+		}
+		
+		//% Completed Assessments
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				if(!empty($cdpr_arr[$key]['comp_cnt'])||$cdpr_arr[$key]['comp_cnt']===0){
+					$cdpr_arr[$key]['percent']	= ($cdpr_arr[$key]['comp_cnt']/$cdpr_arr[$key]['NoOfBen'])*100;
+				}
+			}
+		}
+		
+		
+		$data=array();
+		
+		$data['rec'] =$cdpr_arr;
+		$data['test']=$ben_count_arr;
+		$data['cst']=Resources::session()->cname;
+		
+		return $data;
+}
+public function cdpr(){
+	$render=1;
+	$tags=array("All");
+	$cdpr_pf_cond="";
+	$cdpr_pf_arr="";
+	$data=array();
+	if(Resources::session()->userlevel==='1'){
+		$path="";
+	}elseif(Resources::session()->userlevel==='2'){
+		$path="pfcdprview";
+		$cdpr_arr = array();
+				
+		//Complete CDPR
+		$comp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",Resources::session()->cname,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",1,"=")));
+		$comp_cdpr_pf_arr = $this->_model->getAllRecords($comp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($comp_cdpr_pf_arr)>0){
+			foreach ($comp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['comp_cnt']=$value->cnt;
+			}
+		}
+		
+		//Incomplete CDPR
+		$incomp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",Resources::session()->cname,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",0,"=")));
+		$incomp_cdpr_pf_arr = $this->_model->getAllRecords($incomp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($incomp_cdpr_pf_arr)>0){
+			foreach ($incomp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['incomp_cnt']=$value->cnt;	
+			}
+		}
+		
+		//Count of Beneficiaries
+		$ben_count_arr="";
+		$ben_count_cond="";
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				$ben_count_cond = $this->_model->where(array(array("WHERE","pNo",$key,"=")));
+				$ben_count_arr = $this->_model->getAllRecords($ben_count_cond,"childdetails","GROUP BY pNo",array("count(pNo):NoOfBen"));	
+				$cdpr_arr[$key]['NoOfBen']=$ben_count_arr[0]->NoOfBen;
+			}
+		}
+		
+		//Set default number of Completed Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['comp_cnt'])){
+				$cdpr_arr[$key]['comp_cnt']=0;
+			}
+		}
+		
+		//Set default number of Incompleted Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['incomp_cnt'])){
+				$cdpr_arr[$key]['incomp_cnt']=0;
+			}
+		}
+		
+		//% Completed Assessments
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				if(!empty($cdpr_arr[$key]['comp_cnt'])||$cdpr_arr[$key]['comp_cnt']===0){
+					$cdpr_arr[$key]['percent']	= ($cdpr_arr[$key]['comp_cnt']/$cdpr_arr[$key]['NoOfBen'])*100;
+				}
+			}
+		}
+		
+		
+		
+		
+		$data['rec'] =$cdpr_arr;
+		$data['test']=$ben_count_arr;
+		$data['cst']=Resources::session()->cname;
+	}else{
+		$path="allicpcdprview";
+		$cdpr_arr = array();
+				
+		//Complete CDPR
+		$comp_cdpr_all_cond = $this->_model->where(array(array("WHERE","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",1,"=")));
+		$comp_cdpr_all_arr = $this->_model->getAllRecords($comp_cdpr_all_cond,"cdpr","GROUP BY users.cname",array("users.cname:cst","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		foreach ($comp_cdpr_all_arr as $value) {
+			$cdpr_arr[$value->cst]['comp']=$value->cnt;
+		}
+
+				
+		//Incomplete CDPR
+		$incomp_cdpr_all_cond = $this->_model->where(array(array("WHERE","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",0,"=")));
+		$incomp_cdpr_all_arr = $this->_model->getAllRecords($incomp_cdpr_all_cond,"cdpr","GROUP BY users.cname",array("users.cname:cst","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		foreach ($incomp_cdpr_all_arr as $value) {
+			$cdpr_arr[$value->cst]['incomp']=$value->cnt;
+		}
+		
+		//Count of Beneficiaries
+		$ben_count_arr="";
+		$ben_count_cond="";
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				$ben_count_cond = $this->_model->where(array(array("WHERE","cstName",$key,"=")));
+				$ben_count_arr = $this->_model->getAllRecords($ben_count_cond,"childdetails","GROUP BY cstName",array("count(cstName):NoOfBen"));	
+				$cdpr_arr[$key]['NoOfBen']=$ben_count_arr[0]->NoOfBen;
+			}
+		}	
+			
+		//Set default number of Completed Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['comp'])){
+				$cdpr_arr[$key]['comp']=0;
+			}
+		}
+		
+		//Set default number of Incompleted Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['incomp'])){
+				$cdpr_arr[$key]['incomp']=0;
+			}
+		}
+		
+		//% Completed Assessments
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				if(!empty($cdpr_arr[$key]['comp'])||$cdpr_arr[$key]['comp']===0){
+					$cdpr_arr[$key]['percent']	= ($cdpr_arr[$key]['comp']/$cdpr_arr[$key]['NoOfBen'])*100;
+				}
+			}
+		}
+		
+		$data['rec'] =$cdpr_arr;
+	}
+	$this->dispatch($render,$path, $data,$tags);
+}
+public function savecdpr(){
+	//Update Record	
+	$childNo = $_POST['childNo'];
+	$agegroup = $_POST['cognitiveagegroup'];
+	$ass_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"="),array("AND","cognitiveagegroup",$agegroup,"=")));
+	
+	$this->_model->updateQuery($_POST,$ass_cond,"cdpr");
+	
+	echo "Record Saved Successfully";
+	
+}
+public function submitcdpr(){
+	//Update Record	
+	$childNo = $_POST['childNo'];
+	$agegroup = $_POST['cognitiveagegroup'];
+	$ass_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"="),array("AND","cognitiveagegroup",$agegroup,"=")));
+	
+	$_POST['status']='1';
+	
+	$this->_model->updateQuery($_POST,$ass_cond,"cdpr");
+	
+	echo "Record Submitted Successfully";
+}
+public function viewcdprgrid($render=1,$path='',$tags=array("All")){
+	$data=array();
+	//Extract Assessed Beneficiaries
+	$pNo = Resources::session()->fname;
+	if(isset($this->choice[1])){
+		$pNo=$this->choice[1];
+	}
+	
+	$assessed_ben_cond = $this->_model->where(array(array("WHERE","pNo",$pNo,"=")));
+	$assessed_ben_arr = $this->_model->getAllRecords($assessed_ben_cond,"cdpr","",array("childNo","cognitiveagegroup","status"));
+	
+	$refined_rec = array();
+	foreach ($assessed_ben_arr as $value) {
+		$refined_rec[$value->childNo][$value->cognitiveagegroup]=$value->status;
+	}
+	
+	$data['rec'] = $refined_rec;
+	return $data;
+}
+public function getChildDetailsforCDPR($render=1,$path='',$tags=array("All")){
+	//Check if Child Exists in the the Database
+	$data=array();
+	$childNo = $_POST['childNo'];
+	$agegroup = $_POST['cognitiveagegroup'];
+	$cdpr_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"=")));
+	$cdpr_arr = $this->_model->getAllRecords($cdpr_cond,"childdetails");
+	if(count($cdpr_arr)!==0){
+		//Check if Record exists: If Yes, Update Else Insert New Reord
+		$ass_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"="),array("AND","cognitiveagegroup",$agegroup,"=")));
+		$ass_arr = $this->_model->getAllRecords($ass_cond,"cdpr","",array("childNo","cognitiveagegroup","status"));
+		$new_rec = array();
+		if(count($ass_arr)===0){
+			//Insert a  Record
+			$new_rec['pNo']=Resources::session()->fname;
+			//$pNo = Resources::session()->fname;//$_POST['pNo'];
+			$new_rec['childNo']=$childNo;
+			$new_rec['childName']=$cdpr_arr[0]->childName;
+			$new_rec['dob']=$cdpr_arr[0]->dob;
+			$new_rec['cognitiveagegroup']=$agegroup;
+			
+			$this->_model->insertRecord($new_rec,"cdpr");
+		}
+		
+		$cur_ass_arr = $this->_model->getAllRecords($ass_cond,"cdpr");	
+		$data['rec']=$cur_ass_arr;
+		
+	}else{
+		$data['rec']="";
+	}	
+	
+	
+	//$data['icp']=Resources::session()->fname;
+	$data['icp']=Resources::session()->fname;
+	$data['cognitiveagegroup']=$agegroup;
+	$data['ben']=$childNo;
+	
+	return $data;
+}
+
+
 }

@@ -7,8 +7,6 @@ var path = 'http://'+location.hostname+'/easyPHP/';
         }
 
 
-//body.addEventListener("load",highlight('qryView'), false);
-//document.addEventListener("DOMContentLoaded",highlight('qryView'), false )
   function highlight(inputid)
 	{
 			var textArr=["SELECT ","UPDATE "," FROM "," LEFT JOIN "," WHERE ","GROUP BY"," ON "," ORDER BY "," ASC "," DESC"," INNER JOIN "," RIGHT JOIN "," SUM"," sum"," AVG"," avg"," AS "," as "];
@@ -970,3 +968,175 @@ function validatepdsreport(rid,state){
         xmlhttp.send(frmData);	
 	
 }
+function savecdpr(frmid){
+	//alert("Hello");
+	var frm = document.getElementById(frmid);
+	var frmData = new FormData(frm);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.write(xmlhttp.responseText);
+				//location.reload();
+				alert(xmlhttp.responseText);
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/savecdpr",true);      
+        xmlhttp.send(frmData);
+}
+function getChildDetailsforCDPR(){
+	var childNo = document.getElementById('childNo').value;
+	var cognitiveagegroup = document.getElementById('cognitiveagegroup').value;
+		if(childNo===""){
+		alert("Child Number cannot be empty!");
+		document.getElementById('childNo').style.border='2px red solid';
+		exit;
+	}
+	if(cognitiveagegroup===""){
+		alert("You must select a beneficiary cognitive age group!");
+		document.getElementById('cognitiveagegroup').style.border='2px red solid';
+		exit;
+	}
+	var frmData = new FormData();
+	frmData.append("childNo",childNo);
+	frmData.append("cognitiveagegroup",cognitiveagegroup);
+	
+		xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/getChildDetailsforCDPR",true);      
+        xmlhttp.send(frmData);
+}
+function getChildDetailsforCDPRFromBoard(childNo,cognitiveagegroup){
+	var childNo = document.getElementById('childNo').value;
+	var cognitiveagegroup = document.getElementById('cognitiveagegroup').value;
+	if(childNo===""){
+		alert("Child Number cannot be empty!");
+		document.getElementById('childNo').style.border='2px red solid';
+		exit;
+	}
+	if(cognitiveagegroup===""){
+		alert("You must select a beneficiary cognitive age group!");
+		document.getElementById('cognitiveagegroup').style.border='2px red solid';
+		exit;
+	}
+	var frmData = new FormData();
+	frmData.append("childNo",childNo);
+	frmData.append("cognitiveagegroup",cognitiveagegroup);
+	//frmData.append("pNo",childNo.split("-")[0]);
+	//alert(childNo);
+		xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/getChildDetailsforCDPR",true);      
+        xmlhttp.send(frmData);
+}
+function submitcdpr(frmid){
+	var txt = document.getElementsByTagName("INPUT");
+	var inputCnt=0;
+	for(var w=0;w<txt.length;w++){
+		txt.item(w).style.border='1px white solid';
+		if(txt.item(w).value==='0'||txt.item(w).value===''||txt.item(w).value==='0000-00-00'){
+			inputCnt++;
+			txt.item(w).style.border='1px red solid';
+		}
+	}
+	if(inputCnt>0){
+		alert("You cannot submit an incompletely filled assessment form!");
+		exit;
+	}
+	var frm = document.getElementById(frmid);
+	var frmData = new FormData(frm);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.write(xmlhttp.responseText);
+				//location.reload();
+				alert(xmlhttp.responseText);
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/submitcdpr",true);      
+        xmlhttp.send(frmData);
+}
+function checkcdprchildnumberformat(){
+	var x = document.getElementById("KeNo").value;
+    var y = document.getElementById("childNo").value;
+    //alert(y);
+    document.getElementById('childNo').style.backgroundColor='white';
+    if(y.length===1){
+    	document.getElementById('childNo').value = x+"-000"+y;
+    }
+    if(y.length===2){
+       document.getElementById('childNo').value = x+"-00"+y;
+    }
+    if(y.length===3){
+     document.getElementById('childNo').value = x+"-0"+y;
+    }
+    if(y.length===4){
+     document.getElementById('childNo').value = x+"-"+y;
+    }
+    if(y.length>4){
+    	alert("Please enter only the mumber part of the child number e.g. for KE980-0675, only enter 675");
+		document.getElementById('childNo').value="";
+        //exit;
+    }
+    
+}
+function  validatecdprscore(el){
+	el.style.border='1px white solid';
+	if(el.value>4){
+		alert("The score cannot be greater 4");
+		el.style.border='1px red solid';
+		el.value="0";
+	}
+}
+function getcdprlistbycst(cst){
+	var frmData = new FormData();
+	frmData.append("cst",cst);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/pfcdprview",true);      
+        xmlhttp.send(frmData);
+}
+

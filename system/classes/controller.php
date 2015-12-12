@@ -72,6 +72,8 @@ class E_Controller {
 				in_array("0", $tags)){
 				Resources::render($render,$path,$results);
 								
+			}else{
+				echo "<div style='color:red;border: 1px black solid;text-align: center;border-radius:3px;background-color: yellow;max-width: 450px;margin-left:auto;margin-right:auto;padding: 10px;'>Session has expired<br>Click ".Resources::a_href("Welcome/show", "here")." to refresh</div>";
 			}
 
 	}

@@ -6,20 +6,29 @@ var path = 'http://'+location.hostname+'/easyPHP/';
                 var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
 function addRow(tableID) {
-	//alert("Hello");
     var voucherType = document.getElementById("VTypeMain").value;
     if(voucherType!=="#"){
         var VType=document.cookie="VType="+voucherType;
     }
+    
     var bodyTable = document.getElementById("bodyTable");
-    //var voucherType = document.getElementById("VTypeMain");
     var rws = bodyTable.rows.length;
-    //alert(VType);
+    
     if(rws>1||VType!==""){
-        //document.getElementById("VTypeMain").style.display='none';
         document.getElementById("VTypeMain").parentNode.innerHTML="<input type='text' name='VTypeMain' id='VTypeMain' value='"+voucherType+"' readonly/>";
     }
-    //alert(voucherType);
+     
+    if(rws>1){
+    	var val1 = bodyTable.rows[rws-1].cells[1].childNodes[0].value;
+    	var val2 = bodyTable.rows[rws-1].cells[2].childNodes[0].value;
+    	var val3 = bodyTable.rows[rws-1].cells[3].childNodes[0].value;
+    	var val4 = bodyTable.rows[rws-1].cells[4].childNodes[0].value;
+    	if(val1===""||val2===""||val3===""||val4===""){
+    		alert("You must completely fill in the previous row before you proceed!");
+    		exit;
+    	}
+    }
+    
     xmlhttp.onreadystatechange=function() {
    	if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
@@ -237,9 +246,7 @@ function chqIntel(str){
         xmlhttp.send();
      }
 }
-function delRow(tableID) {
-                       //alert("Hello!");
-			try {
+function delRow(tableID) {				
 			var table = document.getElementById(tableID);
 			var rowCount = table.rows.length;
 
@@ -252,11 +259,14 @@ function delRow(tableID) {
 					i--;
 				}
 
+			}
+			//Totals
+			var totals=0;
+			for(var j=1;j<rowCount;j++){
+				totals+=parseFloat(table.rows[j].cells[4].childNodes[0].value);
+			}
+			document.getElementById('totals').value=accounting.formatMoney(totals, { symbol: "Kes.",  format: "%v %s" }); 
 
-			}
-			}catch(e) {
-				alert(e);
-			}
 }
 function validateVType(){
             var x=document.getElementById('VTypeMain');
@@ -276,6 +286,15 @@ function validateVType(){
 function postVoucher(){
 		var validate = document.getElementsByClassName('validate');
 		var cntFlds =0;
+		
+		var bodytbl = document.getElementById('bodyTable');
+		var bodyrows = bodytbl.rows.length;
+		
+		if(bodyrows===1){
+			alert("You can't post an empty voucher!");
+			exit;
+		}
+		
 		for(var z=0;z<validate.length;z++){
 			if(validate.item(z).value===""){
 				validate.item(z).style.backgroundColor='red';
@@ -632,9 +651,10 @@ function calcVNumber(){
 		var curVNumber=fy+curMonth+"01";
 	}
 	//alert(month);
-	if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)!==parseInt(prevMonth)){
+	//if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)!==parseInt(prevMonth)){
+	if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)>parseInt(prevMonth)+1){
 		document.getElementById('info_div').setAttribute("id","error_div");
-		document.getElementById('error_div').innerHTML='Error <img id="" src= "'+path+'/system/images/error.png"/><br> Date not allowed! The next allowable date should equal to and beyond '+prevDate+" and a date in Month "+month+". To Proceed to the next month dates, please consider submitting month "+month+" Report";
+		document.getElementById('error_div').innerHTML='Error <img id="" src= "'+path+'/system/images/error.png"/><br> Date not allowed! The next allowable date should equal to and beyond '+prevDate+" and a date in Month "+month+". To Proceed to the next month dates, please consider submitting month "+month+" Report if not yet submitted";
 		document.getElementById('TDate').value="";
 		document.getElementById('VNumber').value="";
 		document.getElementById('TDate').style.backgroundColor='red';

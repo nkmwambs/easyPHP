@@ -1,16 +1,25 @@
 <?php
-if($_SESSION['userlevel']==='1'){
-echo "<div id='control' align='center' style='border:2px lightgray groove;padding:5px;'> ".Resources::a_href("Claims/newMedicalClaim",Resources::img("plus.png",  array("title"=>"New Claim")),array("onclick"=>"xmlrequest(\"Claims/newMedicalClaim\");"))." | Filter | From: <input style='width:100px;'  type='text' id='frmDate' readonly/> To: <input style='width:100px;'  type='text' id='toDate' readonly/> State: <select><option>Select State ...</option><option>Checked By PF</option><option>Rejected By PF</option><option>Processed By HS</option><option>Rejected By HS</option><option>Level 1 Approved</option><option>Level 1 Rejected</option><option>Level 2 Approved</option><option>Level 2 Rejected</option><option>Paid</option></select>".Resources::img("go.png",  array("title"=>"Go"))."".Resources::img("download.png",  array("title"=>"Download in Excel","style"=>"margin-left:10px;"))."</div>";
+//print_r($data['claims']);
+echo $data['error'];
+if(Resources::session()->userlevel==='1'){
+echo "<div id='control' align='center' style='border:2px lightgray groove;padding:5px;'> ".Resources::a_href("Claims/newMedicalClaim",Resources::img("plus.png",  array("title"=>"New Claim")),array("onclick"=>"xmlrequest(\"Claims/newMedicalClaim\");"))." | Filter | From: <input style='width:100px;'  type='text' id='frmDate' readonly/> To: <input style='width:100px;'  type='text' id='toDate'  readonly/> State: <select id='rmkSelect'><option>Select State ...</option><option value='0'>New Claim</option><option value='2'>Checked By PF</option><option value='1'>Rejected By PF</option><option value='8'>Processed By HS</option><option value='7'>Rejected By HS</option><option>Level 1 Approved</option><option>Level 1 Rejected</option><option>Level 2 Approved</option><option>Level 2 Rejected</option><option>Paid</option></select>".Resources::img("go.png",  array("title"=>"Go","onclick"=>'selectClaims();',"style"=>'cursor:pointer;'))."".Resources::img("download.png",  array("title"=>"Download in Excel","style"=>"margin-left:10px;"))."</div>";
 }else{
-    if($_SESSION['userlevel']==='2'){$approve = 2;$reject=1;$disapprove=0;}
-    elseif($_SESSION['userlevel']==='3'){$approve = 8;$reject=7;$disapprove=6;}
-    elseif($_SESSION['userlevel']==='5'){$approve = 4;$reject=3;$disapprove=2;}
-    elseif($_SESSION['userlevel']==='6'){$approve = 6;$reject=5;$disapprove=4;}
-    elseif($_SESSION['userlevel']==='10'){$approve = 10;$reject=9;$disapprove=8;}
+    if(Resources::session()->userlevel==='2'){$approve = 2;$reject=1;$disapprove=0;}
+    elseif(Resources::session()->userlevel==='3'){$approve = 8;$reject=7;$disapprove=6;}
+    elseif(Resources::session()->userlevel==='5'){$approve = 4;$reject=3;$disapprove=2;}
+    elseif(Resources::session()->userlevel==='6'){$approve = 6;$reject=5;$disapprove=4;}
+    elseif(Resources::session()->userlevel==='10'){$approve = 10;$reject=9;$disapprove=8;}
     
-    echo "<div id='control' align='center' style='border:2px lightgray groove;padding:5px;'>".Resources::img("approved.png",array("title"=>"Approve","style"=>"margin-right:10px;margin-left:10px;","onclick"=>"approveClaims(\"$approve\");"))."".Resources::img("reject.png",array("title"=>"Reject","style"=>"margin-right:10px;","onclick"=>"approveClaims(\"$reject\");"))."".Resources::img("unapproved.png",array("title"=>"Unapprove","style"=>"margin-right:10px;","onclick"=>"approveClaims(\"$disapprove\");"))." From: <input type='text' style='width:100px;' id='frmDate' readonly/> To: <input  style='width:100px;' type='text' id='toDate' readonly/> State: <select><option>Select State ...</option><option>Checked By PF</option><option>Rejected By PF</option><option>Processed By HS</option><option>Rejected By HS</option><option>Level 1 Approved</option><option>Level 1 Rejected</option><option>Level 2 Approved</option><option>Level 2 Rejected</option><option>Paid</option></select>".Resources::img("go.png",  array("title"=>"Go"))."".Resources::img("download.png",  array("title"=>"Download in Excel","style"=>"margin-left:10px;"))."</div>";
+    echo "<div id='control' align='center' style='border:2px lightgray groove;padding:5px;'>".Resources::img("approved.png",array("title"=>"Approve","style"=>"margin-right:10px;margin-left:10px;","onclick"=>"approveClaims(\"$approve\");"))."".Resources::img("reject.png",array("title"=>"Reject","style"=>"margin-right:10px;","onclick"=>"approveClaims(\"$reject\");"))."".Resources::img("unapproved.png",array("title"=>"Unapprove","style"=>"margin-right:10px;","onclick"=>"approveClaims(\"$disapprove\");"))." From: <input type='text' style='width:100px;' id='frmDate'  readonly/> To: <input  style='width:100px;' type='text' id='toDate'  readonly/> State: <select  id='rmkSelect'><option>Select State ...</option><option value='0'>New Claim</option><option value='2'>Checked By PF</option><option value='1'>Rejected By PF</option><option value='8'>Processed By HS</option><option value='7'>Rejected By HS</option><option>Level 1 Approved</option><option>Level 1 Rejected</option><option>Level 2 Approved</option><option>Level 2 Rejected</option><option>Paid</option></select>".Resources::img("go.png",  array("title"=>"Go","onclick"=>'selectClaims();',"style"=>'cursor:pointer;'))."".Resources::img("download.png",  array("title"=>"Download in Excel","style"=>"margin-left:10px;"))."</div>";
 }
-echo "<table class='nav_table' id='viewClaims'>";
+
+echo "<fieldset>";
+echo "<legend style='font-weight:bold;'>Download</legend>";
+echo "<span style='font-weight:bold;'>Download Medical Claims: </span><a href='".HOST_NAME."/easyPHP/application/mvc/docs/exceldownloads/medicalclaims.php'>".Resources::img("excel.png")."</a>";
+echo "</fieldset>";
+
+//echo "<table class='nav_table' id='viewClaims'>";
+echo "<table id='info_tbl' style='margin-top:20px;'>";
     echo "<thead>";
     echo "<col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col>";
     echo "<caption>".Resources::img("inform.png")." <i><b>Double click a row to view more information for a record in the right pane.</b></i></caption>";
@@ -18,11 +27,11 @@ echo "<table class='nav_table' id='viewClaims'>";
     echo "</thead>";
     
     echo "<tbody>";
-       foreach($data[0] as $elem):
+       foreach($data['claims'] as $elem):
            // Remarks control
            if($elem->rmks==='0'&&($_SESSION['userlevel']!=='2')){$rmk=Resources::img("new.png",  array("style"=>"border:2px green solid;margin:2px;","title"=>"Unchecked By PF"));}
            if($elem->rmks==='0'&&$_SESSION['userlevel']==='1'){$rmk=Resources::img("edit.png",array("style"=>"border:2px red solid;margin:2px;","title"=>"Edit","onclick"=>"editClaim(\"$elem->rec\");"));}
-           if($elem->rmks==='0'&&$_SESSION['userlevel']==='2'){$rmk=Resources::img("waiting.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Unapproved","id"=>"rmk_".$elem->rec."","onclick"=>"editRemarks(this,2,$elem->randomID);"))."".Resources::img("reject.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Reject","id"=>"rmk_".$elem->rec."","onclick"=>"editRemarks(this,1,$elem->randomID);"));}
+           if($elem->rmks==='0'&&$_SESSION['userlevel']==='2'){$rmk=Resources::img("waiting.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Unchecked","id"=>"rmk_".$elem->rec."","onclick"=>"editRemarks(this,2,$elem->randomID);"))."".Resources::img("reject.png",  array("style"=>"border:2px red solid;margin:2px;","title"=>"Reject","id"=>"rmk_".$elem->rec."","onclick"=>"editRemarks(this,1,$elem->randomID);"));}
 
            
            if($elem->rmks==='1'&&($_SESSION['userlevel']!=='2')){$rmk=Resources::img("uncheck.png",  array("style"=>"border:2px green solid;margin:2px;","title"=>"Rejected By PF"));}
@@ -75,10 +84,35 @@ echo "<table class='nav_table' id='viewClaims'>";
        }
        
        //End Delete Control 
-           echo "<tr id='rw_".$elem->rec."_".$elem->childNo."' ondblclick='showMore(this);'><td><input type='checkbox' id='chk_".$elem->rec."' class='chks'/></td><td>{$elem->proNo}</td><td>{$elem->cluster}</td><td>{$elem->childNo}</td><td>{$elem->childName}</td><td>{$elem->treatDate}</td><td>{$elem->diagnosis}</td><td>{$elem->totAmt}</td><td>{$elem->careContr}</td><td>{$elem->nhif}</td><td>{$elem->amtReim}</td><td>{$elem->facName}</td><td>{$elem->facClass}</td><td>{$elem->type}</td><td>{$elem->date}</td><td>{$elem->vnum}</td><td id='rct-".$elem->rec."'>$rct<td>{$elem->refNo}</td><td>{$elem->claimCnt}</td><td id='rmk_td_".$elem->rec."'>".$rmk."".$del."</td></tr>";
+          // echo "<tr id='rw_".$elem->rec."_".$elem->childNo."' ondblclick='showMore(this);'><td><input type='checkbox' id='chk_".$elem->rec."' class='chks'/></td><td>{$elem->proNo}</td><td>{$elem->cluster}</td><td>{$elem->childNo}</td><td>{$elem->childName}</td><td>{$elem->treatDate}</td><td>{$elem->diagnosis}</td><td>{$elem->totAmt}</td><td>{$elem->careContr}</td><td>{$elem->nhif}</td><td>{$elem->amtReim}</td><td>{$elem->facName}</td><td>{$elem->facClass}</td><td>{$elem->type}</td><td>{$elem->date}</td><td>{$elem->vnum}</td><td id='rct-".$elem->rec."'>$rct<td>{$elem->refNo}</td><td>{$elem->claimCnt}</td><td id='rmk_td_".$elem->rec."'>".$rmk."".$del."</td></tr>";
+        	echo "<tr id='rw_".$elem->rec."_".$elem->childNo."'><td><input type='checkbox' id='chk_".$elem->rec."' class='chks'/></td><td>{$elem->proNo}</td><td>{$elem->cluster}</td><td>{$elem->childNo}</td><td>{$elem->childName}</td><td>{$elem->treatDate}</td><td>{$elem->diagnosis}</td><td>".number_format($elem->totAmt,0)."</td><td>".number_format($elem->careContr,0)."</td><td>{$elem->nhif}</td><td>".number_format($elem->amtReim)."</td><td>{$elem->facName}</td><td>{$elem->facClass}</td><td>{$elem->type}</td><td>{$elem->date}</td><td>{$elem->vnum}</td><td id='rct-".$elem->rec."'>$rct<td>{$elem->refNo}</td><td>{$elem->claimCnt}</td><td id='rmk_td_".$elem->rec."'>".$rmk."".$del."</td></tr>";
        endforeach;
     
     echo "</tbody>";
 echo "</table>";
-echo $data[1];
 
+//Navigation DIV
+
+echo "<div style='margin-top:15px;'>";
+
+	if($data['pageNum']===0){
+		for ($i=$data['pageNum']+1; $i < $data['totalPages']+1; $i++) {
+			echo Resources::a_href("Claims/viewMedicalClaims/offset/".$i,$i,array("class"=>"nav_button"));
+		}
+	}elseif($data['pageNum']===$data['totalPages']){
+			echo Resources::a_href("Claims/viewMedicalClaims/offset/".$data['pageNum'],"Previous",array("class"=>"nav_button"));
+		for ($i=$data['pageNum']+1; $i < $data['totalPages']+1; $i++) {
+			echo Resources::a_href("Claims/viewMedicalClaims/offset/".$i,$i,array("class"=>"nav_button"));	
+		}	
+	}else{
+		echo Resources::a_href("Claims/viewMedicalClaims/offset/".$data['pageNum'],"Previous",array("class"=>"nav_button"));
+		for ($i=$data['pageNum']+1; $i < $data['totalPages']+1; $i++) {
+			echo Resources::a_href("Claims/viewMedicalClaims/offset/".$i,$i,array("class"=>"nav_button"));	
+		}
+		echo Resources::a_href("Claims/viewMedicalClaims/offset/".$data['totalPages'],"Next",array("class"=>"nav_button"));
+	}	 
+
+
+echo "</div>";
+
+//echo $data['rmk'];

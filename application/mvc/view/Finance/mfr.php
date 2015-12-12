@@ -4,18 +4,19 @@ if(is_array($data)){
 }else{
 	print($data['test']);
 }
-
-
+$curSelect="";
+$cur = strtotime("now");
 if(isset($data['time'])){
 	$curSelect=date('F-Y',$data['time']);
 	$cur = $data['time'];
 }else{
 	$curSelect=date('F-Y',strtotime("now"));
-	$cur = strtotime("now");
+	//$cur = strtotime("now");
 }
     
 	echo "<button onclick='selectMFR(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectMFR(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectMFR(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
 
+echo "<INPUT TYPE='hidden' value='".$data['icp']."' id='icpNo'/>";
 
 echo "<form id='frmMfr'>";
 echo "<table id='tblMfr' style='text-align:right;'>";
@@ -29,7 +30,7 @@ echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>M
 	    	echo "Report submitted and validated by PF";
 	    }
     echo "</div><br></caption>";
-echo "<tr><th colspan='6'>1. PROJECT NAME: {$_SESSION['username']} - {$_SESSION['lname']}</th><th>Date</th><th colspan='2'>".date("d-m-Y")."<input type='hidden' id='curDate' name='curDate' value='".date("Y-m-d")."'/></th></tr>";
+echo "<tr><th colspan='6'>1. PROJECT NAME: {$data['icp']}</th><th>Date</th><th colspan='2'>".date("d-m-Y")."<input type='hidden' id='curDate' name='curDate' value='".date("Y-m-d")."'/></th></tr>";
 echo "<tr><th colspan='6'>CDC FINANCE REPORT FOR THE MONTH OF: </th><th>".date("F")."</th><th>YEAR</th><th>".date("Y")."</th></tr>";
 
 //Funds Balance Report
@@ -92,7 +93,7 @@ echo "<tr><td colspan='4'>";
         $sum_dep_in_transit=0;
         foreach($data['transit'] as $value){
         	if($data['state']===0){
-        			echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","dep",this);'))."</td><td>".$value['TDate']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
+        			echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","dep",this,"'.$data['time'].'");'))."</td><td>".$value['TDate']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
         	}else{
         		echo "<tr><td>".Resources::img("unreject.png",array("style"=>"cursor:pointer;"))."</td><td>".$value['TDate']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
         	}
@@ -110,7 +111,7 @@ echo "<td colspan='5'>";
         $sum_oc=0;
         foreach ($data['oc'] as $value) {
         	if($data['state']===0){
-            	echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","oc",this);'))."</td><td>".$value['TDate']."</td><td>".$value['ChqNo']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
+            	echo "<tr><td>".Resources::img("uncheck3.png",array("style"=>"cursor:pointer;","title"=>"Clear - {$value['VNumber']}","onclick"=>'clearDepInTransit("'.$value['rId'].'","'.$value['source'].'","oc",this,"'.$data['time'].'");'))."</td><td>".$value['TDate']."</td><td>".$value['ChqNo']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";
             }else{
             	echo "<tr><td>".Resources::img("unreject.png",array("style"=>"cursor:pointer;"))."</td><td>".$value['TDate']."</td><td>".$value['ChqNo']."</td><td>".substr($value['Details'],0,12)."</td><td style='text-align:right;'>".number_format($value['Amount'],2)."</td></tr>";	
             }
@@ -229,6 +230,18 @@ if($data['state']===0){
 //echo "<tr><td colspan='9'>&nbsp;</td></tr>";
 echo "</table>";
 echo "</form>";
+
+//Notes area
+
+echo "<br><TEXTAREA id='mfrNotes' name='mfrNotes' cols=90 rows=10 placeholder='Put notes for this Report here'></TEXTAREA><br><br>";
+	echo "<button onclick='postMfrNotes(\"".date("Y-m-t",$cur)."\",\"".Resources::session()->userfirstname."\",\"".Resources::session()->fname."\",\"".$data['icp']."\");'>Post Notes</button><br><br>";
+echo "<div id='viewMfrNotes'>";
+	echo "<span style='font-weight:bold;'>View Notes Here</span>";
+		foreach ($data['notes'] as $value) {
+			echo "<div class='footnotes_header'>Note From: {$value->userfirstname} : {$value->stmp}</div>";
+			echo "<div style='background-color: #FBD850;border-bottom-left-radius: 5px;	border-bottom-right-radius: 5px;padding-left:10px;'>{$value->notes}</div><br>";
+		}
+echo "</div>";
 
 if($data['state']===0){
 	echo "<button onclick='submitMfr(\"frmMfr\");'>Submit</button>";

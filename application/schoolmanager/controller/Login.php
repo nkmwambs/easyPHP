@@ -8,19 +8,11 @@ class Login_Controller extends E_Controller
     }
 
 		
-	public function login()
+	public function login($render=1,$path='',$tags=array("All"))
 	{
-                $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-                $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
                 
-                $setup_cond = $this->_model->where(array("where"=>array("url","Login/login","=")));
-                $rlst_setup = $this->_model->getAllRecords($setup_cond,"setup");
-                
-                $menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view("Basic/welcome",$rlst_setup);
-		$this->template->view("Basic/footer",$recent);
-
+        $setup_cond = $this->_model->where(array(array("where","url","Login/login","=")));
+        $rlst_setup = $this->_model->getAllRecords($setup_cond,"setup");
 	}
         
 	public function show_login()

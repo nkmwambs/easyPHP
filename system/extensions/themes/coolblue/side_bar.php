@@ -6,7 +6,12 @@
                                 if(!empty($data)){
                                     echo '<ul class="side-bar">';
                                        foreach ($data['side'] as $value) {
-                                            echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],Resources::translate_item($value["langid"]),array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$_SESSION['ID'].'","'.$value['img'].'");')).'</li>' ;
+                                       	//if(isset($value["langid"])||$value["langid"]!==""){
+                                       		//echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],Resources::translate_item($value["langid"]),array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$_SESSION['ID'].'","'.$value['img'].'","'.$value['langid'].'");')).'</li>' ;
+                                       	//}else{
+                                       		echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],$value["name"],array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$_SESSION['ID'].'","'.$value['img'].'","None");')).'</li>' ;
+                                       	//}
+                                            
                                         }
                                     echo '</ul>';
                                 }  else {
@@ -27,7 +32,7 @@
                                     echo '<ul class="side-bar">';
                                        foreach ($data['users'] as $value) {
                                             //echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],$value["name"],array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$_SESSION['ID'].'","'.$value['img'].'");')).'</li>' ;
-                                       		echo "<li onclick='chatWith(\"".$value->user_fname."\")'>".Resources::img("user.png")." ".$value->user_fname."</li>";
+                                       		echo "<li>".Resources::img("user.png")." ".$value->user_fname."</li>";
                                         }
                                     echo '</ul>';
                                 }  else {

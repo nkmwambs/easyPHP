@@ -43,6 +43,7 @@ public function condition($cond){
 } 
     
 public function where($cond){
+/*	
 //$cond = array("where"=>array("fld","val","operator"),"OR"=>array("fld","val","operator"),"AND"=>array("fld","val","operator"));
     if(!array_key_exists("where", $cond)){
         return $this->condition($cond);
@@ -57,6 +58,43 @@ public function where($cond){
             return $str;
         }
     }
+ * 
+ */
+ 
+ //$cond = array("where"=>array("fld","val","operator"),"OR"=>array("fld","val","operator"),"AND"=>array("fld","val","operator"));
+    //if(!array_key_exists("where", $cond)){
+      //  return $this->condition($cond);
+    //}  else {
+            
+        if(is_array($cond)){
+            $str = "";     
+            foreach($cond as $k=>$v){      
+            	if(is_array($v[0])){
+            		$str.=" ".$v[0][0]." (";
+	            		foreach ($v as $ky => $val) {
+	            			if($ky===0){
+	            				$str .=" ".$val[1]." ".$val[3]." '".$val[2]."' ";
+	            			}else{
+	            				$str .=" ".$val[0]." ".$val[1]." ".$val[3]." '".$val[2]."' ";
+	            			}		
+						}
+						
+					$str.=")";
+					
+            	}else{
+            		if($v[3]==='BETWEEN'){
+            			$str .= " ".$v[0]." ".$v[1]." ".$v[3]." ".$v[2]." ";
+            		}else{
+            			$str .= " ".$v[0]." ".$v[1]." ".$v[3]." '".$v[2]."' ";
+            		}
+            		
+            	}
+            }
+
+            return $str;
+        }
+    
+	//}
     }
 
 public function tableJoins($joins=array()){
@@ -86,8 +124,13 @@ public function tableJoins($joins=array()){
 	return $join_str;
 }
 
-    public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array(),$joins="")
+public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array(),$join="")
 	{
+	
+	$joins="";
+	if(is_array($join)){
+		$joins=$this->tableJoins($join);
+	}
       if($_table===""){$_table=$this->table;}
        
                         $s = "SHOW FULL COLUMNS FROM `".$_table."` FROM `".$this->dbase."`";

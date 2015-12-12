@@ -4,13 +4,14 @@ if(Resources::session()->userlevel==="1"){
 }else{
 	$visibility="display:block;";
 }
+//print_r($data['rec']);
 echo "<div style='".$visibility."'>";
-//echo "Select Query: <SELECT id='qrySelect' onchange='setQuery(\"frmQry\");'>";
-//echo "<option value=''>Select Query ... </option>";
-//foreach ($data as $value) {
-	//echo "<option value='".$value->qryDetail."'>".$value->qryName."</option>";
-//}
-//echo "</SELECT><br><br>";
+echo "Select Query: <SELECT id='qrySelect' onchange='setQuery(\"frmQry\");'>";
+echo "<option value=''>Select Query ... </option>";
+foreach ($data['rec'] as $value) {
+	echo "<option value='".$value->qryDetail."'>".$value->qryName."</option>";
+}
+echo "</SELECT><br><br>";
 //echo "<div style='margin-left:auto;margin-right:auto;'>";
 //echo "Query Name:<input type='text' id='qryName' name='qryName'/><br><br>";
 //echo "<button onclick='newQuery(\"frmQry\");'>New Query</button><button onclick='highlight(\"qryView\");'>Update Query</button>"; 

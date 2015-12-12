@@ -7,10 +7,10 @@ var path = 'http://'+location.hostname+'/easyPHP/';
         }
        
        
-function showContents(el,tym){
-	//alert(tym);
+function showContents(el){
     var icp = el.innerHTML; 
     var rds = document.getElementsByClassName("rds");
+ 	var tym = document.getElementById('tym').value;
     for(var i=0;i<rds.length;i++){
         if(rds.item(i).checked===true){
             var rpt =rds.item(i).value;
@@ -23,22 +23,65 @@ function showContents(el,tym){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
+                //alert(xmlhttp.responseText);
                 document.getElementById('content').innerHTML=xmlhttp.responseText;
-                //document.write(xmlhttp.responseText);
-                //location.reload();
           }
         };
         //alert(icp);
+    
     if(rpt==="1"){
       xmlhttp.open("GET",path+"mvc/Finance/ecj/tym/"+tym+"/icp/"+icp,true);  
     }else if(rpt==="2"){
-        xmlhttp.open("GET",path+"mvc/Finance/ppbfOther/icp/"+icp,true);
+    	alert("Function not working!");
+    }else if(rpt==="3"){
+    	//alert(rpt);
+    	xmlhttp.open("GET",path+"mvc/Finance/mfrNav/tym/"+tym+"/icp/"+icp,true);  
+    }else if(rpt==="4"){
+        alert("Function not working!");
+    }else if(rpt==="5"){
+    	 xmlhttp.open("GET",path+"mvc/Finance/viewSlip/tym/"+tym+"/icp/"+icp,true); 
     }
     
     xmlhttp.send();
 }
-    
-
+function previewMfr(icpNo,month){
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                 document.getElementById('content').innerHTML=xmlhttp.responseText;
+            }
+        };
+                                               
+         xmlhttp.open("GET",path+"mvc/Finance/mfrNav/tym/"+month+"/icp/"+icpNo,true);  
+         xmlhttp.send(frmData);
+}
+function optionsSelect(elem){
+	if(elem.id==='rdecj'){
+		document.getElementById('fy').style.display='none';
+    	document.getElementById('month').style.display='block';
+    	document.getElementById('year').style.display='block';
+	}else if(elem.id==='rdppbf'){
+		document.getElementById('fy').style.display='block';
+    	document.getElementById('month').style.display='none';
+    	document.getElementById('year').style.display='none';
+	}else if(elem.id==='rdmfr'){
+		document.getElementById('fy').style.display='none';
+    	document.getElementById('month').style.display='block';
+    	document.getElementById('year').style.display='block';
+	}else if(elem.id==='rdciv'){
+		document.getElementById('fy').style.display='block';
+    	document.getElementById('month').style.display='none';
+    	document.getElementById('year').style.display='none';
+	}else if(elem.id==='rdfunds'){
+		document.getElementById('fy').style.display='none';
+    	document.getElementById('month').style.display='block';
+    	document.getElementById('year').style.display='block';
+	}
+}
 
 function submitFunds(frmid){
     //alert(frmid);
@@ -48,7 +91,7 @@ function submitFunds(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -56,7 +99,7 @@ function submitFunds(frmid){
             }
         };
                                                
-         xmlhttp.open("POST",path+"/mvc/Finance/uploadFundsList/public/0",true);
+         xmlhttp.open("POST",path+"/mvc/Finance/uploadFundsList",true);
          xmlhttp.send(frmData);
 }
 
@@ -600,7 +643,7 @@ function scheduleRow(obj,indx){
     var desc = document.createElement("input");
     desc.value=obj[indx].details;
     if(obj[indx].approved==='2'){
-        setAttributes(desc,{"type":"text","name":"details[]","id":"desc"+rws,"readonly":"readonly"});
+        setAttributes(desc,{"type":"text","id":"desc"+rws,"readonly":"readonly"});
     }else{
         setAttributes(desc,{"type":"text","name":"details[]","id":"desc"+rws});
     }
@@ -610,7 +653,7 @@ function scheduleRow(obj,indx){
     var cell2 = newRw.insertCell(2);
     var qty = document.createElement("input");
     if(obj[indx].approved==='2'){
-        setAttributes(qty,{"type":"text","name":"qty[]","value":"0","style":"width:60px;text-align:right;","id":"qty"+rws,"readonly":"readonly"});
+        setAttributes(qty,{"type":"text","value":"0","style":"width:60px;text-align:right;","id":"qty"+rws,"readonly":"readonly"});
     }else{
         setAttributes(qty,{"type":"text","name":"qty[]","value":"0","style":"width:60px;text-align:right;","id":"qty"+rws});
     }
@@ -643,7 +686,7 @@ function scheduleRow(obj,indx){
     var cell3 = newRw.insertCell(3);
     var unitCost = document.createElement("input");
     if(obj[indx].approved==='2'){
-        setAttributes(unitCost,{"type":"text","name":"unitCost[]","style":"width:60px;text-align:right;","value":"0","id":"unitCost"+rws,"readonly":"readonly"});
+        setAttributes(unitCost,{"type":"text","style":"width:60px;text-align:right;","value":"0","id":"unitCost"+rws,"readonly":"readonly"});
     }else{
         setAttributes(unitCost,{"type":"text","name":"unitCost[]","style":"width:60px;text-align:right;","value":"0","id":"unitCost"+rws});
     }
@@ -679,7 +722,7 @@ function scheduleRow(obj,indx){
     var often = document.createElement("input");
     often.value=obj[indx].often;
     if(obj[indx].approved==='2'){    
-        setAttributes(often,{"type":"text","name":"often[]","style":"width:60px;text-align:right;","value":"0","id":"often"+rws,"readonly":"readonly"});
+        setAttributes(often,{"type":"text","style":"width:60px;text-align:right;","value":"0","id":"often"+rws,"readonly":"readonly"});
     }else{
         setAttributes(often,{"type":"text","name":"often[]","style":"width:60px;text-align:right;","value":"0","id":"often"+rws});
     }
@@ -714,14 +757,24 @@ function scheduleRow(obj,indx){
     var cell5 = newRw.insertCell(5);
     var totalCost = document.createElement("input");
     totalCost.value=obj[indx].totalCost;
-    setAttributes(totalCost,{"type":"text","name":"totalCost[]","class":"totalCost","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"totalCost"+rws});
+    //setAttributes(totalCost,{"type":"text","name":"totalCost[]","class":"totalCost","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"totalCost"+rws});
+    if(obj[indx].approved==='2'){    
+        setAttributes(totalCost,{"type":"text","class":"totalCost","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"totalCost"+rws});
+    }else{
+        setAttributes(totalCost,{"type":"text","name":"totalCost[]","class":"totalCost","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"totalCost"+rws});
+    }
     cell5.appendChild(totalCost); 
     
     //Validation
     var cell6=newRw.insertCell(6);
     var validate = document.createElement("input");
     validate.value=obj[indx].validate;
-    setAttributes(validate,{"type":"text","name":"validate[]","class":"validate","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"validate"+rws});
+    //setAttributes(validate,{"type":"text","name":"validate[]","class":"validate","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"validate"+rws});
+    if(obj[indx].approved==='2'){    
+        setAttributes(validate,{"type":"text","class":"validate","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"validate"+rws});
+    }else{
+        setAttributes(validate,{"type":"text","name":"validate[]","class":"validate","value":"0","style":"width:80px;text-align:right;","readonly":"readonly","id":"validate"+rws});
+    }
     cell6.appendChild(validate);
     
     var cell7 =newRw.insertCell(7);
@@ -767,7 +820,7 @@ function scheduleRow(obj,indx){
         if(k===10){month.value=obj[indx].MayAmt;}
         if(k===11){month.value=obj[indx].JunAmt;}
         if(obj[indx].approved==='2'){
-            setAttributes(month,{"type":"text","name":months_arr[k]+"Amt[]","class":""+months_arr[k]+" row"+rws,"value":"0","style":"width:80px","id":months_arr[k]+rws,"readonly":"readonly"});
+            setAttributes(month,{"type":"text","class":""+months_arr[k]+" row"+rws,"value":"0","style":"width:80px","id":months_arr[k]+rws,"readonly":"readonly"});
         }else{
             setAttributes(month,{"type":"text","name":months_arr[k]+"Amt[]","class":""+months_arr[k]+" row"+rws,"value":"0","style":"width:80px","id":months_arr[k]+rws});
         }
@@ -973,6 +1026,7 @@ function viewPlanSummaryByPf(icp){
       xmlhttp.send();   
 }
 function sendRequest(elem){
+	//alert(e);
     var scheduleID_arr=elem.id.split("_");
     var scheduleID = scheduleID_arr[1];
     var rqType=scheduleID_arr[0];
@@ -1002,9 +1056,9 @@ function sendRequest(elem){
                         }
                 }
                 var txtArea = document.createElement("textarea");
-                setAttributes(txtArea,{"id":"txtArea","name":"rqMessage","rows":"5","cols":"93","style":"overflow:auto"});
+                setAttributes(txtArea,{"id":"txtArea","name":"rqMessage","rows":"5","cols":"60","style":"overflow:auto"});
                 msgDiv.appendChild(txtArea);
-                setAttributes(msgDiv,{"style":"z-index:10;display:block;min-height:100px;min-width:100px;padding:15px 15px 40px 15px;background-color:wheat;"});
+                setAttributes(msgDiv,{"style":"display:block;"});
                 var rqBtn = document.createElement('div');
                 setAttributes(rqBtn,{"id":"rqBtn","onclick":"postRequest();","style":"background-color:green;border-radius:5px;padding:2px;width:60px;color:white;cursor:pointer;"});
                 rqBtn.innerHTML="Post";
@@ -1014,8 +1068,6 @@ function sendRequest(elem){
                 scheduleID_input.value=scheduleID;
                 setAttributes(scheduleID_input,{"type":"hidden","id":"scheduleID_input","name":"scheduleID"});
                 document.getElementById("frmRq").appendChild(scheduleID_input);
-                
-                
          }
         };
 
@@ -1249,6 +1301,7 @@ function ocView(){
       xmlhttp.send();
 }
 function selectCJ(tym){
+	//alert(tym);
 		var icpNo=document.getElementById('icpNo').value;
 	      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
@@ -1271,7 +1324,7 @@ function selectSlip(tym){
 		    xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -1281,7 +1334,7 @@ function selectSlip(tym){
           }
         };
 
-      xmlhttp.open("GET",path+"mvc/Finance/viewSlip/tym/"+tym+"/public/0",true);      
+      xmlhttp.open("GET",path+"mvc/Finance/viewSlip/tym/"+tym,true);      
       xmlhttp.send();
 }
 

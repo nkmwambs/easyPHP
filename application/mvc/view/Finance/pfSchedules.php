@@ -3,8 +3,9 @@
 echo Resources::a_href("Finance/schedules","<button>Back</button>");
 echo "<br><br>";
 echo "<form id='frmRq'>";
-echo "<div id='rqMsgDiv' style='display:none'></div>";
+echo "<div id='rqMsgDiv' class='centered' style='display:none'></div>";
 echo "</form>";
+echo ' <div id="box" style="display:none;">Hey! this is for you, enjoy :)</div>';
 if(!empty($data[0])){
 $tbl_arr = array("JulAmt","AugAmt","SepAmt","OctAmt","NovAmt","DecAmt","JanAmt","FebAmt","MarAmt","AprAmt","MayAmt","JunAmt");
 echo "<table id='tblAllSchedules' style='white-space:nowrap;text-align:right;'>";

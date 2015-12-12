@@ -9,7 +9,8 @@
 		"InfoType"=>array("","Initial Registration","Information Update"),
 		"BeneficiaryProg"=>array("","CSP","CDSP"),
 		"BeneficiaryProgtype"=>array("","Home-Based","Center-Based"),
-		"Favoritesubject"=>array("","Social Studies","Science","Health","Physical Education","Music","Reading","Math","Language","History","Art"),
+		//"Favoritesubject"=>array("","Social Studies","Science","Health","Physical Education","Music","Reading","Math","Language","History","Art"),
+		"Favoritesubject"=>array("","Art","Health","Science","History","Music","Social Studies","Language","Physical Education","Math","Reading"),
 		"Formaleducation"=>array("","Primary","Secondary","Graduate","University","Preschool","Not enrolled"),
 		"Currentyearofstudy"=>array("","5","6","7","4","3","2","1"),
 		"Academicperformance"=>array("","Below Average","Average","Above Average"),
@@ -96,10 +97,13 @@
 		echo "<span style='font-weight:bold;'>ICPs Filtered:</span> ".$data['icpNo']."<br>";
 	}
 	
+	
+	//print_r($data['rec']);
+	
 	echo "<table id='info_tbl' style='margin-top:25px;'>";
 	
 	if($data['icpNo']!=='0'){
-	echo "<caption style='text-align:left;font-weight:bold;'>Download as: <a href='http://localhost/tcpt/excelDownload.php?icpNo=".$data['rec'][0]->ID2."&state=".$data['state']."&infotype=".$data['infotype']."'>".Resources::img("excel.png",array("title"=>"Excel Download"))."</a> | ".Resources::a_href("ProgramCommunication/main", "Back")."</caption>";
+	echo "<caption style='text-align:left;font-weight:bold;'>Download as: <a href='".HOST_NAME."/tcpt/excelDownload.php?icpNo=".$data['rec'][0]->ID2."&state=".$data['state']."&infotype=".$data['infotype']."'>".Resources::img("excel.png",array("title"=>"Excel Download"))."</a> | ".Resources::a_href("ProgramCommunication/main", "Back")."</caption>";
 	}else{
 		echo "<caption style='text-align:left;font-weight:bold;'>".Resources::a_href("ProgramCommunication/main", "Back")."</caption>";
 	}
@@ -255,7 +259,7 @@
 	echo "<th>035: Formal Education (Select only one)</th>";
 	
 	//Current University Year of Study
-	echo "<th>036: Formal Education (Select only one)</th>";
+	echo "<th>036: Current University Year of Study (Select only one)</th>";
 	
 	//Local Grade
 	echo "<th>037: Local Grade Level (Select only one)</th>";
@@ -350,10 +354,10 @@
 	}
 	
 	//Completed On
-	echo "<th>064: Household Name</th>";
+	echo "<th>064: Completed On</th>";
 	
 	//Completed By
-	echo "<th>064: Household Name</th>";
+	echo "<th>064: Completed By</th>";
 	
 	
 	echo "</tr>";
@@ -485,7 +489,7 @@
 		
 		//Favourite subject in school
 		
-		if(!empty($value->Favoritesubject)){
+		if($value->Favoritesubject!==""){
 			echo "<td>".$form_arr['Favoritesubject'][$value->Favoritesubject]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -493,7 +497,7 @@
 		
 		//Formal Education 
 		
-		if(!empty($value->Formaleducation)){
+		if($value->Formaleducation!==""){
 			echo "<td>".$form_arr['Formaleducation'][$value->Formaleducation]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -501,7 +505,7 @@
 		
 		//Current University Year of Study
 		
-		if(!empty($value->Currentyearofstudy)){
+		if($value->Currentyearofstudy!==""){
 			echo "<td>".$form_arr['Currentyearofstudy'][$value->Currentyearofstudy]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -511,7 +515,7 @@
 		echo "<td>".$value->Localgradelevel."</td>";
 		
 		//Academic Performance
-		if(!empty($value->Academicperformance)){
+		if($value->Academicperformance!==""){
 			echo "<td>".$form_arr['Academicperformance'][$value->Academicperformance]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -519,7 +523,7 @@
 		
 		
 		//Type of vocation/ tech training
-		if(!empty($value->Typeofvocationaltraining)){
+		if($value->Typeofvocationaltraining!==""){
 			echo "<td>".$form_arr['Typeofvocationaltraining'][$value->Typeofvocationaltraining]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -535,7 +539,7 @@
 		echo "<td>".$value->notenrolledreason."</td>";
 		
 		//Child's Religious Affiliation		
-		if(!empty($value->Childreligiousaffiliation)){
+		if($value->Childreligiousaffiliation!==""){
 			echo "<td>".$form_arr['Childreligiousaffiliation'][$value->Childreligiousaffiliation]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -547,7 +551,7 @@
 		}
 		
 		//Child's Confession to Jesus Christ		
-		if(!empty($value->ConfessJesus)){
+		if($value->ConfessJesus!==""){
 			echo "<td>".$form_arr['ConfessJesus'][$value->ConfessJesus]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -555,8 +559,11 @@
 		
 		//Weight in Kg
 		$decimal=0;
-		if(!empty($value->Weight2)&&!empty($value->Weight1)){
-			$decimal=number_format($value->Weight2);
+		if(number_format($value->Weight1)){
+			if(number_format($decimal)){
+				$decimal=number_format($value->Weight2);
+			}
+			
 			echo "<td>".number_format($value->Weight1).".".number_format($decimal)."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -566,7 +573,7 @@
 		
 		//Height in Kg
 		$height=0;
-		if(!empty($value->Height)){
+		if($value->Height!==""){
 			$height=number_format($value->Height);
 		}
 		echo "<td>".$height."</td>";
@@ -575,7 +582,7 @@
 		echo "<td>".$value->RegMedTreat1."</td>";
 		
 		//Physical Disabilities
-		if(!empty($value->$val)){
+		if($value->$val!==""){
 		foreach ($flds['physicaldisabilities'] as $key => $val) {
 			echo "<td>".$form_arr['chkbx'][$value->$val]."</td>";	
 		}
@@ -584,9 +591,17 @@
 		}
 		
 		//Chronic Illnesses
-		foreach ($flds['chronicillnesses'] as $key => $val) {
-			echo "<td>".$form_arr['chkbx'][$value->$val]."</td>";	
+		if($value->$val!==""){
+			foreach ($flds['chronicillnesses'] as $key => $val) {
+				echo "<td>".$form_arr['chkbx'][$value->$val]."</td>";	
+			}
+		}else{
+			echo "<td>&nbsp;</td>";
 		}
+		
+		//foreach ($flds['chronicillnesses'] as $key => $val) {
+			//echo $key."=".$form_arr['chkbx'][$value->$val]."<br>";	
+		//}
 		
 		//Mental Development Conditions
 		foreach ($flds['mentaldevelopment'] as $key => $val) {
@@ -594,49 +609,49 @@
 		}
 		
 		//Natural Parents Together Now?		
-		if(!empty($value->Parentstogethernow)){
+		if($value->Parentstogethernow!==""){
 			echo "<td>".$form_arr['Parentstogethernow'][$value->Parentstogethernow]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
 		}
 		
 		//Marital Status		
-		if(!empty($value->Maritalstatus)){
+		if($value->Maritalstatus!==""){
 			echo "<td>".$form_arr['Maritalstatus'][$value->Maritalstatus]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
 		}
 		
 		//Natural Father Alive?		
-		if(!empty($value->Naturalfatheralive)){
+		if($value->Naturalfatheralive!==""){
 			echo "<td>".$form_arr['Naturalfatheralive'][$value->Naturalfatheralive]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
 		}
 		
 		//Natural Father Living with Beneficiary?	
-		if(!empty($value->Naturalfatherlivingwithbenef)){
+		if($value->Naturalfatherlivingwithbenef!==""){
 			echo "<td>".$form_arr['Naturalfatherlivingwithbenef'][$value->Naturalfatherlivingwithbenef]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
 		}
 		
 		//Natural Mother Alive?		
-		if(!empty($value->NaturalmotherAlive)){
+		if($value->NaturalmotherAlive!==""){
 			echo "<td>".$form_arr['NaturalmotherAlive'][$value->NaturalmotherAlive]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
 		}
 		
 		//Natural Mother Living with Beneficiary?	
-		if(!empty($value->Naturalmotherlivingwithbenef)){
+		if($value->Naturalmotherlivingwithbenef!==""){
 			echo "<td>".$form_arr['Naturalmotherlivingwithbenef'][$value->Naturalmotherlivingwithbenef]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
 		}
 		
 		//Father or Male Guardian Occupation	
-		if(!empty($value->fatheremploystatus)){
+		if($value->fatheremploystatus!==""){
 			echo "<td>".$form_arr['fatheremploystatus'][$value->fatheremploystatus]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -646,7 +661,7 @@
 		echo "<td>".$value->fatheroccupation."</td>";
 		
 		//Mother or Female Guardian Occupation	
-		if(!empty($value->motheremploystatus)){
+		if($value->motheremploystatus!==""){
 			echo "<td>".$form_arr['motheremploystatus'][$value->motheremploystatus]."</td>";
 		}else{
 			echo "<td>&nbsp;</td>";
@@ -662,12 +677,12 @@
 		for ($i=1; $i <sizeof($household)+1; $i++) { 
 		
 		foreach ($household['member'.$i] as $key => $val) {
-			if($val==='Ben'.$i&&!empty($value->$val)){
+			if($val==='Ben'.$i&&$value->$val!==""){
 				echo "<td>".number_format($value->$val)."</td>";
 			}elseif($val==='Caregiver'.$i){
 				echo "<td>".$form_arr['chkbx'][$value->$val]."</td>";
 			}elseif($val==='Primarycaregiver'){
-					if(!empty($value->$val)&&$form_arr['Primarycaregiver'][$value->$val]==='member'.$i){
+					if($value->$val!==""&&$form_arr['Primarycaregiver'][$value->$val]==='member'.$i){
 						echo "<td>Yes</td>";
 					}else{
 						echo "<td>&nbsp;</td>";

@@ -4,15 +4,19 @@ var path = 'http://'+location.hostname+'/easyPHP/';
             xmlhttp=new XMLHttpRequest();
                   } else { // code for IE6, IE5
             xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        
- 	      
+        }     
 
 function setAttributes(el, attrs) {
   for(var key in attrs) {
     el.setAttribute(key, attrs[key]);
   }
-}//setAttributes(elem, {"src": "http://example.com/something.jpeg", "height": "100%", ...});   
+}//setAttributes(elem, {"src": "http://example.com/something.jpeg", "height": "100%", ...});  
+
+var tArea = document.getElementsByTagName("textarea");
+for (var f=0; f < tArealength; f++) {
+  //setAttributes(tArea, {"spellcheck": "true"});  
+}; 
+ 
 function timeConverter(UNIX_timestamp){
   var a = new Date(UNIX_timestamp * 1000);
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
