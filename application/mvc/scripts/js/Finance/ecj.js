@@ -144,3 +144,60 @@ function sumEcj(){
 	document.getElementById('balPcBf').innerHTML = accounting.formatMoney($pcOpBal,{symbol:"",format:"v% s%"});
 }
 
+//Start from Here
+
+function voucheredit(lvl,icp,vNo,tdate,payee,address,vtype,tdesc,chqno){
+     xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                //alert(xmlhttp.responseText);
+                document.write(xmlhttp.responseText);
+            }
+        };
+          
+	var frmData = new FormData();
+	frmData.append("userlevel",lvl);
+	frmData.append("icpNo",icp);
+	frmData.append("VNumber",vNo);
+	frmData.append("TDate",tdate);
+	frmData.append("Payee",payee);
+	frmData.append("Address",address);
+	frmData.append("VType",vtype);
+	frmData.append("TDescription",tdesc);
+	frmData.append("ChqNo",chqno);
+	                                  
+    xmlhttp.open("POST",path+"/mvc/Finance/voucheredit",true);
+    xmlhttp.send(frmData);
+}
+
+function allowvoucheredit(el,icp,vNo){
+	 xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                el.style.display='none';
+                alert(xmlhttp.responseText);
+            }
+        };
+       
+    var cnf = confirm("Are you sure you want to allow editing of voucher number "+vNo);
+    
+    if(!cnf){
+    	alert("Process aborted");
+    	exit;
+    }  
+        
+    var frmData = new FormData();
+	frmData.append("icpNo",icp);
+	frmData.append("VNumber",vNo);
+	                                  
+    xmlhttp.open("POST",path+"/mvc/Finance/allowvoucheredit",true);
+    xmlhttp.send(frmData);
+}

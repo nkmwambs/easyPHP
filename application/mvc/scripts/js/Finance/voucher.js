@@ -690,3 +690,125 @@ function postFootNote(frmid){
          xmlhttp.open("POST",path+"/mvc/Finance/postFootNote/public/0",true);
          xmlhttp.send(frmData);
 }
+
+
+//Start from Here
+
+function previewvoucher(vNo){
+     xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('previewdiv').innerHTML=xmlhttp.responseText;
+            }
+        };
+          
+	var frmData = new FormData();
+	frmData.append("VNumber",vNo);
+	                                  
+    xmlhttp.open("POST",path+"/mvc/Finance/previewvoucher",true);
+    xmlhttp.send(frmData);	
+}
+function editVoucher(){
+	var validate = document.getElementsByClassName('validate');
+		var cntFlds =0;
+		
+		var bodytbl = document.getElementById('bodyTable');
+		var bodyrows = bodytbl.rows.length;
+		
+		if(bodyrows===1){
+			alert("You can't post an empty voucher!");
+			exit;
+		}
+		
+		for(var z=0;z<validate.length;z++){
+			if(validate.item(z).value===""){
+				validate.item(z).style.backgroundColor='red';
+				cntFlds++;
+			}
+		}
+		if(cntFlds>0){
+			alert("Date or Voucher Number Fields cannot be empty! Please reset the voucher if this problem persists!");
+			exit();
+		}
+		
+           var x = document.forms["myform"]["Payee"];
+                    var y = document.forms["myform"]["TDescription"];
+                    var accs = document.getElementsByClassName("accNos");
+                    var cost = document.getElementsByClassName('cost');
+                    for(var s=0;s<cost.length;s++){
+                    	if(isNaN(cost.item(s).value)){
+                    		alert("Enter only numeric values");
+                    		cost.item(s).style.backgroundColor='red';
+                    		return false;
+                    	}
+                    }
+                    for(var i = 0; i < accs.length; i++)
+                    {
+                          if(accs.item(i).value===''){
+                           accs.item(i).style.backgroundColor='red';
+                           alert("Please select a valid account number!");
+                           return false;
+                       }else{
+                           accs.item(i).style.backgroundColor='white';
+                       }
+                       
+                    }  
+                
+                    
+                    if (x.value===null || x.value==="") {
+                    x.style.backgroundColor = 'red';
+                    alert("Payee field name must be filled in");
+                    x.style.backgroundColor = 'white';
+                    return false;
+                    }
+                    
+                    if(y.value===null ||y.value===""){
+                        y.style.backgroundColor='red';
+                        alert("Description field must be filled in");
+                        y.style.backgroundColor = 'white';
+                        return false;
+                    }
+                        
+   var frm = document.getElementById('myform');  
+   //frm.submit();
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               //alert(xmlhttp.responseText);
+               document.getElementById('info_div').id='error_div';
+               document.getElementById('editvoucherdiv').innerHTML='';
+               //document.getElementById('btnAddRow').style.display='none';//btnAddRow
+               document.getElementById('error_div').innerHTML="Voucher edited successfully";
+               //document.getElementById("content").innerHTML=xmlhttp.responseText;
+                
+            }
+        };
+         if(document.getElementById('error_div')){
+         	document.getElementById('error_div').innerHTML='Reset to add a New Voucher!';
+         	//document.getElementById('resetBtn').style.backgroundColor='red';
+         }else{  
+         	//document.getElementById('btnPostVch').style.display='none';
+            //document.getElementById('btnAddRow').style.display='none';//btnAddRow                                   
+	         xmlhttp.open("POST",path+"/mvc/Finance/editVoucher",true);
+	         xmlhttp.send(frmData);
+         }
+}
+function chqfld(){
+	alert(document.getElementById('VTypeMain').value);
+    if(document.getElementById('VTypeMain').value==='CHQ'){
+    	document.getElementById('CHQ').style.display='block';
+    	document.getElementById('ChqNoText').style.display='block';
+    }else{
+    	document.getElementById('CHQ').style.display='none';
+    	document.getElementById('ChqNoText').style.display='none';
+    }
+}

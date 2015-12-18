@@ -118,7 +118,14 @@ if(isset($data[4])){
         <?php
             foreach($data[1] as $arr):
 				$rwChq=explode("-",$arr->ChqNo);
-                echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                if(Resources::session()->userlevel==='1'&&$arr->editable==='1'){
+                	echo "<tr><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Edit Voucher","onclick"=>"voucheredit(\"".Resources::session()->userlevel."\",\"".Resources::session()->fname."\",\"".$arr->VNumber."\",\"".$arr->TDate."\",\"".$arr->Payee."\",\"".$arr->Address."\",\"".$arr->VType."\",\"".$arr->TDescription."\",\"".$arr->ChqNo."\")"))."</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                }elseif(Resources::session()->userlevel==='2'&&$arr->editable==='0'){
+                	echo "<tr><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Allow Edit Voucher","onclick"=>"allowvoucheredit(this,\"".$data[5]."\",\"".$arr->VNumber."\")"))."</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                }else{
+                	echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                }	
+                
                 //Bank Deposit
                 if($arr->VType==="CR"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
                 if($arr->VType==="CHQ"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}

@@ -2129,7 +2129,7 @@ public function submitMfr(){
 		$this->dispatch($render=2,$path='',$data,$tags=array("All"));
 	}
 	
-    public function postVoucher(){
+public function postVoucher(){
         $header = array();
         for($i=0;$i<8;$i++){
             $header[]=  array_shift($_POST);
@@ -2264,7 +2264,23 @@ public function showVoucherFromExternalSource($render=1,$path="showVoucher",$tag
 		
         return $data;
 
-    }
+}
+public function previewvoucher($render=2,$path="showVoucher",$tags=array("All")){       
+        $VNum=  $_POST['VNumber'];
+        $icpNo = Resources::session()->fname;
+        
+        //$VNum = '150702';
+		//$icpNo = 'KE903';
+        
+		$footnote_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","VNumber",$VNum,"=")));
+		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes"," ORDER BY footnoteID DESC");
+		
+		$data['details']=$this->_model->showVoucher($VNum,$icpNo);
+		$data['footnotes']=$footnote_arr;
+		
+        return $data;
+
+}
     public function getFlds(){
         $arr_tables=$this->_model->dbTables();
         $flds = $this->_model->getVoucherTableFields($arr_tables[$this->choice[1]]);
@@ -2724,5 +2740,232 @@ public function addicptociv(){
 	
 	//Update the Revenue and Expense Account of the CIV Accout with the list formed in 3 above
 	
+}
+
+//Start from Here
+
+public function editvoucherview($render=1,$path="",$tags=array("All")){
+            //try{
+              //  if(isset($_SESSION['username'])){
+                	
+					//Date Control
+					$date_control_cond=$this->_model->where(array(array("where","extraID",6,"=")));
+					$date_control=$this->_model->getAllRecords($date_control_cond,"extras");
+					$date_control_flag=$date_control[0]->flag;
+					
+					//Max Voucher - Get Max Date and Voucher Number
+					$max_date_cond=$this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+					$max_date=$this->_model->maxICPVoucher($max_date_cond);
+					
+					$max_close_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+					$max_close=$this->_model->maxCloseBal($max_close_cond);
+					
+					$max_voucher=array();
+					if(!empty($max_close)&&empty($max_date)){
+							//$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($max_close[0]->closureDate)))));
+							$fy=date("y",strtotime('next month',strtotime($max_close[0]->closureDate)));
+							$m=date("m",strtotime('next month',strtotime($max_close[0]->closureDate)));					
+							$max_voucher['TDate']=date("Y-m-01",strtotime('next month',strtotime($max_close[0]->closureDate)));
+							$max_voucher['VNumber']=$fy.$m."00";
+					}elseif(!empty($max_date)){
+							$max_voucher['TDate']=$max_date[0]->TDate;
+							$max_voucher['VNumber']=$max_date[0]->VNumber;
+					}else{
+								
+						$open_bc_bal_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=",array("AND","accNo","BC","="))));
+						$open_bc_bal=$this->_model->getAllRecords($open_bc_bal_cond,"cashbal");
+						if(empty($open_bc_bal)){
+							$fy_begin_date = '2015-06-30';
+						}else{
+							$fy_begin_date = $open_bc_bal[0]->month;
+						}	
+								//$fy_begin_date = '2015-06-30';
+								//$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($fy_begin_date)))));
+								$fy=date("y",strtotime('next month',strtotime($fy_begin_date)));
+								$m=date("m",strtotime('next month',strtotime($fy_begin_date)));
+								$max_voucher['TDate']=	$fy_begin_date;//$open_bc_bal[0]->month;
+								$max_voucher['VNumber']=$fy.$m."00";				
+					}
+					
+                    $mth = date('m');
+                    $icp = $_SESSION['fname'];
+					
+					//Check if MFR was submitted
+					$max_voucher_month=date("m",strtotime($max_voucher['TDate']));
+					$max_voucher_year=date("Y",strtotime($max_voucher['TDate']));
+					
+					$chk_mfr_cond = $this->_model->where(array(array("where","Month(month)",$max_voucher_month,"="),array("AND","Year(month)",$max_voucher_year,"="),array("AND","icpNo",Resources::session()->fname,"=")));
+					$chk_mfr_arr = $this->_model->getAllRecords($chk_mfr_cond,"bssubmitted");
+					
+					$data['cDate']=$max_voucher['TDate'];
+					if(!empty($chk_mfr_arr)){
+						$data['cDate']=date('Y-m-d',strtotime("+1 day",strtotime($chk_mfr_arr[0]->month)));
+					}
+					
+					$data['months'] = $this->_model->getMonthByNumber($mth,$icp);
+					$data['date_flag']=$date_control_flag;
+					$data['maxRec']=$max_voucher;
+					$data['test']="";
+                    return $data; 
+            //    }  else {
+              //      throw new customException("Session ID username is not set!");
+                //}
+            //}catch(customException $e){
+              //  echo $e->errorMessage();
+            //} 
+    }
+public function voucheredit(){
+	//$userlevel = $_POST['userlevel'];
+	$icpNo = $_POST['icpNo'];
+	$VNumber = $_POST['VNumber'];
+	$cDate = $_POST['TDate'];
+	$Payee = $_POST['Payee'];
+	$Address = $_POST['Address'];
+	$VType = $_POST['VType'];
+	$TDesc = $_POST['TDescription'];
+	
+	//Get Voucher
+	$render = 1;
+	$path = 'editvoucherview';
+	$data['cDate']=$cDate;
+	$data['months'] = $this->_model->getMonthByNumber(date('m',strtotime($cDate)),$icpNo);
+	$data['date_flag']=1;
+	$data['maxRec']=$VNumber;
+	$data['Payee']=$Payee;
+	$data['Address']=$Address;
+	$data['VType']=$VType;
+	$data['TDesc'] = $TDesc;
+	$data['ChqNo']=$_POST['ChqNo'];
+	$data['test']="";
+	$tags = array("All");
+	
+	$this->dispatch($render,$path, $data,$tags);
+
+}
+public function editVoucher(){
+	//Delete former Voucher
+	$icpNo = $_POST['KENo'];
+	$VNo = $_POST['VNumber'];
+	
+	$vch_del_cond = $this->_model->where(array(array("WHERE","icpNo",$icpNo,"="),array("AND","VNumber",$VNo,"=")));
+	$vch_del_header_qry = $this->_model->deleteQuery($vch_del_cond,"voucher_header");
+	$vch_del_body_qry = $this->_model->deleteQuery($vch_del_cond,"voucher_body");
+	
+	//Insert New
+        $header = array();
+        for($i=0;$i<8;$i++){
+            $header[]=  array_shift($_POST);
+        }
+        $header[]=array_pop($_POST);
+        $fy = Resources::func("get_financial_year",array(date("Y-m-d")));
+        $tm = time();
+        $chqState =0;
+        
+		//Get Bank Bank Code
+		$bank_code=0;
+		$bank_code_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails");
+		if(count($bank_code_qry)>0){
+			$bank_code=$bank_code_qry[0]->bankID;
+		}
+			
+		
+		$rwChqNo=$header[6];
+		if($rwChqNo===""){
+			$header[6]="";
+		}else{
+			$header[6]=ltrim($rwChqNo,'0')."-".$bank_code;
+		}
+			
+		
+		//print_r($header);
+		
+        $fld_header_arr = array("icpNo","TDate","Fy","VNumber","Payee","Address","VType","ChqNo","ChqState","TDescription","totals","unixStmp");
+        $header_one = array_splice($header,0,2);
+        $header_two = array_splice($header,0,5);
+        array_push($header_two, $chqState);
+        array_push($header, $tm);
+        array_push($header_one,$fy);
+        $new_header = array_merge($header_one, $header_two,$header);
+        $qry_array = array_combine($fld_header_arr, $new_header);
+        
+        $qry_array['totals']=  str_replace(",","",$qry_array['totals']);
+		echo $this->_model->insertRecord($qry_array,"voucher_header");
+		
+		 
+        //print_r($qry_array);
+        
+        $hID_cond=$this->_model->where(array(array("where","VNumber",$qry_array['VNumber'],"="),array("AND","icpNo",$qry_array['icpNo'],"=")));
+        $hID_rst = $this->_model->getAllRecords($hID_cond,"voucher_header");
+		
+		//print_r($hID_rst);
+        
+        $body_raw =array();
+        foreach($_POST as $val):
+            $cnt_rows = count($val);
+            for($j=0;$j<$cnt_rows;$j++){
+                $body_raw[$j][]=$val[$j];
+            }
+        endforeach;
+        $lead_body_fld_vals=array($hID_rst[0]->hID,$qry_array['icpNo'],$qry_array['VNumber'],$qry_array['TDate']);
+        $end_body_fld_vals=array($qry_array['VType'],$qry_array['ChqNo'],$qry_array['unixStmp']);
+        foreach($body_raw as $arr):
+            $arr_fin=array_merge($lead_body_fld_vals,$arr,$end_body_fld_vals);
+            $fld_body_arr=array("hID","icpNo","VNumber","TDate","Qty","Details","UnitCost","Cost","AccNo","civaCode","VType","ChqNo","unixStmp");
+            $body_raw_two = array_combine($fld_body_arr, $arr_fin);
+            $body[]=$body_raw_two;
+        endforeach;
+        
+        //print_r($body);
+        foreach($body as $value):
+            $this->_model->insertRecord($value,"voucher_body");
+        endforeach;
+		            //$mth = date('m');
+                    //$icp = $_SESSION['username'];
+                    //return $data = $this->_model->getMonthByNumber($mth,$icp);
+                    
+        //Mail Voucher to PF
+		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel","2","=")));
+		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users");
+		$pf_email="";
+		if(count($pf_email_arr)!==0){
+			$pf_email = $pf_email_arr[0]->email;
+		}else{
+			$pf_email="NKarisa@ke.ci.org";
+		}
+			
+	
+		
+		//Mail Body
+		$body = "<b>Voucher Number:</b>".$qry_array['VNumber']."<br>";
+		$body.= "<b>Total Amount:</b>".$qry_array['totals']."<br>";
+		$body.="<b>Voucher Type:</b>".$qry_array['VType']."<br>";
+		$body.="<b>Description:</b>".$qry_array['TDescription']."<br>";
+		$body.="<b>Posting Date and Time:</b>".date('Y-m-d H:i:s',strtotime('+9 hours',$qry_array['unixStmp']))."<br>";
+		$body.="<b>Transaction Date:</b>".$qry_array['TDate']."<br>";
+		$body.="<b>Posted By:</b>".Resources::session()->username."<br>";
+		
+		
+		//Mail Header
+		
+		$title = $qry_array['icpNo']." Voucher Posting: V# ".$qry_array['VNumber'];
+		
+		Resources::mailing($pf_email, $title, $body); 
+		
+		//$action = "Posted voucher Number ".$qry_array['VNumber'];
+		//user_history($userid,$langid,$lang="eng",$actionParam=array())
+		Resources::user_history(Resources::session()->ID,"post_voucher",$lang="eng",$action=array("VNumber"=>$qry_array['VNumber']));
+		
+    }
+public function allowvoucheredit(){
+	$icpNo = $_POST['icpNo'];
+	$VNumber = $_POST['VNumber'];
+	
+	$set_for_edit = array("editable"=>1);
+	$set_for_cond= $this->_model->where(array(array("WHERE","icpNo",$icpNo,"="),array("AND","VNumber",$VNumber,"=")));
+	
+	$update_vch = $this->_model->updateQuery($set_for_edit,$set_for_cond,"voucher_header");
+	
+	echo "Voucher editing for voucher number ".$VNumber." allowed!";
 }
 }
