@@ -1,12 +1,3 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-                 var xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-
-
   function highlight(inputid)
 	{
 			var textArr=["SELECT ","UPDATE "," FROM "," LEFT JOIN "," WHERE ","GROUP BY"," ON "," ORDER BY "," ASC "," DESC"," INNER JOIN "," RIGHT JOIN "," SUM"," sum"," AVG"," avg"," AS "," as "];
@@ -1140,3 +1131,125 @@ function getcdprlistbycst(cst){
         xmlhttp.send(frmData);
 }
 
+
+function runquery(el){
+	var cond = document.getElementById('conditions');
+
+	while (cond.firstChild.nextSibling) {
+    	cond.removeChild(cond.firstChild.nextSibling);
+	}
+	
+	addcondition(cond);
+	
+}
+function deletecondition(el){
+	var pNode = el.parentNode.parentNode;
+	pNode.removeChild(el.parentNode);
+}
+function getQueryResults(frmid){
+
+var reqd = document.getElementsByClassName('flds');
+var cnt=0;
+for(var z=0;z<reqd.length;z++){
+	if(reqd.item(z).value===''){
+		++cnt;
+		reqd.item(z).style.border='1px red solid';
+	}
+}	
+
+if(cnt>0){
+	alert(cnt+" required fields are empty!");
+	exit;
+}
+	
+var frm = document.getElementById('qryfld');
+var frmData = new FormData(frm);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.getElementById('qryView').innerHTML=document.getElementById('query').innerHTML;
+                document.getElementById('rsView').innerHTML=xmlhttp.responseText;
+                //highlight('qryView');
+
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/getQueryResults",true);      
+        xmlhttp.send(frmData);
+	
+}
+function addcondition(el){
+	xmlhttp.onreadystatechange=function() {
+       if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+          	
+          	//alert(xmlhttp.responseText);
+          	var oprt=["=",">","<","!=",">=","<=","LIKE %%","BETWEEN","IN","NOT IN"];
+          	var obj = JSON.parse(xmlhttp.responseText);
+          	
+			var pr = document.getElementById('conditions');
+			
+			var br = document.createElement("BR");
+			pr.appendChild(br);
+			
+			var div = document.createElement("DIV"); 
+			
+			var img_del = document.createElement("IMG"); 
+			setAttributes(img_del,{"src":''+path+'/system/images/uncheck3.png',"onclick":"deletecondition(this)","class":"flds"});
+			div.appendChild(img_del);
+				
+			var fld = document.createElement("SELECT");
+			var fld_opt1 = document.createElement("OPTION");
+			fld_opt1_text = document.createTextNode("Select Field");
+			setAttributes(fld_opt1,{"value":""});
+			fld_opt1.appendChild(fld_opt1_text);
+			fld.appendChild(fld_opt1);
+				for(var k in obj){
+					var fld_opt2 = document.createElement("OPTION");
+					fld_opt2_text = document.createTextNode(obj[k]);
+					setAttributes(fld_opt2,{"value":k});
+					fld_opt2.appendChild(fld_opt2_text);
+					fld.appendChild(fld_opt2);				
+				}
+			
+			setAttributes(fld,{"style":"width:160px;","class":"flds","name":"fld[]"});
+			div.appendChild(fld);
+			
+			var op = document.createElement("SELECT");
+			var op_opt1 = document.createElement("OPTION");
+			op_opt1_text = document.createTextNode("Select Operator");
+			setAttributes(op_opt1,{"value":""});
+			op_opt1.appendChild(op_opt1_text);
+			op.appendChild(op_opt1);
+				for(l in oprt){
+					var op_opt2 = document.createElement("OPTION");
+					op_opt2_text = document.createTextNode(oprt[l]);
+					setAttributes(op_opt2,{"value":oprt[l]});
+					op_opt2.appendChild(op_opt2_text);
+					op.appendChild(op_opt2);
+				}
+			setAttributes(op,{"style":"width:80px;","class":"flds","name":"op[]"});
+			div.appendChild(op);
+			
+			var val = document.createElement("INPUT");
+			setAttributes(val,{"style":"width:180px;","placeholder":"Field Value","type":"text","class":"flds","name":"val[]","value":""});
+			div.appendChild(val);
+			
+			var img_plus = document.createElement("IMG"); 
+			setAttributes(img_plus,{"src":''+path+'/system/images/plus.png',"onclick":"addcondition(this)","class":"flds"});
+			div.appendChild(img_plus);
+			
+			pr.appendChild(div);
+			
+			}
+        };
+		var frm = document.getElementById('qryfld');
+		var frmData = new FormData(frm);
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/addcondition",true);      
+        xmlhttp.send(frmData);			
+}

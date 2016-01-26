@@ -26,9 +26,9 @@ $objPHPExcel->setActiveSheetIndex(0);
   */
 
 $host = "localhost";
-$user = "root";
-$pass = "";
-$dbase = "mvc";
+$user = "compatl8_root";
+$pass = "R3@l!s!ngCh!ldr3n"; 
+$dbase = "compatl8_mvc";
 $table = "claims";
 						
 //PDO Database Connection
@@ -36,11 +36,11 @@ $conn = new PDO("mysql:host=$host;dbname=$dbase",$user,$pass);
 
 //Start Date
 
-$fromdate = '2015-11-01';
-$todate = '2015-11-30';
-$rmks=2;
+$fromdate = date("Y-m-d",$_GET['from']);
+$todate = date("Y-m-d",$_GET['to']);
+$rmks=$_GET['rmk'];
 
-$sql = "SELECT `claims` FROM ".$table." WHERE `rmks`=".$rmks." AND `date` > '".$fromdate."' AND `date` < '".$todate."'";
+$sql = "SELECT * FROM ".$table." WHERE date>='".$fromdate."' AND date<='".$todate."' AND rmks=$rmks";
 //if(isset($_GET['cst'])){
 	//$sql .=" AND cst='".$_GET['cst']."'";
 //}elseif(isset($_GET['icp'])){
@@ -67,29 +67,16 @@ $headStr=array(
 				"Facility Type",
 				"Claim Type",	
 				"Claim Date",
-				"Voucher Number"
+				"Voucher Number",
+				"Remark"
 			);
 							
 				
 $arrVals=array();
 
-while($row =$r->fetch(PDO::FETCH_ASSOC)){
+while($row =$r->fetch(PDO::FETCH_OBJ)){
 
-	$arrVals[] = $row->proNo;
-	$arrVals[] = $row->cluster;
-	$arrVals[] = $row->childNo;
-	$arrVals[] = $row->childName;
-	$arrVals[] = $row->treatDate;
-	$arrVals[] = $row->diagnosis;
-	$arrVals[] = $row->totAmt;
-	$arrVals[] = $row->careContr;
-	$arrVals[] = $row->nhif;
-	$arrVals[] = $row->amtReim;
-	$arrVals[] = $row->facName;
-	$arrVals[] = $row->facClass;
-	$arrVals[] = $row->type;
-	$arrVals[] = $row->date;
-	$arrVals[] = $row->vnum;
+	$arrVals[] = array($row->proNo,$row->cluster,$row->childNo,$row->childName,$row->treatDate,$row->diagnosis,$row->totAmt,$row->careContr,$row->nhif,$row->amtReim,$row->facName,$row->facClass,$row->type,$row->date,$row->vnum,$row->rmks);
 	 
 }
 

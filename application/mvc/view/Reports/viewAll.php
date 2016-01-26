@@ -4,6 +4,8 @@ if(Resources::session()->userlevel==="1"){
 }else{
 	$visibility="display:block;";
 }
+echo Resources::a_href("Reports/extraReports","[Special Reports]");
+echo "<hr><br>";
 //print_r($data['rec']);
 echo "<div style='".$visibility."'>";
 echo "Select Query: <SELECT id='qrySelect' onchange='setQuery(\"frmQry\");'>";

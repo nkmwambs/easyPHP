@@ -1,7 +1,6 @@
 <?php
 class Resources{
-
-
+	
 public static function import($path){
 		$path_arr = explode(".", $path);
 		$path_str="";
@@ -9,32 +8,29 @@ public static function import($path){
 			$path_str.=DIRECTORY_SEPARATOR.$value;
 		endforeach;
 
-		if(file_exists(BASE_PATH.DS."system".DS."libs".$path_str.".class.php")){
-			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".class.php";
+		if(file_exists(BASE_PATH."/"."system"."/"."libs".$path_str.".class.php")){
+			$fPath = BASE_PATH."/"."system"."/"."libs".$path_str.".class.php";
 		}else{
-			$fPath = BASE_PATH.DS."system".DS."libs".$path_str.".php";
+			$fPath = BASE_PATH."/"."system"."/"."libs".$path_str.".php";
 		}
 		
 		require_once $fPath;
-	}
+}
 public static function includes($path,$separator="."){
-	//if(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".DS.$url)){
-		//	include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".DS.$url.".php";
-		//}
 		$path_arr = explode($separator, $path);
 		$path_str="";
 		foreach($path_arr as $value):
 			$path_str.=DIRECTORY_SEPARATOR.$value;
 		endforeach;
 
-		if(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".$path_str.".php")){
-			$fPath = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."includes".$path_str.".php";
+		if(file_exists(BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."includes".$path_str.".php")){
+			$fPath = BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."includes".$path_str.".php";
 		}
 		
 		require_once $fPath;
 }
 public static function load_mail_template($url,$params=array()){
-			$msg = file_get_contents(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."docs/mail_templates".DS.$url);
+			$msg = file_get_contents(BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."docs/mail_templates"."/".$url);
 			foreach($params as $key=>$value):
 				$msg = str_replace('%'.$key.'%', $value, $msg);
 			endforeach;
@@ -67,7 +63,7 @@ public static function ie_detect()
 }	 
 	 
 public static function url($url){
-    return HOST_NAME.DS."easyPHP/".$GLOBALS['app']."/".$url;
+    return HOST_NAME."/".ROOT_FOLDER."/".$GLOBALS['app']."/".$url;
 }
 public static function a_href($path,$text,$properties=""){
     //property array example - array("width"=>"80px","heigth"=>"90px","title"=>"Petty","style"=>"margin-top:10px;border:5px solid black;")
@@ -75,7 +71,7 @@ public static function a_href($path,$text,$properties=""){
     if($path===""){
     	$str  = "<a href='#' ";
     }else{
-    	$str  = "<a href='".HOST_NAME.DS.'easyPHP'.DS.$GLOBALS['app'].DS.$path."' ";
+    	$str  = "<a href='".HOST_NAME."/".ROOT_FOLDER."/".$GLOBALS['app']."/".$path."' ";
     }
     
     
@@ -90,11 +86,11 @@ public static function a_href($path,$text,$properties=""){
 }
 public static function img($path,$properties=""){
     
-    if(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."images".DS.$path)){
-        $str = "<img src='http://".$_SERVER['HTTP_HOST']."/easyPHP/application/".$GLOBALS['app']."/images/".$path."'";
+    if(file_exists(BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."images"."/".$path)){
+        $str = "<img src='http://".$_SERVER['HTTP_HOST']."/".ROOT_FOLDER."/application/".$GLOBALS['app']."/images/".$path."'";
 
     }  else {
-        $str = "<img src='http://".$_SERVER['HTTP_HOST']."/easyPHP/system/images/".$path."'"; 
+        $str = "<img src='http://".$_SERVER['HTTP_HOST']."/".ROOT_FOLDER."/system/images/".$path."'"; 
     }
     
 
@@ -110,26 +106,26 @@ public static function link($links=array()){
     
         //Load grouped default app level css
 
-if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$GLOBALS['Controller'].".css")){
-        print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['Controller'].".css'>\n";
+if(file_exists(BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'css'."/".$GLOBALS['Controller'].".css")){
+        print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."css"."/".$GLOBALS['Controller'].".css'>\n";
     }
     
         //Load single default app level js
     
-    if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$GLOBALS['app'].".css")){
-        print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['app'].".css'>\n";
+    if(file_exists(BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'css'."/".$GLOBALS['app'].".css")){
+        print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."css"."/".$GLOBALS['app'].".css'>\n";
     }
     
     
         //Load grouped default app level css
     
-    $dir = BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$GLOBALS['app'];
+    $dir = BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'css'."/".$GLOBALS['app'];
     
     if (is_dir($dir)) {
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['app'].DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."css"."/".$GLOBALS['app']."/".$file."'>\n";
             }
         }
         closedir($dh);
@@ -138,13 +134,13 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     
     //Load grouped default Controller level css
     
-    $dir = BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$GLOBALS['Controller'];
+    $dir = BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'css'."/".$GLOBALS['Controller'];
     
     if (is_dir($dir)) {
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$GLOBALS['Controller'].DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."css"."/".$GLOBALS['Controller']."/".$file."'>\n";
             }
         }
         closedir($dh);
@@ -154,34 +150,34 @@ if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'cs
     //Load specified css file in css folders. App level css has high preference    
     
     foreach($links as $value){
-        if(!file_exists(BASE_PATH.DS.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'css'.DS.$value)){
-            print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."css".DS.$value."'>\n";
+        if(!file_exists(BASE_PATH."/".DS.'application'."/".$GLOBALS['app']."/".'scripts'."/".'css'."/".$value)){
+            print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."system"."/"."scripts"."/"."css"."/".$value."'>\n";
         }  else {
-            print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."css".DS.$value."'>\n";
+            print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."css"."/".$value."'>\n";
         }
     }
 	
     
-    $dir = BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."scripts".DS."css";
+    $dir = BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['theme']."/"."scripts"."/"."css";
     
     if (is_dir($dir)) {
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."scripts".DS."css".DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['theme']."/"."scripts"."/"."css"."/".$file."'>\n";
             }
         }
         closedir($dh);
     }
     }
 	
-	$dir = BASE_PATH.DS."system".DS."scripts".DS."css";
+	$dir = BASE_PATH."/"."system"."/"."scripts"."/"."css";
     
     if (is_dir($dir)) {
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."css".DS.$file."'>\n";
+                print "<link rel='stylesheet' type='text/css' href='".HOST_NAME."/".ROOT_FOLDER."/"."system"."/"."scripts"."/"."css"."/".$file."'>\n";
             }
         }
         closedir($dh);
@@ -193,13 +189,13 @@ public static function script($scripts){
     
     //Load grouped default app level js
     
-    $dir = BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$GLOBALS['app'];
+    $dir = BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'js'."/".$GLOBALS['app'];
     
     if (is_dir($dir)) {
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['app'].DS.$file."'></script>\n";
+                print "<script src='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."js"."/".$GLOBALS['app']."/".$file."'></script>\n";
             }
         }
         closedir($dh);
@@ -208,13 +204,13 @@ public static function script($scripts){
     
     //Load grouped default Controller level js
     
-    $dir = BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$GLOBALS['Controller'];
+    $dir = BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'js'."/".$GLOBALS['Controller'];
     
     if (is_dir($dir)) {
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['Controller'].DS.$file."'></script>\n";
+                print "<script src='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."js"."/".$GLOBALS['Controller']."/".$file."'></script>\n";
             }
         }
         closedir($dh);
@@ -226,29 +222,29 @@ public static function script($scripts){
     
     //Load specified js file in js folders. App level js has high preference
     foreach ($scripts as $value) {
-        if(!file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$value)){
-            print "<script src='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."js".DS.$value."'></script>\n";
+        if(!file_exists(BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'js'."/".$value)){
+            print "<script src='".HOST_NAME."/".ROOT_FOLDER."/"."system"."/"."scripts"."/"."js"."/".$value."'></script>\n";
         }  else {
-            print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$value."'></script>\n";
+            print "<script src='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."js"."/".$value."'></script>\n";
         }
     }
     
       //Load single default app level js
-    if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$GLOBALS['app'].".js")){
-        print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['app'].".js'></script>\n";
+    if(file_exists(BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'js'."/".$GLOBALS['app'].".js")){
+        print "<script src='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."js"."/".$GLOBALS['app'].".js'></script>\n";
     }
     
     //Load single default Controller level js
-    if(file_exists(BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'scripts'.DS.'js'.DS.$GLOBALS['Controller'].".js")){
-        print "<script src='".HOST_NAME.DS.'easyPHP'.DS."application".DS.$GLOBALS['app'].DS."scripts".DS."js".DS.$GLOBALS['Controller'].".js'></script>\n";
+    if(file_exists(BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'scripts'."/".'js'."/".$GLOBALS['Controller'].".js")){
+        print "<script src='".HOST_NAME."/".ROOT_FOLDER."/"."application"."/".$GLOBALS['app']."/"."scripts"."/"."js"."/".$GLOBALS['Controller'].".js'></script>\n";
     }
-	$dir = BASE_PATH.DS.'system'.DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS.'scripts'.DS."js";
+	$dir = BASE_PATH."/".'system'."/"."extensions"."/"."themes"."/".$GLOBALS['theme']."/".'scripts'."/"."js";
     
     if (is_dir($dir)) {
     if ($dh = opendir($dir)) {
         while (($file = readdir($dh)) !== false) {
             if ($file != "." && $file != ".."){
-                print "<script src='".HOST_NAME.DS.'easyPHP'.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."scripts".DS."js".DS.$file."'></script>\n";
+                print "<script src='".HOST_NAME."/".ROOT_FOLDER."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['theme']."/"."scripts"."/"."js"."/".$file."'></script>\n";
             }
         }
         closedir($dh);
@@ -259,11 +255,11 @@ public static function script($scripts){
     public static function func($func_name,$var = array()){
         //if(is_array($param)){
             //foreach ($param as $func_name):
-                if(realpath(BASE_PATH.DS.'system'.DS.'functions'.DS.$func_name.".php"))
+                if(realpath(BASE_PATH."/".'system'."/".'functions'."/".$func_name.".php"))
                     {
-                        require_once BASE_PATH.DS.'system'.DS.'functions'.DS.$func_name.".php";
+                        require_once BASE_PATH."/".'system'."/".'functions'."/".$func_name.".php";
                     }  else {
-                        require_once BASE_PATH.DS.'application'.DS.$GLOBALS['app'].DS.'functions'.DS.$func_name.".php";
+                        require_once BASE_PATH."/".'application'."/".$GLOBALS['app']."/".'functions'."/".$func_name.".php";
                     }
 					
 					if(count($var)===0){
@@ -408,34 +404,31 @@ public static function render($render="1",$path="",$results=""){
             }
         }
 		
-		//$rec_cond=  $model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        //$recent = $model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10"); 
-		//echo $render;
 		if($render===1){
-			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."header.php")){
+			if(file_exists(BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['app_default_theme']."/"."header.php")){
 				$data = $menu_data;		
-				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."header.php";
+				include BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['app_default_theme']."/"."header.php";
 			}else{
 				$data = $menu_data;		
-				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."header.php";
+				include BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['theme']."/"."header.php";
 			}
-	        if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."side_bar.php")){
+	        if(file_exists(BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['app_default_theme']."/"."side_bar.php")){
 				$data['side'] = $side_menu_data;
 				$data['users']=$users_online_arr;
-				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."side_bar.php";
+				include BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['app_default_theme']."/"."side_bar.php";
 			}else{
 				$data['side'] = $side_menu_data;
 				$data['users']=$users_online_arr;
-				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."side_bar.php";
+				include BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['theme']."/"."side_bar.php";
 			}
 		}
-			if($path===""&&file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$GLOBALS['Method'].".php")){
+			if($path===""&&file_exists(BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."view"."/".$GLOBALS['Controller']."/".$GLOBALS['Method'].".php")){
 				$data = $results;
-	            include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$GLOBALS['Method'].".php";
+	            include BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."view"."/".$GLOBALS['Controller']."/".$GLOBALS['Method'].".php";
 				
-			}elseif(file_exists(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$path.".php")){
+			}elseif(file_exists(BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."view"."/".$GLOBALS['Controller']."/".$path.".php")){
 				$data = $results;
-				include BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."view".DS.$GLOBALS['Controller'].DS.$path.".php";
+				include BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."view"."/".$GLOBALS['Controller']."/".$path.".php";
 			}else{
 				if($path==="err"){
 					$data = self::img("error.png")." Error Log:<br>".$results;
@@ -444,15 +437,15 @@ public static function render($render="1",$path="",$results=""){
 				
 				}
 				
-				include BASE_PATH.DS."system".DS."logs".DS."error.php";
+				include BASE_PATH."/"."system"."/"."logs"."/"."error.php";
 			}
 		if($render===1){
-			if(file_exists(BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."side_bar.php")){
+			if(file_exists(BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['app_default_theme']."/"."footer.php")){
 				$data = $recent;
-				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['app_default_theme'].DS."footer.php";
+				include BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['app_default_theme']."/"."footer.php";
 			}else{
 				$data = $recent;
-				include BASE_PATH.DS."system".DS."extensions".DS."themes".DS.$GLOBALS['theme'].DS."footer.php";
+				include BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['theme']."/"."footer.php";
 			}
 		}
 		//return $recent;
@@ -462,7 +455,7 @@ public static function session(){
 	return (object)$_SESSION;
 }
 public static function load_language($lang,$langid,$content=array()){
-	$cont = file_get_contents(BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."docs".DS."lang".DS.$lang.".lang");
+	$cont = file_get_contents(BASE_PATH."/"."application"."/".$GLOBALS['app']."/"."docs"."/"."lang"."/".$lang.".lang");
 	$arr = (array)json_decode($cont);
 	$action_arr = $arr[$langid]; 
 	$action="";

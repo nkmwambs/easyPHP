@@ -12,6 +12,162 @@ class Reports_Controller extends E_Controller
 		$data['rec'] = $this->_model->getAllRecords("","queries");
 		return $data;
     }
+	public function extraReports($render=1,$path='',$tags=array("All")){
+		
+		//List all Reports
+		$relate = $this->_model->getAllRecords("","relationships","",array("rID","qryTitle"));
+		
+		$data =array();
+		$data['relate'] = $relate;
+		
+		return $data;
+		
+	}
+	public function addcondition(){
+		
+		$rid = $_POST['qryTitle'];
+		$arr=array();
+		$fld_arr=array();
+		$alias_arr=array();
+		
+		$conds = $this->_model->where(array(array("WHERE","rID",$rid,"=")));
+		$rst = $this->_model->getAllRecords($conds,"relationships","",array("tables","fields","field_alias","joins"));
+		
+		$flds = $rst[0]->fields;
+		$alias = $rst[0]->field_alias;
+		$joins = $rst[0]->joins;
+		
+		if($flds!=="*"&&!empty($alias)){
+			//Convert field string to array
+			$fld_arr = explode(",", $flds);
+			
+			//Convert field_alias string to array
+			$alias_arr = explode(",", $alias);
+			
+			//Construct array to be rendered to view
+			for ($x=0; $x < count($fld_arr); $x++) { 
+				$arr[$fld_arr[$x]]=$alias_arr[$x];
+			}
+			
+		}else{
+			$arr = $this->_model->getTableColumns($rst[0]->tables);			
+		}
+		
+		
+		print_r(json_encode($arr));
+	}
+		public function getQueryResults($render=2,$path='queryView',$tags=array("All")){
+		//print_r($_POST);
+		$str = $_POST;
+		$data =array();
+		if(isset($str['qryTitle'])){
+			//Initialize variables
+			$f_arr="";
+			$a_arr="";
+			$flds = "";
+			$conds = "";
+			$final_cond = 1;
+			$tbl = "";
+			$fld_arr="";
+			$op_arr="";
+			$val_arr="";
+			$extra = "";
+			$startfrom = 0;
+			$offset = 50;
+			$tbl_cond = $this->_model->where(array(array("where","rID",$str['qryTitle'],"=")));
+			
+			//Get Relationship Table Results
+			$tbl_rst = $this->_model->getAllRecords($tbl_cond,"relationships","",array("tables","fields","field_alias","joins","conditions","extra_conditions","hide_column"));
+			
+			//Set Results to variables
+			
+			$tbl = $tbl_rst[0]->tables;
+			$tbl_flds = $tbl_rst[0]->fields;
+			$tbl_joins = $tbl_rst[0]->joins;
+			$tbl_cd = $tbl_rst[0]->conditions;
+			$tbl_alias = $tbl_rst[0]->field_alias;
+			$tbl_extra = $tbl_rst[0]->extra_conditions;
+			$tbl_col_hide = $tbl_rst[0]->hide_column;
+			
+			if(!empty($tbl_cd)){
+				$conds .=" ".$tbl_cd." AND ";
+			}
+			
+			if($tbl_extra!=="all"){
+				$extra = $tbl_extra;
+			}
+			
+			//Set Fields from default all fields asterik
+			if($tbl_flds!=='*'){
+				//Convert field string to array
+				$f_arr = explode(",", $tbl_flds);
+				
+				//Convert field_alias string to array
+				$a_arr = explode(",", $tbl_alias);
+				
+				//Convert hidden columns to array
+				$h_arr = explode(",", $tbl_col_hide);
+				
+				for ($k=0; $k <count($f_arr) ; $k++) {
+					if(!in_array($f_arr[$k], $h_arr)){
+						$flds.= $f_arr[$k]." As '".$a_arr[$k]."',"; 	
+					} 
+				}
+				
+				$flds = substr($flds,0,-1);
+			}else{
+				$flds="*";
+			}
+			
+			//Set condition for the query
+			if(sizeof($str)>1&&isset($str['fld'])){
+				$fld_arr = $str['fld'];
+				$op_arr = $str['op'];
+				$val_arr = $str['val'];	
+				
+				for ($i=0; $i < sizeof($fld_arr); $i++) {
+					if($op_arr[$i]==='LIKE %%'){
+						$conds .= " ".$fld_arr[$i]." LIKE '%".$val_arr[$i]."%' AND ";
+					}elseif($op_arr[$i]==='BETWEEN'){
+						$conds .= " ".$fld_arr[$i]." ".$op_arr[$i]." ".$val_arr[$i]." AND ";
+					}elseif($op_arr[$i]==='IN' ||$op_arr[$i]==='NOT IN'){
+						$conds .= " ".$fld_arr[$i]." ".$op_arr[$i]." (".$val_arr[$i].") AND ";
+					}else{
+						$conds .= " ".$fld_arr[$i]." ".$op_arr[$i]." '".$val_arr[$i]."' AND ";
+					} 
+					
+				}
+			
+				$final_cond = substr($conds, 0, -4);	
+			}
+				
+			//Construct the sql - Limited Query to 50 items
+				$sql = "SELECT ".$flds." FROM ".$tbl." ".$tbl_joins." WHERE ".$final_cond." ".$extra." LIMIT ".$startfrom.",".$offset;
+			//Total records query
+				$sql_total = "SELECT count(*) as num_records FROM ".$tbl." ".$tbl_joins." WHERE ".$final_cond." ".$extra;
+				
+			//Send query to model	
+				$okQry = substr_count($sql,"SELECT",0);
+				$okQryTwo = substr_count($sql,"SHOW",0);
+				$finSql = str_replace("'", "\"", $sql);
+				$finSql_total = str_replace("'", "\"", $sql_total);
+				if($okQry>0||$okQryTwo){
+					$data['rst'] =  $this->_model->queryTables($sql);
+					$totals = $this->_model->queryTables($sql_total);
+					$data['rst_total'] =  $totals[0]->num_records;
+					$data['sql']=$finSql;
+				}else{
+					$data['rst'] = "Query denied. Contact the administrator!";
+				}
+
+		}else{
+			$data['rst'] = "<b>No Query selected!</b>";
+		}	
+		return $data;
+	}
+	public function runquery(){
+
+	}
 	public function queryView($render=2,$path='',$tags=array("All")){
 		$data=array();
 		$sql = $_POST['query'];
@@ -137,8 +293,7 @@ class Reports_Controller extends E_Controller
 		return $qry;
 	}
     public function health($render=1,$path="",$tags=array("All")){
-        $data = "Health Report!";
-		return $data;
+
     }
    
     public function hvcQtrly($render=1,$path="",$tags=array("All")){
@@ -633,6 +788,20 @@ public function history($render=1,$path='',$tags=array("All")){
 public function malnutrition($render=1,$path='',$tags=array("All")){
 	
 }
+public function nonicpmalnutrition($render=1,$path='updateMalCase',$tags=array("All")){
+	
+	if(Resources::session()->userlevel==='2'){
+		$mal_cond = $this->_model->where(array(array("where","cst",Resources::session()->cname,"=")));
+	}else{
+		$mal_cond = "";//$this->_model->where(array(array("where","icpNo",$icpNo,"=")));
+	}
+	
+	$mal_arr = $this->_model->getAllRecords($mal_cond,"malnutrition","",array("malID","childNo","childName","childDOB","sex","diagDate","diagWeight","diagHeight"));
+	
+	$data=array();
+	$data['mal']=$mal_arr;
+	return $data;
+}
 public function registerMalCase($render=1,$path='',$tags=array("All")){
 	$data=array();
 	//Get ICP Cluster
@@ -667,6 +836,7 @@ public function updateMalCase($render=1,$path='',$tags=array("All")){
 	$data['mal']=$mal_arr;
 	return $data;
 }
+
 public function newMalCase(){
 	//Check for Duplicates
 	$childNo = $_POST['childNo'];

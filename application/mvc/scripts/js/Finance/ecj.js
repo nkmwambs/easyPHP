@@ -1,12 +1,3 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-                 var xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-
-
 function sumEcj(){
 	//alert("Hello");
 	
@@ -201,3 +192,14 @@ function allowvoucheredit(el,icp,vNo){
     xmlhttp.open("POST",path+"/mvc/Finance/allowvoucheredit",true);
     xmlhttp.send(frmData);
 }
+
+ function winpopon(){
+ 	var str = "Hello";
+ 	var rst = document.createElement("DIV");
+ 	rst.innerHTML='World';
+ 	popup(rst,str);
+ }  
+ 
+ function winpopoff(){
+ 	closepop();
+ }

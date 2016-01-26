@@ -32,7 +32,7 @@ for(var j=0;j<medical.length;j++){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loadingmin.gif"/>';
 
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
@@ -69,13 +69,12 @@ for(var j=0;j<medical.length;j++){
 }
 
 function saveRecordNewStudent(frmid){
-        
     var frm = document.getElementById(frmid);
     var frmData = new FormData(frm);
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loadingmin.gif"/>';
 
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
@@ -116,10 +115,35 @@ function gotoFrame(curid,nextid){
 function clearHighlight(elem){
     document.getElementById(elem.id).style.backgroundColor==='white';
 }
+function editstudentfromprofile(el){
+		    xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loadingmin.gif"/>';
+
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                //alert(xmlhttp.responseText);
+                document.getElementById('divResults').innerHTML = xmlhttp.responseText; 
+                completeDraftStudent(el);
+            }
+        };
+	xmlhttp.open("GET",path+"/schoolmanager/Students/editstudentfromprofile",true);
+    xmlhttp.send();
+	
+}
 function completeDraftStudent(el){
+//alert(el.title);
 var val="";
+var rw;
 if(el.tagName==='SELECT'){
     val=el.value;
+}else if(isNaN(parseInt(el.title)/2)){
+	//alert("Hello");
+	rw = el.title.split("-");
+	val = parseInt(rw[1]);
+	//alert(val);
 }else{
     val=el.title;
     document.getElementById("divResults").style.display='none';
@@ -133,7 +157,7 @@ if(el.tagName==='SELECT'){
 	   {
         if (xmlhttp.readyState===4 && xmlhttp.status===200) 
         {
-            
+          //alert(xmlhttp.responseText);
           var obj = JSON.parse(xmlhttp.responseText);
           document.getElementById("admNo").value=obj[0].admNo;
           document.getElementById("fname").value=obj[0].fname;
@@ -213,7 +237,7 @@ if(el.tagName==='SELECT'){
         }
        };
  
-       xmlhttp.open("GET",path+"system/index.php?url=schoolmanager/Students/completeDraftStudent/studentKey/"+val+"/&rnd="+Math.random(),true);
+       xmlhttp.open("GET",path+"/schoolmanager/Students/completeDraftStudent/studentKey/"+val,true);
        xmlhttp.send();
     }
     
@@ -229,13 +253,11 @@ function searchResults(){
             legendid_arr[r]=fieldsets.item(r).children(0).id;
         }
     }
-    //alert(legendid_arr);
     if(cnt>0){
-        var query="SELECT ";//+sel+" FROM students "+where+" "+sort
+        var query="SELECT ";
         for(var k=0;k<legendid_arr.length;k++){
             var parent = document.getElementById(legendid_arr[k]).parentNode;
             if(legendid_arr[k]==="select"){
-                //var sel="";
                 if(parent.children.length===2){
                     var cond = parent.children(1).children(0).value;
                     var val = parent.children(1).children(1).value;
@@ -437,4 +459,23 @@ function hideScroll(elem){
 }
 function updateManageRec(elem){
     document.getElementById("manageRec").value=elem.title;
+}
+function viewprintprofile(sid,el){
+	//alert(el);
+	    xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loadingmin.gif"/>';
+
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                //alert(xmlhttp.responseText);
+                document.getElementById('divResults').innerHTML = xmlhttp.responseText; 
+                completeDraftStudent(el);
+            }
+        };
+	xmlhttp.open("GET",path+"/schoolmanager/Students/viewprintprofile/studentKey/"+sid,true);
+    xmlhttp.send();
+    
 }

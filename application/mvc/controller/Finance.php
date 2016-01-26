@@ -89,6 +89,8 @@ class Finance_Controller extends E_Controller
             $AccGrp = 0;
         }elseif($voucherType_code==="CR"){
             $AccGrp = 1;
+        }elseif($voucherType_code==="PCR"){
+        	$AccGrp = 4;
         }
         $cond = $this->_model->where(array(array("where","accounts.AccGrp",$AccGrp,"=")));
         $rst_rw=$this->_model->civaAccountsMerge($cond,$this->choice[1]);
@@ -2142,7 +2144,7 @@ public function postVoucher(){
 		//Get Bank Bank Code
 		$bank_code=0;
 		$bank_code_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
-		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails");
+		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails","",array("bankID"));
 		if(count($bank_code_qry)>0){
 			$bank_code=$bank_code_qry[0]->bankID;
 		}
@@ -2174,7 +2176,7 @@ public function postVoucher(){
         //print_r($qry_array);
         
         $hID_cond=$this->_model->where(array(array("where","VNumber",$qry_array['VNumber'],"="),array("AND","icpNo",$qry_array['icpNo'],"=")));
-        $hID_rst = $this->_model->getAllRecords($hID_cond,"voucher_header");
+        $hID_rst = $this->_model->getAllRecords($hID_cond,"voucher_header","",array("hID"));
 		
 		//print_r($hID_rst);
         
@@ -2204,7 +2206,7 @@ public function postVoucher(){
                     
         //Mail Voucher to PF
 		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel","2","=")));
-		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users");
+		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users","",array("email"));
 		$pf_email="";
 		if(count($pf_email_arr)!==0){
 			$pf_email = $pf_email_arr[0]->email;

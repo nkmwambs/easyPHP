@@ -46,11 +46,8 @@ function log(frmid){
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
                 document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
-                //document.getElementById("loading").style.marginTop='200px';
-                //document.getElementById("loading").style.marginLeft='570px';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                //alert(xmlhttp.responseText);
                 document.getElementById('overlay').style.display='none';
                 if(xmlhttp.responseText==='1'){
                     document.getElementById("error_log").innerHTML='<img id="loadimg" src= "'+path+'/system/images/error.png"/> Access denied, Please contact an administrator if error persists!';
@@ -73,11 +70,8 @@ function checkSecurity(frmid){
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
                 document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
-                //document.getElementById("loading").style.marginTop='200px';
-                //document.getElementById("loading").style.marginLeft='570px';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                //alert(xmlhttp.responseText);
                 document.getElementById('overlay').style.display='none';
                 if(xmlhttp.responseText==='0'){
                     document.getElementById("error_log").innerHTML='<img id="loadimg" src= "'+path+'/system/images/error.png"/> Credential provided is wrong, Please contact the Administrator!';

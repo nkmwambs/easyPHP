@@ -4,7 +4,7 @@ $urgency_arr=array("Low","Medium","High");
 $active_arr =array("Not Active","Active");
 $rec = $data[0];?>
 <table id="viewMoreEvent" style="min-width:80%;">
-    <caption>View Event <?php if($_SESSION['ID']===$rec->eventOwner&&$rec->eventActive==='1'){echo img_tag("diskedit.png",array("onclick"=>"editEvent($rec->eventID);","style"=>"cursor:pointer;"));}?><br> Owner: <?php echo $rec->eventOwnerName;?></caption>
+    <caption>View Event <?php if($_SESSION['ID']===$rec->eventOwner&&$rec->eventActive==='1'){echo Resources::img("diskedit.png",array("onclick"=>"editEvent($rec->eventID);","style"=>"cursor:pointer;"));}?><br> Owner: <?php echo $rec->eventOwnerName;?></caption>
 <?php
 echo "<tr><td><b>Event Title: </b></td><td>{$rec->eventTitle}</td><td><b>Event Date: </b></td><td>{$rec->eventDate}</td><td><b>Event Location: </b></td><td>{$rec->eventLoc}</td></tr>";
 

@@ -5,38 +5,33 @@ class Students_Controller extends E_Controller{
         parent::__construct();
         $this->_model=new Students_Model("students");
     }
-    public function newStudent(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-                $menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view();
-		$this->template->view("Basic/footer",$recent); 
-    }
-    public function searchStudent(){
-        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-        $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-                $menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view();
-		$this->template->view("Basic/footer",$recent);        
-    }
-    public function searchResults(){
-        //print_r($_POST);
-                //print_r(json_encode($this->_model->searchResultsQuery($_POST)));
-                $data = $this->_model->searchResultsQuery($_POST);
-                if(is_array($data)){
-                    $rst = $data;
-                }  else {
-                    $rst = "The search could not be completed!";
-                }
-                $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-                $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-                $menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view("Basic/studentSearchResults",$rst);
-		$this->template->view("Basic/footer",$recent); 
+	public function newStudent($render=1,$path='',$tags=array("All")){
 
+    }
+    public function searchStudent($render=1,$path='',$tags=array("All")){
+    	  
+    }
+	public function viewprintprofile($render=2,$path='',$tags=array("All")){
+		$studentKey = $this->choice[1];
+		
+		$student_cond =  $this->_model->where(array(array("WHERE","studentKey",$studentKey,"=")));
+		$student_arr = $this->_model->getAllRecords($student_cond,"students");
+		
+		$data['student'] = $student_arr[0];
+		
+		return $data;
+	}
+	public function editstudentfromprofile($render=2,$path='newStudent',$tags=array("All")){
+		
+	}
+    public function searchResults($render=1,$path='',$tags=array("All")){
+         $data = $this->_model->searchResultsQuery($_POST);
+         if(is_array($data)){
+         	$rst = $data;
+         }  else {
+            $rst = "The search could not be completed!";
+         }
+		return $rst;
     }
     
     public function getFlds(){
@@ -46,7 +41,7 @@ class Students_Controller extends E_Controller{
 
     public function addStudentRecord(){
         $rec = $_POST;
-        $found_cond=  $this->_model->where(array("where"=>array("admNo",$rec['admNo'],"="),"AND"=>array("fname",$rec['fname'],"!="),"AND"=>array("lname",$rec['lname'],"!=")));
+        $found_cond=  $this->_model->where(array(array("where","admNo",$rec['admNo'],"="),array("AND","fname",$rec['fname'],"!="),array("AND","lname",$rec['lname'],"!=")));
         $found = $this->_model->getAllRecords($found_cond,"students");
         
         if(is_array($found)&&!empty($found)){
@@ -79,7 +74,7 @@ class Students_Controller extends E_Controller{
        //$final_arr['studentImage']=$_POST['fname']." ".$_POST['lname'];
        $final_arr['regBy']=$_SESSION['fname'].' '.$_SESSION['lname'];
        
-       $student_cond=  $this->_model->where(array("where"=>array("admNo",$final_arr['admNo'],"=")));
+       $student_cond=  $this->_model->where(array(array("where","admNo",$final_arr['admNo'],"=")));
        $cnt_recs = $this->_model->getAllRecords($student_cond,"students");
        
        if(count($cnt_recs)>0){
@@ -100,24 +95,17 @@ class Students_Controller extends E_Controller{
               
     }
     public function completeDraftStudent(){
-        //echo $this->choice[1];
-        $draft_cond = $this->_model->where(array("where"=>array("studentKey",  $this->choice[1],"=")));
+        $draft_cond = $this->_model->where(array(array("where","studentKey",$this->choice[1],"=")));
         $rs = $this->_model->getAllRecords($draft_cond,"students");
         print_r(json_encode($rs));
     }
 
-    public function draftStudentRecords(){
-                $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-                $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-                $draft_cond = $this->_model->where(array("where"=>array("draft",'1',"=")));
-                $data = $this->_model->getAllRecords($draft_cond,"students");
-                $menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view("",$data);
-		$this->template->view("Basic/footer",$recent); 
+    public function draftStudentRecords($render=1,$path='',$tags=array("All")){
+		$draft_cond = $this->_model->where(array(array("where","draft",1,"=")));
+        $rs = $this->_model->getAllRecords($draft_cond,"students");
+		
+		return $rs;
     }
    
-
-    
 }
 ?>

@@ -1,10 +1,3 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-                 var xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
 function submitRec(frmid){
     //alert(frmid);
     var x = document.getElementsByClassName('rData');
@@ -151,18 +144,7 @@ function addClaim(tableID) {
 			element4.name = "childNo[]";
                         element4.className="rData";
                         element4.id = "childNo"+rowCount;
-                        element4.onchange=function(){ //"csp"+rowCount;
-                        								//alert(csp);
-                                                        //if(document.getElementById('csp'+rowCount).checked===false){
-                                                        	//var x = document.getElementById('proNo'+rowCount).value;
-                                                        	//alert('Not checked');
-                                                        //}else if(document.getElementById('csp'+rowCount).checked===true){
-                                                        	//var x = csp;
-                                                        	//alert('Checked');
-                                                        //}else{
-                                                        	//var x = document.getElementById('proNo'+rowCount).value;
-                                                        //}
-                                                        
+                        element4.onchange=function(){ 
                                                         if(csp===""){
                                                         	var x = document.getElementById('proNo'+rowCount).value;
                                                         }else{
@@ -240,7 +222,8 @@ function addClaim(tableID) {
 			var element5 = document.createElement("input");
 			element5.type = "text";
 			element5.name = "childName[]";
-            element5.id = "childName"+rowCount;                                                          
+            element5.id = "childName"+rowCount;  
+            element5.className = 'childName';                                                        
             element5.readOnly = "true";
 			cell5.appendChild(element5);  
 
@@ -271,7 +254,7 @@ function addClaim(tableID) {
                                                               this.style.backgroundColor='white';
                                                           }
                                                     };
-                        element6.readOnly = 'true';
+                        //element6.readOnly = 'true';
                         element6.className="rData";
 			cell6.appendChild(element6);
                         
@@ -307,7 +290,7 @@ function addClaim(tableID) {
                         element9.onchange = function(){
                                                 this.style.backgroundColor='white';
                                              };
-                        element9.className="rData";
+                        element9.className="rData vnum";
 			cell9.appendChild(element9);
                         
             
@@ -321,6 +304,11 @@ function addClaim(tableID) {
                         element10.className="rData";
                         element10.onkeyup = function(){
                                                             //alert('Here you are!');
+                                                            if(isNaN(parseInt(this.value)/2)){
+                                                            	alert("Only numbers accepted!");
+                                                            	this.value="";
+                                                            	exit;
+                                                            }
                                                             var x = this.value;
                                                             var w = document.getElementById('amtReim'+rowCount).value;
                                                             var y = document.getElementById('totAmt'+rowCount).value;
@@ -335,7 +323,13 @@ function addClaim(tableID) {
                                                             
                                                         };
                         element10.onblur = function(){
-                                                        var x = this.value;
+                        								if(isNaN(parseInt(this.value)/2)){
+                                                            	alert("Only numbers accepted!");
+                                                            	this.value="";
+                                                            	exit;
+                                                          }
+                                                            
+                                                        	var x = this.value;
                                                             var w = document.getElementById('amtReim'+rowCount).value;
                                                             var y = document.getElementById('totAmt'+rowCount).value;
                                                             var z = document.getElementById('careContr'+rowCount).value;
@@ -448,28 +442,37 @@ function addClaim(tableID) {
             
             var cell15 = row.insertCell(15+parseInt(cnt_csp));
 			var element15 = document.createElement("select");
-                                var tex = ['Select Type ...','Public','Private','Missionary'];
-                                var val = ['','Public','Private','Missionary'];
-                        for (i=0;i<tex.length;i++){
-                                var option = document.createElement("option"); 
-                                option.text = tex[i];
-                                option.value = val[i];
-                                element15.add(option,element15[i]);
-                        } 
+            var tex = ['Select Type ...','Public','Private','Missionary'];
+            var val = ['','Public','Private','Missionary'];
+                for (i=0;i<tex.length;i++){
+                   var option = document.createElement("option"); 
+                       option.text = tex[i];
+                       option.value = val[i];
+                    element15.add(option,element15[i]);
+                 } 
 			element15.name = "facClass[]";
-                        element15.onchange = function(){
-                                                this.style.backgroundColor='white';
-                                  //           };
-                        //element15.onselect = function(){
+            element15.onchange = function(){
+  							//Make refNo field mandatory
+  							var refNo = document.getElementById("refNo"+rowCount);
+  							if(this.value!=='Public'){
+  								refNo.setAttribute("class","rData");
+  								alert("Please attach an approval document before you submit this claim!");
+  							}else{
+  								refNo.removeAttribute("class");
+  							}
+  							
+                        	//Trigger Claim counter
+                                         this.style.backgroundColor='white';
                                         xmlhttp.onreadystatechange=function() {
                                           if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                                            document.getElementById("cnt"+rowCount).value = xmlhttp.responseText;
+                                            document.getElementById("claimCnt"+rowCount).value = xmlhttp.responseText;
                                           }
                                         };
                                         var str = document.getElementById('childNo'+rowCount).value;
-                                        //alert(str);
-                                        xmlhttp.open("GET",path+"health/claimCnt.php?cid="+str,true);
-                                        xmlhttp.send();
+                                        var frmData = new FormData();
+                                        frmData.append('childNo',str);
+                                        xmlhttp.open("POST",path+"/mvc/Claims/claimCnt",true);
+                                        xmlhttp.send(frmData);
                                 };                      
             element15.className="rData";
 			cell15.appendChild(element15);  
@@ -477,10 +480,10 @@ function addClaim(tableID) {
        
             var cell16 = row.insertCell(16+parseInt(cnt_csp));
             var element16=document.createElement("input");
-			element16.type = "text";
-			element16.name = "refNo[]";
-            element16.id = "refNo"+rowCount;
-            element16.style.width = '90px';
+			element16.type = "file";
+			element16.name = "rct[]";
+            element16.id = "rct"+rowCount;
+            element16.style.width = '130px';
             element16.value = '0';
             element16.className="rData";
 			cell16.appendChild(element16);
@@ -489,10 +492,10 @@ function addClaim(tableID) {
             var cell17 = row.insertCell(17+parseInt(cnt_csp));
             var element17=document.createElement("input");
             element17.type = "file";
-			element17.name = "rct[]";
-            element17.id = "rct"+rowCount;
+			element17.name = "refNo[]";
+            element17.id = "refNo"+rowCount;
             element17.style.width = '130px';
-            element17.className="rData";
+            //element17.className="rData";
             cell17.appendChild(element17);
     
             var cell18 = row.insertCell(18+parseInt(cnt_csp));
@@ -509,6 +512,100 @@ function addClaim(tableID) {
                         $("#treatDate"+rowCount).datepicker({dateFormat:"yy-mm-dd"});
                         
 }
+
+function waiveparentscontribution(el,rec,amt){
+	var newContr = prompt("Enter the new Contribution rate:",0);
+	
+	if(newContr){
+			
+		var amtReim = parseFloat(amt) - parseFloat(newContr);
+
+		xmlhttp.onreadystatechange=function() {
+	            if(xmlhttp.readyState!==4){
+	                document.getElementById('overlay').style.display='block';
+	                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+	            }
+	            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+	                document.getElementById('overlay').style.display='none';
+	                
+	                el.parentNode.parentNode.childNodes[8].innerHTML = newContr;
+					el.parentNode.parentNode.childNodes[10].innerHTML = amtReim;
+					
+					alert(xmlhttp.responseText);
+	            }
+	        };    
+	    var frmData = new FormData();
+		frmData.append("rec",rec);
+		frmData.append("careContr",newContr);
+		frmData.append("amtReim",amtReim);                                
+	    
+	    xmlhttp.open("POST",path+"/mvc/Claims/waiveparentscontribution",true);
+	    xmlhttp.send(frmData);
+		
+	}else{
+		alert("Please specify the adjusted contribution");
+	}
+}
+function chkClaimValidity(){
+	var childName = document.getElementsByClassName('childName');
+	var vnum = document.getElementsByClassName('vnum');
+	var required = document.getElementsByClassName('rData');
+	
+	var cntChildNames = childName.length;
+	
+	//Check if a claim has been raised
+	if(cntChildNames===0){
+		alert("Add atleast one claim to submit!");
+		exit;
+	}
+	
+	//Check if all the required fields are with data
+	var reqCnt=0;
+	for (var j=0; j < required.length; j++) {
+	  if(required.item(j).value===""){
+	  	reqCnt++;
+	  	required.item(j).style.border='2px red solid';
+	  }
+	  
+	};
+	
+	if(reqCnt>0){
+		alert("You have "+reqCnt+" required fields not filled in");	
+		exit;
+	}
+	
+	
+	//Check if beneficiries records have names
+	var cntChildNames = 0;
+	for(var i=0;i<cntChildNames;i++){
+		if(childName.item(i).value ===''||childName.item(i).value ==='Name not found!'){
+			cntChildNames++;
+			alert("Can't Submit without valid beneficiary names!");
+			childName.item(i).style.border='2px red solid';
+		}
+	}
+	
+	if(cntChildNames>0){
+		exit;
+	}
+	
+	//Count Voucher Number Characters
+	var vnumCnt = 0;
+	var vnum_flds = vnum.length;
+	for (var k=0; k < vnum_flds; k++) {
+	  	if(vnum.item(k).value.length!==6){
+	  		vnumCnt++;
+			alert("Voucher number must be 6 characters long!");
+			//alert(vnum.item(k).value.length);
+			vnum.item(k).style.border='2px red solid';
+		}
+	};
+	
+	if(vnumCnt>0){
+		exit;		
+	}
+
+}
 function submitClaim(frmid){
    var frm = document.getElementById(frmid);  
     var frmData = new FormData(frm);
@@ -522,16 +619,60 @@ function submitClaim(frmid){
                 alert(xmlhttp.responseText);
             }
         };
-                                               
-         xmlhttp.open("POST",path+"/mvc/Claims/medicalClaimEntry",true);
-         xmlhttp.send(frmData);
+     chkClaimValidity();                                     
+     xmlhttp.open("POST",path+"/mvc/Claims/medicalClaimEntry",true);
+     xmlhttp.send(frmData);
 }
 function editRemarks(el,rmk,rnd){
-    //alert(rnd);
+    var reason = "";
+    var hdr = "";
+    var bdy = "";
     var sep = el.id.split("_");
     var id=sep[1];
+        
+    if(rmk===1){
+    	hdr = "Type the rejection reason here:";
+    	var bdy = document.createElement("DIV");
+    	setAttributes(bdy,{"style":"padding-bottom:40px;"});
+    	var txt = document.createElement("TEXTAREA");
+    	setAttributes(txt,{"rows":"10","cols":"35"});
+    	//setAttributes(txt,{"TYPE":"text"});
+    	
+    	var sbmt = document.createElement('button');
+    	sbmt.innerHTML = "Post";
+    	sbmt.onclick = function(){		
+			    		xmlhttp.onreadystatechange=function() {
+			            if(xmlhttp.readyState!==4){
+			                document.getElementById('overlay').style.display='block';
+			                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+			            }
+			            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+			                document.getElementById('overlay').style.display='none';
+			                alert(xmlhttp.responseText);
+			                closepop();
+			            }
+			        	};
+			             var rsn = txt.innerHTML;
+			             var frmData = new FormData();
+			             frmData.append("recid",id);
+			             frmData.append("rson",rsn);                                  
+			         	xmlhttp.open("POST",path+"mvc/Claims/postRejectionNotes",true);
+			        	xmlhttp.send(frmData);
+			        	
+    	};    	
+    	bdy.appendChild(txt);
+    	bdy.appendChild(sbmt);
+    	popup(bdy,hdr);
+    }
+    
+
         xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
                 el.parentNode.innerHTML=xmlhttp.responseText;
             }
         };
@@ -539,7 +680,34 @@ function editRemarks(el,rmk,rnd){
          xmlhttp.open("GET",path+"mvc/Claims/remarkMedicalClaim/rmks/"+rmk+"/rec/"+id+"/rnd/"+rnd,true);
          xmlhttp.send();
 }
-
+function viewNotes(recid){
+	//alert(recid);
+	   xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                //alert(xmlhttp.responseText);
+                if(xmlhttp.responseText==="0"){
+                	alert("Notes not available");
+                }else{
+                	//alert(xmlhttp.responseText);
+                	var obj = JSON.parse(xmlhttp.responseText);
+                	var DIV = document.createElement("DIV");
+                	for (var i=0; i < obj.length; i++) {
+					  	DIV.innerHTML += "<b>"+obj[i].username+":</b>"+obj[i].reason+"<br>";
+					};
+                	var hdr = "Claim Notes";
+                	popup(DIV,hdr);
+                }
+            }
+        };
+                                               
+         xmlhttp.open("GET",path+"mvc/Claims/viewNotes/rec/"+recid,true);
+         xmlhttp.send();
+}
 function showMore(el){
     var table_id = el.parentNode.parentNode.id;
     var table = document.getElementById(table_id);
@@ -710,6 +878,24 @@ if(document.getElementById("info_tbl").rows[0].cells[1].innerHTML===rec) {
         alert("You cannot edit unselected record! Please double click the record to select it");
     }
 }
+function deleteClaim(el,recid){	
+	        xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {      
+                document.getElementById('overlay').style.display='none';
+                el.parentNode.parentNode.style.display='none';
+				alert(xmlhttp.responseText);
+            }
+        };
+         frmData = new FormData();
+         frmData.append("rec",recid);                                      
+         xmlhttp.open("POST",path+"/mvc/Claims/deleteClaim",true);
+         xmlhttp.send(frmData);
+	
+}
 function calcReimburse(el,rec){
     //alert("Hello");
     var amt = document.getElementById('totAmt').value;
@@ -736,6 +922,35 @@ function calcReimburse(el,rec){
 }
 function uploadRct(rec,frmid){
     var frm = document.getElementById(frmid);
+    var frm_sub = frmid.substr(0,3);
+    var frmData = new FormData(frm);
+    //alert(frmData.length);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               alert(xmlhttp.responseText);
+               /*
+                document.getElementById('overlay').style.display='none';
+                    var rctTD = document.getElementById('rct-'+rec);
+                    if(frm_sub==="ref"){
+                    	rctTD = document.getElementById('ref-'+rec);
+                    }
+                     rctTD.innerHTML=xmlhttp.responseText;
+                     rctTD.style.color='green';
+                    */
+            		
+            }
+        };
+                                               
+         xmlhttp.open("POST",path+"/mvc/Claims/attachReceipt",true);
+         xmlhttp.send(frmData);
+}
+function uploadRef(rec,frmid){
+    var frm = document.getElementById(frmid);
     var frmData = new FormData(frm);
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
@@ -743,39 +958,55 @@ function uploadRct(rec,frmid){
                 document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                //alert(innerHTML=xmlhttp.responseText);
+               // alert(xmlhttp.responseText);
+               
                 document.getElementById('overlay').style.display='none';
                     var rctTD = document.getElementById('rct-'+rec);
                      rctTD.innerHTML=xmlhttp.responseText;
                      rctTD.style.color='green';
                      document.getElementById("rmk_td_"+rec).innerHTML+='<img id="" style="border:2px red solid;margin:2px;" src= "'+path+'/system/images/diskdel.png"/>';
+            
             }
         };
                                                
-         xmlhttp.open("POST",path+"/mvc/Claims/attachReceipt",true);
+         xmlhttp.open("POST",path+"/mvc/Claims/attachRef",true);
          xmlhttp.send(frmData);
 }
-
-function delReceipt(rct,clst,rec,rnd){
-    //alert(rct);
-        xmlhttp.onreadystatechange=function() {
+function delReceipt(rct,clst,icp,rec,docgrp){
+    
+    var cnf = confirm("Are you sure you want to delete this attachment?");    
+    if(!cnf){
+    	alert("Aborted!");
+    	exit;	
+    }
+    
+    xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                var str = xmlhttp.responseText.split("*");
-                
-                if(str[0]==='0'){
-                    document.getElementById("rmk_td_"+rec).innerHTML='<img id="" onclick="editRemarks(this,2,"'+rnd+'");" style="border:2px red solid;margin:2px;" src= "'+path+'/system/images/waiting.png"/>\n\
-                                                                    <img id="" onclick="editRemarks(this,1,"'+rnd+'");" style="border:2px red solid;margin:2px;" src= "'+path+'/system/images/reject.png"/>';
-                    document.getElementById("rct-"+rec).innerHTML='<input type="file" name="rct"/>';
-                }
-                alert(str[1]);
+                document.getElementById('overlay').style.display='none';
+            	alert(xmlhttp.responseText);
+
             }
         };
-                                               
-         xmlhttp.open("GET",path+"system/index.php?url=mvc/Claims/delReceipt/rct/"+rct+"/clst/"+clst+"/rec/"+rec,true);
-         xmlhttp.send();
+        
+        var frmData = new FormData();
+        frmData.append("rct",rct);
+        frmData.append("clst",clst);
+        frmData.append("icp",icp);
+        frmData.append("rec",rec);
+        frmData.append("docgrp",docgrp);
+        xmlhttp.open("POST",path+"mvc/Claims/delReceipt",true);      
+        xmlhttp.send(frmData);        
 }
 
 function selectClaims(){
+	if(document.getElementById('rmkSelect').value===''){
+		alert("Select a valid option");
+		exit;
+	}
 	var rmk = document.getElementById('rmkSelect').value;
 	var frmDate = document.getElementById('frmDate').value;
 	var toDate = document.getElementById('toDate').value;
@@ -783,7 +1014,9 @@ function selectClaims(){
 	      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                document.write(xmlhttp.responseText);
-               location.reload();
+               //location.reload();
+             	//window.location.reload( true );
+             	
             }
         };
                                                
@@ -793,4 +1026,24 @@ function selectClaims(){
         frmData.append("toDate",toDate);
         xmlhttp.open("POST",path+"mvc/Claims/viewMedicalClaims",true);      
         xmlhttp.send(frmData);
+}
+function viewReceipt(rct,cst,icp){
+	      xmlhttp.onreadystatechange=function() {
+          if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               document.write(xmlhttp.responseText);
+               location.reload();
+            }
+        };
+                                               
+        var frmData = new FormData();
+        frmData.append("rct",rct);
+        frmData.append("cst",cst);
+        frmData.append("icp",icp);
+        xmlhttp.open("POST",path+"mvc/Claims/viewReceipt",true);      
+        xmlhttp.send(frmData);		
 }

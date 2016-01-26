@@ -193,18 +193,24 @@ public function switchUser($render=1,$path="",$tags=array("All")){
 			      
                     return $_SESSION['fname']; 
     }
-    
-public function searchUser(){
-        $_SESSION['search_user'] =  $this->choice[1];
-        $username = $_SESSION['search_user'];
-        $search=  $this->_model->searchUsers($username);
+public function userpop($render=2,$path='',$tags=array("All")){
         
-        if(count($search)===0){
-            echo "No match Found";
-        }else{
-             print_r($search);
-        }
-    }
+		if(Resources::session()->userlevel==='2'){
+			$getuser_cond = $this->_model->where(array(array("WHERE","userlevel",1,"="),array("AND","cname",Resources::session()->cname,"="),array("AND","department",0,"=")));	
+		}else{
+			$getuser_cond="";
+		}
+		$search = $this->_model->getAllRecords($getuser_cond,"users","",array("ID","userfirstname","userlastname","username"));
+		
+        //print_r(json_encode($search));
+        $data = $search;
+		
+		return $data;
+        	
+}
+public function searchUser(){
+
+}
 public function passwordReset($render=1,$path='',$tags=array("0","All")){ 
 	
 }

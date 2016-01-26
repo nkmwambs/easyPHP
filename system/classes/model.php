@@ -203,10 +203,10 @@ public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array(),
                                     array_push($this->inner_arr,$row[$i]);
                                  }
                                  	$this->combined = array_combine($this->comments,$this->inner_arr);
-                               		$this->value_arr[]=$this->combined;
+                               		$this->value_arr[]=(object)$this->combined;
                             }
 							
-                            return json_decode(json_encode($this->value_arr),FALSE);
+                            return $this->value_arr;//json_decode(json_encode($this->value_arr),FALSE);
 
                         }else {
                             return "Could not select the table ".$this->table;   

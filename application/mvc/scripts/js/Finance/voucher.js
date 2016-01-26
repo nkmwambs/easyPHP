@@ -1,10 +1,3 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-                 var xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
 function addRow(tableID) {
     var voucherType = document.getElementById("VTypeMain").value;
     if(voucherType!=="#"){
@@ -628,6 +621,7 @@ function calcVNumber(){
 	var selectedSTMP=selectedDateEpoch.getTime();
 	
 	var curMonth= selectedDate.substr(5,2);
+	var curYear = selectedDate.substr(2,2);;
 	
 	var prevDate = document.getElementById('previousDate').value;
 	var prevDateEpoch=new Date(prevDate);
@@ -636,7 +630,7 @@ function calcVNumber(){
 	var prevMonth= prevDate.substr(5,2);
 	
 	var prevVNumber= document.getElementById('prevVNumber').value;
-	var fy=prevVNumber.substr(0,2);
+	var fy=curYear;//prevVNumber.substr(0,2);
 	var month=prevVNumber.substr(2,2);
 	var VNumber = prevVNumber.substr(4);
 	var rawNextVNumber=parseInt(VNumber)+1;
@@ -645,7 +639,7 @@ function calcVNumber(){
 		nextVNumber='0'+rawNextVNumber;
 	}
 	
-	var curVNumber=fy+month+nextVNumber;
+	var curVNumber=fy+month+nextVNumber; 
 	
 	if(parseInt(curMonth)!==parseInt(month)){
 		var curVNumber=fy+curMonth+"01";

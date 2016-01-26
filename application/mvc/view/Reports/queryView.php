@@ -1,5 +1,5 @@
 <?php
-if(is_array($data['rst'])&&isset($data['rst'])){
+if(is_array($data['rst'])&&isset($data['rst'])&&!empty($data['rst'])){
 	
 	$header=array_keys((array)$data['rst'][0]);
 	
@@ -11,7 +11,7 @@ if(is_array($data['rst'])&&isset($data['rst'])){
 	
 	$header=array_keys((array)$data['rst'][0]);
 	echo "<table id='info_tbl' style='min-width:100%;'>";
-	echo "<caption>Results Grid</caption>";
+	echo "<caption style='text-align:left;'><b>Results Grid:- Count Of Results: </b>".count($data['rst'])."</caption>";
 	echo "<tr>";
 	foreach($header as $val){
 		echo "<th>".$val."</th>";
@@ -26,7 +26,8 @@ if(is_array($data['rst'])&&isset($data['rst'])){
 	}
 	echo "</table>";
 }else{
-	print($data['rst']);
+	//print($data['rst']);
+	echo "<b>No data found for the query:</b> <br><br><kbd>".$data['sql']."</kbd>";
 }
  
 ?>

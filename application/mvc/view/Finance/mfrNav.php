@@ -5,7 +5,7 @@ if(is_array($data)){
 	print($data['test']);
 }
 
-print_r($data['chk']);
+//print_r($data['chk']);
 //echo date('Y-m-t',$data['time']);
 $curSelect="";
 $cur="";

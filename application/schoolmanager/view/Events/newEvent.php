@@ -2,7 +2,7 @@
 ?>
 <form id="tblNewEvent">
 <table style="border:1px orange solid;max-width:80%;">
-    <caption><?php echo img_tag("plus.png");?> Add Event</caption>
+    <caption><?php echo Resources::img("plus.png");?> Add Event</caption>
     <tr><td><input type="text" id="eventTitle" name="eventTitle" title="Event Title" placeholder="Event Title"/></td><td><input type="text" id="eventDate" name="eventDate" readonly="readonly" placeholder="Event Date" title="Event Date"/></td><td><input type="text" id="eventLoc" name="eventLoc" placeholder="Event Location" title="Event Location"/></td><td colspan="3" align='center'></td><td rowspan="3" style="border-left:1px black solid;padding:0px 10px 0px 10px;">
             Event Re-Occurence<br>
             <div style="max-width:100%;">
@@ -14,8 +14,8 @@
             </td>
         </tr>
         <tr><td colspan="3" align='center'><textarea id="eventDesc" name="eventDesc" rows='10' cols="70" placeholder="Event Description" title="Event Description" style="overflow:auto;"></textarea></td></tr>
-        <tr><td colspan=""><div style="float: left;width:50%;"><input type="text" id="eventInivitees" name="eventInivitees" placeholder="Invite Users" title="Invite Users" readonly='readonly'/></div><div style="float: left;width: 50%;"><?php echo img_tag("search2.png",array("style"=>"cursor:pointer;position:relative;left:55px;top:5px;z-index:20;","onclick"=>"popup();"));?></div></td><td><select id="eventUrgency" name="eventUrgency" title="Urgency"><option value="">Choose Urgency</option><option value="0">Low</option><option value="1">Medium</option><option value="2">High</option></select></td><td>&nbsp;</td></tr>
-    <tr><td colspan="4" align='center'><?php echo img_tag("disksave.png",array("title"=>"Add Event","onclick"=>"newEvent(tblNewEvent);"))." ".img_tag("clear.png",array("title"=>"Reset"));?></td></tr>
+        <tr><td colspan=""><div style="float: left;width:50%;"><input type="text" id="eventInivitees" name="eventInivitees" placeholder="Invite Users" title="Invite Users" readonly='readonly'/></div><div style="float: left;width: 50%;"><?php echo Resources::img("search2.png",array("style"=>"cursor:pointer;position:relative;left:55px;top:5px;z-index:20;","onclick"=>"popup();"));?></div></td><td><select id="eventUrgency" name="eventUrgency" title="Urgency"><option value="">Choose Urgency</option><option value="0">Low</option><option value="1">Medium</option><option value="2">High</option></select></td><td>&nbsp;</td></tr>
+    <tr><td colspan="4" align='center'><?php echo Resources::img("disksave.png",array("title"=>"Add Event","onclick"=>"newEvent(tblNewEvent);"))." ".Resources::img("clear.png",array("title"=>"Reset"));?></td></tr>
     
     
 

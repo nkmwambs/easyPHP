@@ -5,21 +5,22 @@ if(is_array($data)&&!empty($data)){
 $keys = array_keys((array)$data[0]);
 //print_r($keys);
 echo "<div id='divResults' onmouseover='displayScroll(this);' onmouseout='hideScroll(this);'>";
-echo "<table id='tblSearchResults'><tr>";
-foreach($keys as $value):
-   echo "<th>".$value."</th>";
-endforeach;
-echo "</tr>";
+echo "<table id='tblSearchResults'>";
+
+echo "<tr><th>Action</th><th>Full Name</th><th>Gender</th><th>Date Of Birth</th><th>Admission Number</th></tr>";
+
 foreach($data as $val):
-    echo "<tr>";
-        foreach($val as $ky=>$elem):
-            if($ky==='studentKey'){
-                echo "<td>".img_tag("manage2.png",array("title"=>$elem,"onclick"=>'completeDraftStudent(this);'))."</td>";
-            }else{
-                echo "<td>".$elem."</td>";
-            }
-        
-        endforeach;
+  	echo "<tr>";
+	echo "<td>".Resources::img("manage2.png",array("title"=>$val->studentKey,"onclick"=>'completeDraftStudent(this);',"style"=>'cursor:pointer;width:15px;height:15px;'))." ".Resources::img("print.png",array("onclick"=>"viewprintprofile(\"".$val->studentKey."\",this)","Title"=>'View/ Print  - '.$val->studentKey.'',"style"=>'cursor:pointer;width:15px;height:15px;'))."</td>";
+   	echo "<td>".$val->fname." ".$val->lname."</td>";
+	if($val->sex==='1'){
+		echo "<td>Female</td>";
+	}else{
+		echo "<td>Male</td>";
+	}
+	echo "<td>".$val->dob."</td>";
+	echo "<td>".$val->admNo."</td>";
+
     echo "</tr>";
 endforeach;
 echo "</table>";
@@ -33,7 +34,7 @@ echo "</div>";
 <div id="lblManage" style="display:none;"><div id="lbl_BioData" class="progress">Bio-Data</div> <div id="lbl_Location" class="progress">Location</div><div id="lbl_Parent" class="progress">Parent/ Guardian</div><div id="lbl_Academic" class="progress">Academic</div><div id="lbl_Talents" class="progress">Talents</div><div id="lbl_Health" class="progress">Health</div></div>
 <form id="frmBioData" enctype="multipart/form-data">
 <table id="tbl_BioData" style="border:1px solid orange;max-width:750px;display: none;">
-    <caption><?php echo img_tag("diskedit.png");?>Edit Record</caption>
+    <caption><?php echo Resources::img("diskedit.png");?>Edit Record</caption>
     
     <tr><th colspan="3">Student's Bio-Data (Page 1/6)</th></tr>
     <tr>
@@ -59,7 +60,7 @@ echo "</div>";
     
     
    
-            <tr><td colspan="3" align="center"><?php echo img_tag("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." ". img_tag("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_BioData","tbl_Location");',"style"=>"float:right;cursor:pointer;"));?></td></tr>
+            <tr><td colspan="3" align="center"><?php echo Resources::img("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." ". Resources::img("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_BioData","tbl_Location");',"style"=>"float:right;cursor:pointer;"));?></td></tr>
     
 </table>
 
@@ -67,7 +68,7 @@ echo "</div>";
 <!-- Table Location-->
 
 <table id="tbl_Location" class="sub_tbl studentdraft" style="border:1px solid orange;max-width:750px;">
-    <caption><?php echo img_tag("plus.png");?>New Student Profile</caption>
+    <caption><?php echo Resources::img("plus.png");?>New Student Profile</caption>
              <tr><td colspan="4">&nbsp;</td></tr>
     <tr><th colspan="4">Student's Residence/ Location (Page 2/6)</th></tr>
              <tr><td colspan="4">&nbsp;</td></tr>
@@ -85,7 +86,7 @@ echo "</div>";
      
          <tr><td colspan="4">&nbsp;</td></tr>
      
-     <tr><td colspan="4" align="center"><?php echo img_tag("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Location","tbl_BioData");',"style"=>"float:left;cursor:pointer;")). " ". img_tag("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." " . img_tag("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Location","tbl_Parent");',"style"=>"float:right;cursor:pointer;"));?></td></tr>
+     <tr><td colspan="4" align="center"><?php echo Resources::img("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Location","tbl_BioData");',"style"=>"float:left;cursor:pointer;")). " ". Resources::img("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." " . Resources::img("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Location","tbl_Parent");',"style"=>"float:right;cursor:pointer;"));?></td></tr>
 </table>
 
 
@@ -94,7 +95,7 @@ echo "</div>";
 
 
 <table id="tbl_Parent" class="sub_tbl studentdraft" style="border:1px solid orange;max-width:750px;">
-    <caption><?php echo img_tag("plus.png");?>New Student Profile</caption>
+    <caption><?php echo Resources::img("plus.png");?>New Student Profile</caption>
              <tr><td colspan="4">&nbsp;</td></tr>
     <tr><th colspan="4">Student's Parent/ Guardian Information (Page 3/6)</th></tr>
              <tr><td colspan="4">&nbsp;</td></tr>
@@ -113,14 +114,14 @@ echo "</div>";
     
     <tr><td colspan="1">&nbsp;</td><td colspan="3"><input type="text" onchange='clearHighlight(this);' id="parentTwoHome" name="parentTwoHome" title="Residence" placeholder="Residence"/></td></tr>       
     
-    <tr><td colspan="4" align="center"><?php echo img_tag("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Parent","tbl_Location");',"style"=>"float:left;cursor:pointer;")). " ". img_tag("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." ". img_tag("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Parent","tbl_Academic");',"style"=>"float:right;cursor:pointer;"));?></td></tr>
+    <tr><td colspan="4" align="center"><?php echo Resources::img("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Parent","tbl_Location");',"style"=>"float:left;cursor:pointer;")). " ". Resources::img("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." ". Resources::img("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Parent","tbl_Academic");',"style"=>"float:right;cursor:pointer;"));?></td></tr>
 </table>
 
 
 <!-- Class Details-->
 
 <table id="tbl_Academic" class="sub_tbl studentdraft" style="border:1px solid orange;max-width:750px;">
-    <caption><?php echo img_tag("plus.png");?>New Student Profile</caption>
+    <caption><?php echo Resources::img("plus.png");?>New Student Profile</caption>
              <tr><td colspan="4">&nbsp;</td></tr>
     <tr><th colspan="4">Student's Academic Information (Page 4/6)</th></tr>
              <tr><td colspan="4">&nbsp;</td></tr>
@@ -139,7 +140,7 @@ echo "</div>";
     
              
              
-        <tr><td colspan="4" align="center"><?php echo img_tag("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Academic","tbl_Parent");',"style"=>"float:left;cursor:pointer;")). " ".img_tag("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." " . img_tag("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Academic","tbl_Talents");',"style"=>"float:right;cursor:pointer;"));?></td></tr>         
+        <tr><td colspan="4" align="center"><?php echo Resources::img("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Academic","tbl_Parent");',"style"=>"float:left;cursor:pointer;")). " ".Resources::img("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))." " . Resources::img("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Academic","tbl_Talents");',"style"=>"float:right;cursor:pointer;"));?></td></tr>         
 </table>
 
 
@@ -147,7 +148,7 @@ echo "</div>";
 <!--Table Talents-->
 
 <table id="tbl_Talents" class="sub_tbl studentdraft" style="border:1px solid orange;max-width:750px;">
-    <caption><?php echo img_tag("plus.png");?>New Student Profile</caption>
+    <caption><?php echo Resources::img("plus.png");?>New Student Profile</caption>
              <tr><td colspan="4">&nbsp;</td></tr>
     <tr><th colspan="4">Student's Talents Information (Page 5/6)</th></tr>
              <tr><td colspan="4">&nbsp;</td></tr>
@@ -162,8 +163,8 @@ echo "</div>";
                     <option value="Other">Other</option>
                     </select></div>
                 <div style="float:left;height: 20px;">
-                <?php echo img_tag("next.png",array("onclick"=>'moveitem("selectTalent","getTalent");'));?><br>
-                <?php echo img_tag("previous.png",array("onclick"=>'moveitem("getTalent","selectTalent");'));?><br>
+                <?php echo Resources::img("next.png",array("onclick"=>'moveitem("selectTalent","getTalent");'));?><br>
+                <?php echo Resources::img("previous.png",array("onclick"=>'moveitem("getTalent","selectTalent");'));?><br>
                 </div>
                 <div style="float:left;height:100px;width: auto;">
                     <select class="mandatory" id="getTalent" name="talents[]" multiple style="height:125px;min-width:250px;"></select>
@@ -171,7 +172,7 @@ echo "</div>";
                 <input type="text" onchange='clearHighlight(this);' id="talentOther" name="talentsOther" title="Other Talents/ Gifts" placeholder="If other, Specify"/>
         </td></tr>    
              
-        <tr><td colspan="4" align="center"><?php echo img_tag("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Talents","tbl_Academic");',"style"=>"float:left;cursor:pointer;")). " ".img_tag("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))."" . img_tag("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Talents","tbl_Health");',"style"=>"float:right;cursor:pointer;"));?></td></tr>           
+        <tr><td colspan="4" align="center"><?php echo Resources::img("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Talents","tbl_Academic");',"style"=>"float:left;cursor:pointer;")). " ".Resources::img("disksave.png",array("title"=>'Save',"onclick"=>'saveRecordNewStudent("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"))."" . Resources::img("next.png",array("title"=>"Next","onclick"=>'gotoFrame("tbl_Talents","tbl_Health");',"style"=>"float:right;cursor:pointer;"));?></td></tr>           
 </table>
 
 
@@ -180,7 +181,7 @@ echo "</div>";
 
 
 <table id="tbl_Health" class="sub_tbl studentdraft" style="border:1px solid orange;max-width:750px;">
-    <caption><?php echo img_tag("plus.png");?>New Student Profile</caption>
+    <caption><?php echo Resources::img("plus.png");?>New Student Profile</caption>
              <tr><td colspan="4">&nbsp;</td></tr>
     <tr><th colspan="4">Student's Talents Information (Page 6/6)</th></tr>
              <tr><td colspan="4">&nbsp;</td></tr>
@@ -195,8 +196,8 @@ echo "</div>";
                     <option value="Other">Other</option>
                     </select></div>
                 <div style="float:left;height: 20px;">
-                <?php echo img_tag("next.png",array("onclick"=>'moveitem("selectMed","getMed");'));?><br>
-                <?php echo img_tag("previous.png",array("onclick"=>'moveitem("getMed","selectMed");'));?><br>
+                <?php echo Resources::img("next.png",array("onclick"=>'moveitem("selectMed","getMed");'));?><br>
+                <?php echo Resources::img("previous.png",array("onclick"=>'moveitem("getMed","selectMed");'));?><br>
                 </div>
                 <div style="float:left;height:100px;width: auto;">
                     <select class="mandatory" id="getMed" name="medical[]" multiple style="height:125px;min-width:250px;"></select>
@@ -204,6 +205,6 @@ echo "</div>";
                     <input type="text" onchange='clearHighlight(this);' id="medicalOther" name="medicalOther" title="Other Medical Condition" placeholder="If other, Specify"/><input type="hidden" name="draft" value="1" id="draft"/>
             </td></tr>
              
-            <tr><td colspan="4" align="center"><?php echo img_tag("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Health","tbl_Talents");',"style"=>"float:left;cursor:pointer;"))." ".img_tag("unreject.png",array("title"=>'Submit',"onclick"=>'addStudentRecord("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"));?></td></tr>  
+            <tr><td colspan="4" align="center"><?php echo Resources::img("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Health","tbl_Talents");',"style"=>"float:left;cursor:pointer;"))." ".Resources::img("unreject.png",array("title"=>'Submit',"onclick"=>'addStudentRecord("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"));?></td></tr>  
 </table>
 </form>

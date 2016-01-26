@@ -1,7 +1,6 @@
 body{
-	background-color:lightgray;
-        font-family: "Avant Garde",Avantgarde,Century Gothic,CenturyGothic,AppleGothic,sans-serif;
-        font-size: 90%;
+	background-color:grey;
+    font-family: "Avant Garde",Avantgarde,Century Gothic,CenturyGothic,AppleGothic,sans-serif;
 }
 
 #overlay
@@ -17,46 +16,42 @@ body{
 	display: none;
 }
 
-#header{
+#header
+{
 	position:absolute;
 	top:0px;
 	left:0px;
 	right:0px;
 	max-height: 150px;
 	min-height: 150px;
-	background: linear-gradient(to bottom, #f0ffff , lightgray ); /* Standard syntax */
-        //border: 1px white solid;
+	background: linear-gradient(to bottom, #f0ffff , grey ); /* Standard syntax */
 	
 }
-#logo{
+#logo
+{
 
-	//background-image: url('/../easyPHP/application/schoolmanager/images/logo.png');
-	//background-size: 100px 120px;
-    //background-repeat: no-repeat;
 	
 }
-#logo_img{
-  	max-width:  8%;
-	min-width: 8%;
+#logo_img
+{
+  	max-width:  25%;
+	min-width: 25%;
 	margin:10px 0px 10px 120px;  
 }
-#main_menu{
+#main_menu
+{
 	width: 1122px;
 	border-radius:10px;
-	//background-color:wheat;//darkblue;
-        z-index: 5;
+    z-index: 5;
 	height:20px;
 	color:blue;
 	position:absolute;
-        left: 108px;
+    left: 108px;
 	top:142px;
 	padding:10px;
-      //  border: 1px white solid;
-        background: linear-gradient(to bottom,white,wheat);
-        //opacity: 0.9;
+    background: linear-gradient(to bottom,white,wheat);
 }
-#main_menu_links{
-	
+#main_menu_links{	
 	list-style: none;
 	position: relative;
 	top:-15px;
@@ -70,21 +65,31 @@ body{
 #main_menu_links a{
 		text-decoration:none;
 }
-#container{
-	min-width: 74%;
-        max-width: 74%;
+#contain
+{
 	position: relative; /*position works with left, right, top and bottom*/
 	left: 100px; /* left, bottom always works with position*/
 	top:157px;
 	min-height:350px;
 	border:1px white solid;
-        border-top:0px;
+    border-top:0px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
-	background: linear-gradient(to right, lightgray , white, lightgray ); /* Standard syntax */
-	padding: 50px 10px 10px 130px;
+	padding: 50px 10px 10px 120px;
 	z-index: 2;
- 
+	width: 1009px;
+	margin-bottom:0px;
+	//color:white;
+}
+#foot{   
+	position:relative;
+	width:1350px;
+	left:0px;
+	right:0px;
+    top:159px;	
+	max-height: 150px;
+	min-height: 150px;
+	background: linear-gradient(to top, #f0ffff , grey ); /* Standard syntax */
 }
 #login_link>a:link
 {
@@ -98,7 +103,6 @@ body{
 {
 	z-index:25;
 	display: inline-block; /*fills up the div width with content*/
-	//background:skyblue;	
 	text-align:center;
 	position:relative;
 	left:275px;
@@ -107,10 +111,12 @@ body{
 	border-radius:6px;
 	color: orange;
 	font-weight:bolder;
-        margin-top: 20px;
+    margin-top: 20px;
 }
 #extra_access{
     z-index: 30;
+    position:relative;
+    top:15px;
 }
 #extra_access>li{
     position: absolute;
@@ -153,7 +159,7 @@ display: none;
     width: 15%; 
     border-radius: 5px;  
     padding: 30px 10px 10px 20px;
-    background: linear-gradient(to right,lightgray,wheat,lightgray);  
+    background: linear-gradient(to right,grey,wheat,grey);  
     color: blue;
 }
 #left_bar{
@@ -187,6 +193,7 @@ display: none;
 .se{
 	margin-bottom: 10px;
 	margin-top:10px;
+	max-width: 160px;
 }
 input[type="text"],input[type="password"], input[type="submit"]{
 	border-radius:6px;
@@ -223,9 +230,17 @@ h2{
 .logo_color{
 	color:orange;
 }
+#logo_text{
+	position:absolute;
+	top:130px;
+	left:275px;
+}
 #welcome_logo
 {
-	margin-left:270px; position:absolute; top:100px; left: 120px;
+	margin-left:320px; 
+	position:absolute; 
+	top:100px; 
+	left: 60px;
        
 }
 button{
@@ -234,26 +249,13 @@ button{
     padding: 5px;
     font-weight: bold;
 }
-#footer{
-    position: absolute;
-    top:480px;
-    bottom: 0px;
-    padding: 90px 10px 0px 30px;
-    width: 82%;
-    height: 35px;
-    border:1px white solid;
-    left:96px;
-    margin: 10px 0px 18px 0px;
-    background-color: wheat;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
+
 #loading{
     margin-top:200px;
     margin-left:570px;
 }
 input[readonly]{
-    background-color: lightgray;
+    background-color: grey;
 }
 #innerdiv{
     background-color:white;margin-bottom:3px;cursor:pointer;

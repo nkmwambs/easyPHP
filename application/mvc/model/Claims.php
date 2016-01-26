@@ -56,8 +56,24 @@ class Claims_Model extends E_Model
         }
     }
     
-    public function uploadReceipt($randNo,$rec,$newfilename){
-            $sql = "UPDATE claims SET randomID='".$randNo."' WHERE rec='".$rec."'";
+    public function uploadReceipt($randNo,$rec,$newfilename,$grp){
+    	$sql = "UPDATE claims SET randomID='".$randNo."',rct='".$newfilename."' WHERE rec='".$rec."'";
+		$grp="";
+    	if($grp==='supportdocs'){
+    		$sql = "UPDATE claims SET randomID='".$randNo."',refNo='".$newfilename."' WHERE rec='".$rec."'";
+    	}
+            
+            //$qry = mysql_query($sql);
+            $qry = $this->conn->prepare($sql);
+            if($qry){
+            	$qry->execute();
+                return 1;
+            }  else {
+                return "Error in updating random number: ".$this->conn->errorInfo();
+            }
+    }
+	    public function uploadRef($randNo,$rec,$newfilename){
+            $sql = "UPDATE claims SET randomID='".$randNo."',refNo='".$newfilename."' WHERE rec='".$rec."'";
             //$qry = mysql_query($sql);
             $qry = $this->conn->prepare($sql);
             if($qry){
