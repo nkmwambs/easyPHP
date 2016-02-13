@@ -1,12 +1,15 @@
 <?php
 //print_r($data[3]);
 
-echo "<button onclick='massSubmitPlanItems();'>Mass Submit</button><br><br>";
+echo "<button onclick='massSubmitPlanItems();'>Mass Submit</button><button onclick='excelexport()'>Export</button><br><br>";
 echo "<form id='frmRq'>";
 echo "<div id='rqMsgDiv' style='display:none'></div>";
 echo "</form>";
 if(!empty($data[0])){
 $tbl_arr = array("JulAmt","AugAmt","SepAmt","OctAmt","NovAmt","DecAmt","JanAmt","FebAmt","MarAmt","AprAmt","MayAmt","JunAmt");
+
+echo "<div id='rst'>";	
+	
 echo "<table id='tblAllSchedules' style='white-space:nowrap;text-align:right;'>";
 echo "<caption><b>".Resources::session()->fname."-".Resources::session()->lname." Budget Schedules<b></caption>";
 foreach($data[0] as $item):
@@ -50,11 +53,13 @@ foreach($data[0] as $item):
     endforeach;
     foreach ($data[1] as $extraItem):
         if($extraItem->AccNo===$item->AccNo){
-        echo "<tr><td colspan='20' style='text-align:left;'><label>Notes for $extraItem->details</label><br><textarea rows='10' cols='150' style='overflow:auto;' readonly>$extraItem->notes</textarea></td></tr>";
+        echo "<tr><td colspan='20' style='text-align:left;display:none;'><label>Notes for $extraItem->details</label><br><textarea rows='10' cols='150' style='overflow:auto;' readonly>$extraItem->notes</textarea></td></tr>";
         }
     endforeach;
 endforeach;
 echo "</table>";
+
+echo "</div>";
 }
  else {
      echo "<b>No budget schedules present for this selected period</b>";

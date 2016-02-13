@@ -76,8 +76,24 @@ class E_Controller {
 
 	}
 	
-
-
+public function create_grid($array,$tbl){
+	$cond_users =  Resources::create_condition($array);
+	
+	$qry = $this->model->getAllRecords($cond_users,$tbl);
+	
+	print_r(json_encode($qry));	
+}
+public function editable_grid($array,$tbl,$tbl_key_field){
+	$id = $array['id'];
+	$field = $array['field'];
+	$newVal = $array['newVal'];
+	
+	$update_set = array($field=>$newVal);
+	$update_cond = $this->_model->where(array(array("where",$tbl_key_field,$id,"=")));
+	$update_qry = $this->_model->updateQuery($update_set,$update_cond,$tbl);
+	
+	echo "Update Successfully!";
+}
     /**
 	 * Error control
 	 * @param string $var

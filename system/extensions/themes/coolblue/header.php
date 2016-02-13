@@ -7,6 +7,10 @@ $sess = Resources::session();
         <?php
         //Resources::link_tag(array("coolBlue_template.css","elements.css","designerTables.css","error.css"));
         ?>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script  type="text/javascript">
+
+		</script>
         <img src="http://www.compassionkenya.com/phpjobscheduler/firepjs.php?return_image=1" border="0" alt="phpJobScheduler" style="display: none;">
         <?php
         Resources::link(array("elements.css"));

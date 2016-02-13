@@ -106,6 +106,26 @@ public static function img($path,$properties=""){
     $str .="/>";
     return $str;
 }
+public static function table_filters($fieldset,$filter_fields,$callbackjsfunc,$callbackforedit="",$contentdiv='rst'){
+	self::import("filterTables.filterTables");
+	$instance = new filterTables($fieldset,$filter_fields,$callbackjsfunc,$callbackforedit,$contentdiv);
+	
+	$rst = $instance->filter();
+	return $rst;
+}
+public static function create_condition($multi_array){
+	//return $multi_array;
+	$str = " WHERE ";
+	if(is_array($multi_array)){
+		for ($i=0; $i < sizeof($multi_array['fields'])-1; $i++) { 
+			$str .= $multi_array['fields'][$i].$multi_array['operators'][$i]."'".$multi_array['criteriaval'][$i]."' AND ";
+		}
+		
+		$str .= $multi_array['fields'][sizeof($multi_array['fields'])-1].$multi_array['operators'][sizeof($multi_array['fields'])-1]."'".$multi_array['criteriaval'][sizeof($multi_array['fields'])-1]."'";
+	}
+	
+	return $str;
+}
 public static function link($links=array()){
     
         //Load grouped default app level css
@@ -254,6 +274,21 @@ public static function script($scripts){
         closedir($dh);
     }
     }
+    
+	
+	$dir2 = BASE_PATH.DS."system".DS."scripts".DS."js";
+    
+    if (is_dir($dir2)) {
+    if ($dh2 = opendir($dir2)) {
+        while (($file2 = readdir($dh2)) !== false) {
+            if ($file2 != "." && $file != ".."){
+             print "<script src='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."js".DS.$file2."'></script>\n";
+            }
+        }
+        closedir($dh2);
+    }
+    }
+    
 
 }
     public static function func($func_name,$var = array()){

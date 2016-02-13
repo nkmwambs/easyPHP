@@ -35,7 +35,7 @@
 	        //});
 	    //}
 	    
-
+/*
  var mozilla=document.getElementById && !document.all
  var ie=document.all
  var contextisvisible=0
@@ -77,3 +77,4 @@
  document.attachEvent("oncontextmenu", displaymenu)
  document.attachEvent("onclick", hidemenu)
  }
+ */

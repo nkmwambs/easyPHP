@@ -1,4 +1,9 @@
 {
+	"audit_top_menu":"Audit",
+	"training_top_menu":"Training and Support",
+	"civ_finance_sub_menu":"CIV",
+	"reports_cdpr_sub_menu":"CDPR",
+	"managefunds_finance_sub_menu":"Manage Funds",
     "post_voucher": "Posted Voucher Number %VNumber%",
     "password_reset": "Password Reset By %username%",
     "home_top_menu":"Home",

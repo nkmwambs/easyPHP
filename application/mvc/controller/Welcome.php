@@ -282,16 +282,25 @@ public function notifyPassChange($render=1,$path='',$tags=array("0")){
 			return $data;
 }
 public function test($render=1,$path='',$tags=array("0","All")){
-	$data=array();
-	$joins = $this->_model->tableJoins(array("LEFT JOIN"=>array("voucher_header"=>"hID","voucher_body"=>"hID")));
-	$test_cond = $this->_model->where(array(array("where","voucher_header.icpNo","KE381","=")));
-	$test_arr = $this->_model->getAllRecords($test_cond,"voucher_header","GROUP BY voucher_body.VNumber ORDER BY voucher_header.VNumber",array("voucher_header.icpNo","voucher_header.TDate","voucher_header.Payee as Payee","voucher_header.Fy","voucher_header.VNumber","sum(voucher_body.Cost)"),$joins);
-	
-	$data['cond']=$test_cond;
-	$data['arr']=$test_arr;
-	$data['join']=$joins;
-	
-	return $data;	
-}
 
+}
+public function filterschedule(){
+	//$cond_users =  Resources::create_condition($_POST);
+	//$qry = $this->_model->getAllRecords($cond_users,"fundsschedule");
+	//print_r(json_encode($qry));
+	
+	$this->create_grid($_POST,"fundsschedule");
+}
+public function editgrid(){
+	//$id = $_POST['id'];
+	//$field = $_POST['field'];
+	//$newVal = $_POST['newVal'];
+	
+	//$update_set = array($field=>$newVal);
+	//$update_cond = $this->_model->where(array(array("where","ID",$id,"=")));
+	//$update_qry = $this->_model->updateQuery($update_set,$update_cond,"fundsschedule");
+	
+	//echo "Update Successfully!";
+	$this->editable_grid($_POST,"fundsschedule","ID");
+}
 }

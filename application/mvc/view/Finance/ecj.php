@@ -50,6 +50,9 @@ if(isset($data[4])){
 
     echo Resources::img("print.png",array("onclick"=>'printData("ecj");',"title"=>"Print","id"=>"printecj"));
 ?>
+<button id='' onclick="excelexport()">Export</button>
+
+<div id='rst'>
 
 <table id="ecj" border='1'>
     <caption><b>COMPASSION ASSISTED PROJECT - PROGRAM IMPLEMENTING CHURCH PARTNER <br> CASH JOURNAL FOR CHILD DEVELOPMENT CENTRE</b></caption>
@@ -137,6 +140,9 @@ if(isset($data[4])){
         ?>
     </tbody>
 </table>
+
+</div>
+
 <br><br>
 <b>Current Month's Footnotes</b>
 <?php

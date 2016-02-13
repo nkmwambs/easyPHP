@@ -1,0 +1,12 @@
+/*
+ * Table Filter Style start here
+ */
+#fldset{
+	border: 2px orange solid;
+}
+legend{
+	font-weight: bold;
+}
+/*
+ * Table Filter Style End here
+ */
