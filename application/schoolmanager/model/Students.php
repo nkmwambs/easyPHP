@@ -1,23 +1,26 @@
 <?php
 class Students_Model extends E_Model{
     public function getStudentsTableFields(){
-                        $s = "SHOW FULL COLUMNS FROM `students` FROM `schoolmanager`";
-                        $q = mysql_query($s);
-                        $this->num_fields = mysql_num_rows($q);
+        $s = "SHOW FULL COLUMNS FROM `students` FROM `schoolmanager`";
+		$q = $this->conn->prepare($s);
+		$q->execute();
+		$this->num_fields=$q->rowCount();
+        $this->comments=  array();
 
-                        $this->comments=  array();
-
-                        while($rows=mysql_fetch_object($q)){
-                                array_push($this->comments,$rows->Field);
-                        }
-                        return $this->comments;
+        while($rows=$q->fetch(PDO::FETCH_OBJ))
+        {
+             array_push($this->comments,$rows->Field);
+        }
+        return $this->comments;
     }
     public function searchResultsQuery($array){
         
         $qry = str_replace("%MyTable%","students",$array['results_sql']);
-        $rst = mysql_query($qry);
+        //$rst = mysql_query($qry);
+        $rst = $this->conn->prepare($qry);
+		$rst->execute();
         $rst_arr=array();
-        while ($row = mysql_fetch_object($rst)) {
+        while ($row=$rst->fetch(PDO::FETCH_OBJ)) {
             $rst_arr[]=$row;
         }
         return $rst_arr;

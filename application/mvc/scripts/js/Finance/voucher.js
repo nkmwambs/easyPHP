@@ -1,25 +1,27 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-                 var xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
 function addRow(tableID) {
-	//alert("Hello");
     var voucherType = document.getElementById("VTypeMain").value;
     if(voucherType!=="#"){
         var VType=document.cookie="VType="+voucherType;
     }
+    
     var bodyTable = document.getElementById("bodyTable");
-    //var voucherType = document.getElementById("VTypeMain");
     var rws = bodyTable.rows.length;
-    //alert(VType);
+    
     if(rws>1||VType!==""){
-        //document.getElementById("VTypeMain").style.display='none';
         document.getElementById("VTypeMain").parentNode.innerHTML="<input type='text' name='VTypeMain' id='VTypeMain' value='"+voucherType+"' readonly/>";
     }
-    //alert(voucherType);
+     
+    if(rws>1){
+    	var val1 = bodyTable.rows[rws-1].cells[1].childNodes[0].value;
+    	var val2 = bodyTable.rows[rws-1].cells[2].childNodes[0].value;
+    	var val3 = bodyTable.rows[rws-1].cells[3].childNodes[0].value;
+    	var val4 = bodyTable.rows[rws-1].cells[4].childNodes[0].value;
+    	if(val1===""||val2===""||val3===""||val4===""){
+    		alert("You must completely fill in the previous row before you proceed!");
+    		exit;
+    	}
+    }
+    
     xmlhttp.onreadystatechange=function() {
    	if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
@@ -237,9 +239,7 @@ function chqIntel(str){
         xmlhttp.send();
      }
 }
-function delRow(tableID) {
-                       //alert("Hello!");
-			try {
+function delRow(tableID) {				
 			var table = document.getElementById(tableID);
 			var rowCount = table.rows.length;
 
@@ -252,11 +252,14 @@ function delRow(tableID) {
 					i--;
 				}
 
+			}
+			//Totals
+			var totals=0;
+			for(var j=1;j<rowCount;j++){
+				totals+=parseFloat(table.rows[j].cells[4].childNodes[0].value);
+			}
+			document.getElementById('totals').value=accounting.formatMoney(totals, { symbol: "Kes.",  format: "%v %s" }); 
 
-			}
-			}catch(e) {
-				alert(e);
-			}
 }
 function validateVType(){
             var x=document.getElementById('VTypeMain');
@@ -276,6 +279,15 @@ function validateVType(){
 function postVoucher(){
 		var validate = document.getElementsByClassName('validate');
 		var cntFlds =0;
+		
+		var bodytbl = document.getElementById('bodyTable');
+		var bodyrows = bodytbl.rows.length;
+		
+		if(bodyrows===1){
+			alert("You can't post an empty voucher!");
+			exit;
+		}
+		
 		for(var z=0;z<validate.length;z++){
 			if(validate.item(z).value===""){
 				validate.item(z).style.backgroundColor='red';
@@ -609,6 +621,7 @@ function calcVNumber(){
 	var selectedSTMP=selectedDateEpoch.getTime();
 	
 	var curMonth= selectedDate.substr(5,2);
+	var curYear = selectedDate.substr(2,2);;
 	
 	var prevDate = document.getElementById('previousDate').value;
 	var prevDateEpoch=new Date(prevDate);
@@ -617,7 +630,7 @@ function calcVNumber(){
 	var prevMonth= prevDate.substr(5,2);
 	
 	var prevVNumber= document.getElementById('prevVNumber').value;
-	var fy=prevVNumber.substr(0,2);
+	var fy=curYear;//prevVNumber.substr(0,2);
 	var month=prevVNumber.substr(2,2);
 	var VNumber = prevVNumber.substr(4);
 	var rawNextVNumber=parseInt(VNumber)+1;
@@ -626,15 +639,16 @@ function calcVNumber(){
 		nextVNumber='0'+rawNextVNumber;
 	}
 	
-	var curVNumber=fy+month+nextVNumber;
+	var curVNumber=fy+month+nextVNumber; 
 	
 	if(parseInt(curMonth)!==parseInt(month)){
 		var curVNumber=fy+curMonth+"01";
 	}
 	//alert(month);
-	if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)!==parseInt(prevMonth)){
+	//if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)!==parseInt(prevMonth)){
+	if(parseInt(selectedSTMP)<parseInt(prevSTMP)||parseInt(curMonth)>parseInt(prevMonth)+1){
 		document.getElementById('info_div').setAttribute("id","error_div");
-		document.getElementById('error_div').innerHTML='Error <img id="" src= "'+path+'/system/images/error.png"/><br> Date not allowed! The next allowable date should equal to and beyond '+prevDate+" and a date in Month "+month+". To Proceed to the next month dates, please consider submitting month "+month+" Report";
+		document.getElementById('error_div').innerHTML='Error <img id="" src= "'+path+'/system/images/error.png"/><br> Date not allowed! The next allowable date should equal to and beyond '+prevDate+" and a date in Month "+month+". To Proceed to the next month dates, please consider submitting month "+month+" Report if not yet submitted";
 		document.getElementById('TDate').value="";
 		document.getElementById('VNumber').value="";
 		document.getElementById('TDate').style.backgroundColor='red';
@@ -669,4 +683,126 @@ function postFootNote(frmid){
     }                                      
          xmlhttp.open("POST",path+"/mvc/Finance/postFootNote/public/0",true);
          xmlhttp.send(frmData);
+}
+
+
+//Start from Here
+
+function previewvoucher(vNo){
+     xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('previewdiv').innerHTML=xmlhttp.responseText;
+            }
+        };
+          
+	var frmData = new FormData();
+	frmData.append("VNumber",vNo);
+	                                  
+    xmlhttp.open("POST",path+"/mvc/Finance/previewvoucher",true);
+    xmlhttp.send(frmData);	
+}
+function editVoucher(){
+	var validate = document.getElementsByClassName('validate');
+		var cntFlds =0;
+		
+		var bodytbl = document.getElementById('bodyTable');
+		var bodyrows = bodytbl.rows.length;
+		
+		if(bodyrows===1){
+			alert("You can't post an empty voucher!");
+			exit;
+		}
+		
+		for(var z=0;z<validate.length;z++){
+			if(validate.item(z).value===""){
+				validate.item(z).style.backgroundColor='red';
+				cntFlds++;
+			}
+		}
+		if(cntFlds>0){
+			alert("Date or Voucher Number Fields cannot be empty! Please reset the voucher if this problem persists!");
+			exit();
+		}
+		
+           var x = document.forms["myform"]["Payee"];
+                    var y = document.forms["myform"]["TDescription"];
+                    var accs = document.getElementsByClassName("accNos");
+                    var cost = document.getElementsByClassName('cost');
+                    for(var s=0;s<cost.length;s++){
+                    	if(isNaN(cost.item(s).value)){
+                    		alert("Enter only numeric values");
+                    		cost.item(s).style.backgroundColor='red';
+                    		return false;
+                    	}
+                    }
+                    for(var i = 0; i < accs.length; i++)
+                    {
+                          if(accs.item(i).value===''){
+                           accs.item(i).style.backgroundColor='red';
+                           alert("Please select a valid account number!");
+                           return false;
+                       }else{
+                           accs.item(i).style.backgroundColor='white';
+                       }
+                       
+                    }  
+                
+                    
+                    if (x.value===null || x.value==="") {
+                    x.style.backgroundColor = 'red';
+                    alert("Payee field name must be filled in");
+                    x.style.backgroundColor = 'white';
+                    return false;
+                    }
+                    
+                    if(y.value===null ||y.value===""){
+                        y.style.backgroundColor='red';
+                        alert("Description field must be filled in");
+                        y.style.backgroundColor = 'white';
+                        return false;
+                    }
+                        
+   var frm = document.getElementById('myform');  
+   //frm.submit();
+    var frmData = new FormData(frm);
+            xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               //alert(xmlhttp.responseText);
+               document.getElementById('info_div').id='error_div';
+               document.getElementById('editvoucherdiv').innerHTML='';
+               //document.getElementById('btnAddRow').style.display='none';//btnAddRow
+               document.getElementById('error_div').innerHTML="Voucher edited successfully";
+               //document.getElementById("content").innerHTML=xmlhttp.responseText;
+                
+            }
+        };
+         if(document.getElementById('error_div')){
+         	document.getElementById('error_div').innerHTML='Reset to add a New Voucher!';
+         	//document.getElementById('resetBtn').style.backgroundColor='red';
+         }else{  
+         	//document.getElementById('btnPostVch').style.display='none';
+            //document.getElementById('btnAddRow').style.display='none';//btnAddRow                                   
+	         xmlhttp.open("POST",path+"/mvc/Finance/editVoucher",true);
+	         xmlhttp.send(frmData);
+         }
+}
+function chqfld(){
+	alert(document.getElementById('VTypeMain').value);
+    if(document.getElementById('VTypeMain').value==='CHQ'){
+    	document.getElementById('CHQ').style.display='block';
+    	document.getElementById('ChqNoText').style.display='block';
+    }else{
+    	document.getElementById('CHQ').style.display='none';
+    	document.getElementById('ChqNoText').style.display='none';
+    }
 }

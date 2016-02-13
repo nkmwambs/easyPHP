@@ -1,18 +1,26 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        
- 	      
-
 function setAttributes(el, attrs) {
   for(var key in attrs) {
     el.setAttribute(key, attrs[key]);
   }
-}//setAttributes(elem, {"src": "http://example.com/something.jpeg", "height": "100%", ...});    
+}//setAttributes(elem, {"src": "http://example.com/something.jpeg", "height": "100%", ...});  
+
+var tArea = document.getElementsByTagName("textarea");
+for (var f=0; f < tArealength; f++) {
+  //setAttributes(tArea, {"spellcheck": "true"});  
+}; 
+ 
+function timeConverter(UNIX_timestamp){
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year;
+  return time;
+} 
 function xmlrequest(url){
         xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
@@ -84,8 +92,6 @@ function printData(tblid)
 }
 
 function switchUser(el){
-    //alert(el.id);
-
 
     xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
@@ -99,39 +105,49 @@ function switchUser(el){
             }
         };
         var username = document.getElementById('username').value;
-       // if(el.tagName==="BUTTON"){
-           // var frm=document.getElementById("frmSwitch");
-            //var frmData = new FormData(frm);    
-            xmlhttp.open("GET",path+"/mvc/Welcome/switchUser/username/"+username,true);
-            xmlhttp.send(); 
-        //}else{
-            //xmlhttp.open("GET",path+"/mvc/Welcome/switchUser/username/"+el.id,true);
-            //xmlhttp.send();             
-        //}
+        if(!username){
+ 			alert('Click the watch glass to search for a username!');
+ 			exit;
+ 		}
+        xmlhttp.open("GET",path+"/mvc/Welcome/switchUser/username/"+username,true);
+        xmlhttp.send(); 
     
 }
-
-function searchUser(elid){
-    //alert(elid);
-    var val = document.getElementById(elid).value;
-    //alert(val);
+function closepop(){
+	document.getElementById('popup').style.display='none';
+}
+function popup(rst,header){
+	var container = document.getElementById('container');
+	var pop = document.createElement("DIV");
+	setAttributes(pop,{"id":"popup","class":"popup"});
+	var content = document.createElement("DIV");
+	//content.innerHTML='<a href="#close" title="Close"  onclick="closepop()" class="close">X</a><b>'+header+"</b><br>"+rst;
+	content.innerHTML='<a href="#close" title="Close"  onclick="closepop()" class="close">X</a><b>'+header+"</b><br>";
+	content.appendChild(rst);
+	pop.appendChild(content);
+	container.appendChild(pop);
+	
+}
+function searchUser(){
         xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
-                            document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').style.display='block';
                 document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-                newWin= window.open("http://localhost/easyPHP/mvc/Welcome/searchUser/", "_blank","toolbar=no, scrollbars=yes, resizable=no, \n\
-                top=50, left=600,width=500, height=500,menubar=no,titlebar=no,statusbar=no");
-                //var obj = JSON.parse(xmlhttp.responseText);
-                //newWin.document.write(xmlhttp.responseText);
-                document.getElementById("btnUserSearch").style.display='block';
+                var rst = xmlhttp.responseText;
+                var header = "Toolkit Users";
+                popup(rst,header);
           }
         };
-        //alert(val);
-    xmlhttp.open("GET",path+"mvc/Welcome/searchUser/username/"+val,true);
+    xmlhttp.open("GET",path+"mvc/Welcome/userpop",true);
     xmlhttp.send();
+}
+function getUser(username){
+	//alert(username);
+	document.getElementById('username').value = username;
+	closepop();
 }
 function delRec(){
     var dels = document.getElementsByClassName("dels");

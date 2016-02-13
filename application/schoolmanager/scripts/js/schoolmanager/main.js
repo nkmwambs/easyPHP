@@ -1,4 +1,4 @@
-var path = 'http://'+location.hostname+'/easyPHP/'
+var path = 'http://'+location.hostname+'/easyPHP/';
 if (window.XMLHttpRequest) 
 {
         // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -60,6 +60,9 @@ function popup(){
        xmlhttp.open("GET",path+"system/index.php?url=schoolmanager/Events/searchUsers/&rnd="+Math.random(),true);
        xmlhttp.send();
 }
+function searchstudentfrominput(){
+	alert("Hello");
+}
 function fillInFld(el){
     //alert(el);
     document.getElementById("eventInivitees").value+=el+",";
@@ -71,13 +74,11 @@ function recentItems(title,url,userid,img){
 	   {
         if (xmlhttp.readyState===4 && xmlhttp.status===200) 
         {
-            
-          //alert(xmlhttp.responseText); 
 
         }
        };
  
-       xmlhttp.open("GET",path+"system/index.php?url=schoolmanager/Register/newRecent/title/"+title+"/url/"+mod_url+"/userid/"+userid+"/img/"+img+"/&rnd="+Math.random(),true);
+       xmlhttp.open("GET",path+"system/index.php?url=schoolmanager/Register/newRecent/title/"+title+"/url/"+mod_url+"/userid/"+userid+"/img/"+img,true);
        xmlhttp.send();
  
 }

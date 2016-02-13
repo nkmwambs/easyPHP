@@ -68,11 +68,13 @@ class E_Controller {
     }
 
 	protected function dispatch($render="1",$path,$results,$tags=array()){
-			if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||
-				in_array("0", $tags)){
+			//if(in_array($_SESSION['userlevel'], $tags)||(in_array("All", $tags)&&$_SESSION['userlevel']!=='0')||in_array("0", $tags))
+			//{
 				Resources::render($render,$path,$results);
 								
-			}
+			//}else{
+				//echo "<div style='color:red;border: 1px black solid;text-align: center;border-radius:3px;background-color: yellow;max-width: 450px;margin-left:auto;margin-right:auto;padding: 10px;'>Session has expired<br>Click ".Resources::a_href($GLOBALS['default_controller']."/".$GLOBALS['default_view'], "here")." to refresh</div>";
+			//}
 
 	}
 	

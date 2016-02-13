@@ -11,9 +11,7 @@ if (window.XMLHttpRequest)
  }
 
 function showEvent(td,mth,yr){
-    //alert(td.innerHTML);
     var dt = td.innerHTML;
-   //document.getElementById("desc").innerHTML="Event(s) for "+td.innerHTML+"-"+mth+"-" +yr;
     	   xmlhttp.onreadystatechange=function() 
 	   {
 		if (xmlhttp.readyState!==4) 
@@ -60,11 +58,10 @@ function showEvent(td,mth,yr){
         }
        };
        //alert(dt);
-       xmlhttp.open("GET",path+"system/index.php?url=schoolmanager/Events/showEvents/public/1/dt/"+dt+"/mth/"+mth+"/yr/"+yr,true);
+       xmlhttp.open("GET",path+"/schoolmanager/Events/showEvents/public/1/dt/"+dt+"/mth/"+mth+"/yr/"+yr,true);
        xmlhttp.send();
 }
 function newEvent(form){
-    //alert("Hello");
     var id=form.id;
     var frm = document.getElementById(id);
     var frmData = new FormData(frm);

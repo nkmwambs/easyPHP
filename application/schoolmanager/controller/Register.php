@@ -6,14 +6,9 @@ private $_model;
         $this->_model=new Register_Model("users");
     }
 
-    public function userRegister() {
-                        $rec_cond=  $this->_model->where(array("where"=>array("userid",$_SESSION['ID'],"=")));
-                $recent = $this->_model->getAllRecords($rec_cond,"recent"," ORDER BY recID DESC LIMIT 0,10");
-		$menu=$this->model->getAllRecords("","menu");
-		$this->load_menu->menu($menu);
-		$this->template->view();
-		$this->template->view("Basic/footer",$recent);            
-        }
+    public function userRegister($render=1,$path='',$tags=array("All")) {
+            
+    }
 
     public function submitUser(){
             foreach($_POST as $key=>$value):
@@ -57,7 +52,7 @@ private $_model;
         $record['url']=  $directory = str_replace("_", "/", $this->choice[3]);
         $record['userid']=  $this->choice[5];
         $record['link_img']=  $this->choice[7];
-        $cnd = $this->_model->where(array("where"=>array("itemTitle",$this->choice[1],"=")));
+        $cnd = $this->_model->where(array(array("where","itemTitle",$this->choice[1],"=")));
         $cn = $this->_model->getAllRecords($cnd,"recent");
         if(count($cn>0)){
             $this->_model->deleteQuery($cnd,"recent");

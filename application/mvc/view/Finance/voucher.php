@@ -12,7 +12,7 @@ if(isset($data['error'])){
 ?>
 
 
-<button id="btnAddRow" onclick="addRow('bodyTable');">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
+<button id="btnAddRow" onclick="addRow('bodyTable')">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
 <br><br><div id='info_div'></div>
 <form id="myform" method='POST'>
             <input type="hidden" value="<?php echo $_SESSION['fname']; ?>" id="KENo" name="KENo"/>
@@ -29,11 +29,11 @@ if(isset($data['error'])){
 		                  if ($data['months']<=9){
 		                    ?>
 		               
-		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class="validate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."0".($data['months'])+1; ?>' readonly="readOnly"/></td>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class="validate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."0".($data['months'])+1; ?>' readonly="readOnly"/></td>
 		                    <?php
 		                   }else{
 		                        ?>
-		                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" class="validate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."".($data['months'])+1; ?>' readonly="readOnly"/></td>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" class="validate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."".($data['months'])+1; ?>' readonly="readOnly"/></td>
 		 
 		                    <?php
 		                   }
@@ -41,7 +41,7 @@ if(isset($data['error'])){
 		              		
 							?>
 		               
-		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class='dateSelector validate' onchange="calcVNumber();" name="TDate" style="width:95%;" value="" readonly="readOnly"/><input type='hidden' id="previousDate" value="<?php echo $data['cDate'];?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='' readonly="readOnly"/><input type="hidden" id="prevVNumber" value="<?php echo $data['maxRec']['VNumber'];?>"/></td>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class='dateSelector validate' onchange="calcVNumber();" name="TDate" style="width:95%;" value=""/><input type='hidden' id="previousDate" value="<?php echo $data['cDate'];?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='' readonly="readOnly"/><input type="hidden" id="prevVNumber" value="<?php echo $data['maxRec']['VNumber'];?>"/></td>
 		                    <?php
   	
 		              } 
@@ -61,6 +61,7 @@ if(isset($data['error'])){
                             <option value="PC">Payment By Cash</option>
                             <option value="CHQ">Payment By Cheque</option>
                             <option value="CR">Cash Received</option>
+                            <option value="PCR">Petty Cash Re-Banking</option>
                         </select>
                     </td>
                     <td id='ChqNoText' style="display:none;"><b>Cheque Number:</b></td><td><input type="text" id="CHQ" name="ChqNo" onblur="chqIntel(this.value);" style="width:95%;display:none;"/></td>

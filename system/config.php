@@ -9,6 +9,13 @@ define('DB_PREFIX','');
 define('DB_USER',DB_PREFIX.'root');
 define("HOST_NAME",'http://localhost');
 
+$fspath = explode("\\",dirname(__FILE__));
+array_pop($fspath);
+$rtpath = array_pop($fspath);
+
+define("ROOT_FOLDER",$rtpath);
+
+
 $theme = "coolblue";
 
 //Define Default Controller and Controller Method

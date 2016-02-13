@@ -17,6 +17,6 @@
     <tr><td colspan="2">OR</td></tr>
     <tr><td>Provide any former password?</td><td><input type="text" id="password" name="password"/></td></tr>
     <tr><td colspan="2">&nbsp;</td></tr>
-    <tr><td colspan="2" align='center'><?php echo img_tag("disksave.png",array("title"=>"Submit","onclick"=>'checkSecurity("passReset");'));?></td></tr>
+    <tr><td colspan="2" align='center'><?php echo Resources::img("disksave.png",array("title"=>"Submit","onclick"=>'checkSecurity("passReset");'));?></td></tr>
 </table>
 </form>

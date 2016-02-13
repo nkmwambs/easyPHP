@@ -1,7 +1,7 @@
 <div style="float:left;border-right:2px black solid;padding-right: 10px;min-width: 390px;">
     <form id="newuser">
 <table id="newuser">
-    <caption><?php echo img_tag("submituser.png");?> New User Registration</caption>
+    <caption><?php echo Resources::img("submituser.png");?> New User Registration</caption>
     <tr><td>Username:</td><td><input type="text" id="username" name="username" placeholder="User Name" onblur="validate(this);"/></td></tr>
     <tr><td>First Name:</td><td><input type="text" id="fname" name="fname" placeholder="First Name"/></td></tr>
     <tr><td>Last Name:</td><td><input type="text" id="lname" name="lname" placeholder="Last Name"/></td></tr>
@@ -10,7 +10,7 @@
     <tr><td>Password:</td><td><input type="password" id="password" name="password" placeholder="Password" onkeyup="check_pswd_len(this);"/></td></tr>
     <tr><td>Repeat Password:</td><td><input type="password" id="rptPassword" name='rptPassword' placeholder="Repeat Password" onkeyup="check_pswd_rpt();"/></td></tr>
     <tr><td align='center' colspan="2" style="color:red;font-size: 8pt;" id="register_error"></td></tr>
-    <tr><td align='center' colspan="2"><?php echo img_tag("disksave.png",array("title"=>"Submit","style"=>"cursor:pointer","onclick"=>"submitUser(\"newuser\");"))."  ".img_tag("clear.png",array("title"=>"Clear Form","style"=>"cursor:pointer"));?></td></tr>
+    <tr><td align='center' colspan="2"><?php echo Resources::img("disksave.png",array("title"=>"Submit","style"=>"cursor:pointer","onclick"=>"submitUser(\"newuser\");"))."  ".Resources::img("clear.png",array("title"=>"Clear Form","style"=>"cursor:pointer"));?></td></tr>
 </table>
     </form>
 </div>

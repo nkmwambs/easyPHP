@@ -24,7 +24,7 @@ if(is_array($data['test'])){
 		<?php
 			}
 		        
-        echo Resources::a_href("Reports/manageHvc","<button>View/Manage</button>")."<br><br>";
+        echo Resources::a_href("Reports/manageHvcIcp","<button>View/Manage</button>")."<br><br>";
         $limit = 3;//DLookup1("limit","hvc_limit","prg='2'"); $msg = $limit+1;?>
         <!--<input type="text" value="<?php echo $limit ?>"/>-->
        <!-- <div style="display:<? if($cnt<=$limit){echo 'none';}else{echo 'block';} ?>;">You have reached the maximum number (<?php //echo $msg; ?> cases) allowable to index!</div>

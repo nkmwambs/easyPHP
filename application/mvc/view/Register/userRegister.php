@@ -36,12 +36,9 @@
     <tr><td align='center' colspan="2" style="color:red;font-size: 8pt;" id="register_error"></td></tr>
     <input type="hidden" name="userlevel" value="1"/>
     <input type="hidden" name="auth" value="1"/>
-    <!--<input type="hidden" name="reffererID" value="<?php echo Resources::session()->ID;?>"/>-->
     </form>
     <tr><td align='center' colspan="2"><?php echo Resources::img("disksave.png",array("title"=>"Submit","style"=>"cursor:pointer","onclick"=>"submitUsers(\"newuser\");"))."  ".Resources::img("clear.png",array("title"=>"Clear Form","style"=>"cursor:pointer"));?></td></tr>
 </table>
-
-<!--<div>Forgot Password? Click <?php echo Resources::a_href("Register/forgotPass","Here");?></div>-->
     
 </div>
 <div style="float:left;margin-left: 40px;max-width:300px;">

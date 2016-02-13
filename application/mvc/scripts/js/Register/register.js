@@ -1,10 +1,3 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-                 var xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
 function submitUsers(frmid){
     var frm = document.getElementById(frmid);
     var frmData = new FormData(frm);
@@ -160,9 +153,10 @@ function changePwd(frmid){
                     
           }
         };
-
-      xmlhttp.open("GET",path+"mvc/Register/getICPs/clst/"+clst,true);      
-      xmlhttp.send();
+	var frmData = new FormData();
+	frmData.append("cstName",clst);	
+      xmlhttp.open("POST",path+"mvc/Register/getICPs",true);      
+      xmlhttp.send(frmData);
  }
 
 

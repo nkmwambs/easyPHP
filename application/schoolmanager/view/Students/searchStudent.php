@@ -1,5 +1,5 @@
 <?php
-echo a_tag("Students/newStudent/public/0",img_tag("plus.png",array("title"=>"New Record"))." New Profile",array("class"=>"url"))." ".a_tag("Students/draftStudentRecords/public/0",img_tag("diskedit.png",array("title"=>"Draft Record"))." Draft Profile",array("class"=>"url"))." ".a_tag("Students/manageStudents/public/0",img_tag("manage2.png",array("title"=>"Manage Record"))." Manage Profile",array("class"=>"url"));
+echo Resources::a_href("Students/newStudent/public/0",Resources::img("plus.png",array("title"=>"New Record"))." New Profile",array("class"=>"url"))." ".Resources::a_href("Students/draftStudentRecords/public/0",Resources::img("diskedit.png",array("title"=>"Draft Record"))." Draft Profile",array("class"=>"url"))." ".Resources::a_href("Students/manageStudents/public/0",Resources::img("manage2.png",array("title"=>"Manage Record"))." Manage Profile",array("class"=>"url"));
 ?>
 <br>
 <hr width='85%' style="float: left;"><br>
@@ -26,6 +26,6 @@ Search Student:<br><br>
     <fieldset style="width:130px;float: left;border:1px black solid;">
         <legend>Action</legend>
         <button onclick="searchResults();">Search</button>
-    <?php echo a_tag("Students/searchStudent","<button>Reset</button>");?>
+    <?php echo Resources::a_href("Students/searchStudent","<button>Reset</button>");?>
     </fieldset>
 </div>

@@ -1,14 +1,3 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-    if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-                 var xmlhttp=new XMLHttpRequest();
-                  } else { // code for IE6, IE5
-                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-
-
-//body.addEventListener("load",highlight('qryView'), false);
-//document.addEventListener("DOMContentLoaded",highlight('qryView'), false )
   function highlight(inputid)
 	{
 			var textArr=["SELECT ","UPDATE "," FROM "," LEFT JOIN "," WHERE ","GROUP BY"," ON "," ORDER BY "," ASC "," DESC"," INNER JOIN "," RIGHT JOIN "," SUM"," sum"," AVG"," avg"," AS "," as "];
@@ -33,7 +22,7 @@ function queryView(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -63,7 +52,7 @@ function queryView(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -90,7 +79,7 @@ function queryView(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -156,7 +145,7 @@ function submitCsp(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -174,7 +163,7 @@ function deleteCsp(rid){
 		      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -192,7 +181,7 @@ function showCspRpt(){
 	      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -225,7 +214,7 @@ function editCspFromGrid(el){
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -244,7 +233,7 @@ function selectCspRpts(){
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -363,17 +352,13 @@ function calcAge(elem){
 	document.getElementById('childAge').value=years.toFixed(2);
 }
 function inactivateCase(cid){
-	//alert(cid);	
-		//var period = document.getElementById('showQtr').value;
-	//var mth = document.getElementById('showMnth').value;
 		xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState!==4) {
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-                document.getElementById('overlay').style.display='none';
-				//document.getElementById("rptsDiv").innerHTML=xmlhttp.responseText;
+            	document.getElementById('overlay').style.display='none';
 				location.reload();
           }
         };
@@ -381,8 +366,10 @@ var cnf = confirm("Want to Inactivate this record? Note, Once you inactivate a r
 if(!cnf){
 	alert("Action aborted!");	
 }else{
-     	xmlhttp.open("GET",path+"mvc/Reports/inactivateCase/cid/"+cid,true);      
-        xmlhttp.send();
+		frmData=new FormData();
+		frmData.append("cid",cid);
+     	xmlhttp.open("POST",path+"mvc/Reports/inactivateCase",true);      
+        xmlhttp.send(frmData);
 }
 }
 function stateSort(){
@@ -396,15 +383,15 @@ function stateSort(){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-				//document.getElementById("rptsDiv").innerHTML=xmlhttp.responseText;
-				//location.reload();
 				document.write(xmlhttp.responseText);
 				location.reload();
           }
         };
-		
-      	xmlhttp.open("GET",path+"mvc/Reports/manageHvc/state/"+state+"/icpNo/"+keno,true);      
-        xmlhttp.send();
+		var frmData = new FormData();
+		frmData.append("state",state);
+		frmData.append("icp",keno);
+      	xmlhttp.open("POST",path+"mvc/Reports/manageHvcIcp",true);      
+        xmlhttp.send(frmData);
 }
 function isInt(value) {
   return !isNaN(value) && 
@@ -556,19 +543,39 @@ function showHvcBody(){
 		//alert(document.getElementById('childNo').hasAttribute('onblur'));
 	}
 }
-function toogleHvcView(cst){
-	var rwCst = cst.replace("-","_");
-	//alert(rwCst);
+function toogleHvcViewSpecialist(cst){
 	var frmData = new FormData();
 		xmlhttp.onreadystatechange=function() {
-
+			if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            	document.getElementById('overlay').style.display='none';
 				document.write(xmlhttp.responseText);
 				location.reload();
           }
         };
 	frmData.append("cst",cst);
-      	xmlhttp.open("POST",path+"mvc/Reports/manageHvc",true);      
+      	xmlhttp.open("POST",path+"mvc/Reports/manageHvcPf",true);      
+        xmlhttp.send(frmData);
+}
+function toogleHvcViewPf(icp){
+	var frmData = new FormData();
+		xmlhttp.onreadystatechange=function() {
+
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            	document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+	frmData.append("icp",icp);
+      	xmlhttp.open("POST",path+"mvc/Reports/manageHvcIcp",true);      
         xmlhttp.send(frmData);
 }
 
@@ -579,7 +586,7 @@ function newMalCase(frmid){
             xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
-                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
@@ -808,6 +815,43 @@ function viewPdsReports(){
       	xmlhttp.open("GET",path+"mvc/Reports/viewPdsReports/",true);      
         xmlhttp.send();	
 }
+function viewpdsreporters(elem){
+	//alert(elem.innerHTML);
+	var icp = elem.innerHTML;
+		xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.getElementById('pdsRptWelcome').innerHTML=xmlhttp.responseText;
+				//location.reload();
+          }
+        };
+		var frmData = new FormData();
+		frmData.append("icp",icp);
+      	xmlhttp.open("POST",path+"mvc/Reports/viewPdsReports/",true);      
+        xmlhttp.send(frmData);
+}
+function selectpdsreport(tym){
+
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		var frmData = new FormData();
+		frmData.append("cdate",tym);
+      	xmlhttp.open("POST",path+"mvc/Reports/pdsreportview/",true);      
+        xmlhttp.send(frmData);
+}
 function savePdsReport(frmid){
 	var frm = document.getElementById(frmid);  
     var frmData = new FormData(frm);
@@ -852,8 +896,15 @@ function createpdsreport(tym){
       	xmlhttp.open("GET",path+"mvc/Reports/createpdsreport/tym/"+tym,true);      
         xmlhttp.send();	
 }
-function submitpdsreport(curdate,enddate,frmid){
-	if(parseInt(curdate)>=18&&parseInt(curdate)<=parseInt(enddate)){
+
+function submitpdsreport(startdate,curdate,enddate,frmid){
+	//if(parseInt(curdate)>=parseInt(startdate)&&parseInt(curdate)<=parseInt(enddate)){
+		//alert("Ok");
+	//}else{
+		//alert("Nope");
+	//}
+
+	if(parseInt(curdate)>=parseInt(startdate)&&parseInt(curdate)<=parseInt(enddate)){
 				//alert("Report submitted successfully");
 				var frm = document.getElementById(frmid);  
 		   		 var frmData = new FormData(frm);
@@ -878,9 +929,10 @@ function submitpdsreport(curdate,enddate,frmid){
 			        xmlhttp.open("POST",path+"/mvc/Reports/savePdsReport",true);
 			        xmlhttp.send(frmData);	
 		        }
-	}else if(curdate<18){
-		alert("You cannot submit a report before 18th of the month or after the end of the month");
+	}else{
+		alert("You cannot submit this report before "+timeConverter(startdate)+" of the month or after "+timeConverter(enddate)+" of the next reporting month");
 	}
+
 }
 
 function validatepdsreport(rid,state){
@@ -906,4 +958,298 @@ function validatepdsreport(rid,state){
       	xmlhttp.open("POST",path+"mvc/Reports/validatepdsreport",true);      
         xmlhttp.send(frmData);	
 	
+}
+function savecdpr(frmid){
+	//alert("Hello");
+	var frm = document.getElementById(frmid);
+	var frmData = new FormData(frm);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.write(xmlhttp.responseText);
+				//location.reload();
+				alert(xmlhttp.responseText);
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/savecdpr",true);      
+        xmlhttp.send(frmData);
+}
+function getChildDetailsforCDPR(){
+	var childNo = document.getElementById('childNo').value;
+	var cognitiveagegroup = document.getElementById('cognitiveagegroup').value;
+		if(childNo===""){
+		alert("Child Number cannot be empty!");
+		document.getElementById('childNo').style.border='2px red solid';
+		exit;
+	}
+	if(cognitiveagegroup===""){
+		alert("You must select a beneficiary cognitive age group!");
+		document.getElementById('cognitiveagegroup').style.border='2px red solid';
+		exit;
+	}
+	var frmData = new FormData();
+	frmData.append("childNo",childNo);
+	frmData.append("cognitiveagegroup",cognitiveagegroup);
+	
+		xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/getChildDetailsforCDPR",true);      
+        xmlhttp.send(frmData);
+}
+function getChildDetailsforCDPRFromBoard(childNo,cognitiveagegroup){
+	var childNo = document.getElementById('childNo').value;
+	var cognitiveagegroup = document.getElementById('cognitiveagegroup').value;
+	if(childNo===""){
+		alert("Child Number cannot be empty!");
+		document.getElementById('childNo').style.border='2px red solid';
+		exit;
+	}
+	if(cognitiveagegroup===""){
+		alert("You must select a beneficiary cognitive age group!");
+		document.getElementById('cognitiveagegroup').style.border='2px red solid';
+		exit;
+	}
+	var frmData = new FormData();
+	frmData.append("childNo",childNo);
+	frmData.append("cognitiveagegroup",cognitiveagegroup);
+	//frmData.append("pNo",childNo.split("-")[0]);
+	//alert(childNo);
+		xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/getChildDetailsforCDPR",true);      
+        xmlhttp.send(frmData);
+}
+function submitcdpr(frmid){
+	var txt = document.getElementsByTagName("INPUT");
+	var inputCnt=0;
+	for(var w=0;w<txt.length;w++){
+		txt.item(w).style.border='1px white solid';
+		if(txt.item(w).value==='0'||txt.item(w).value===''||txt.item(w).value==='0000-00-00'){
+			inputCnt++;
+			txt.item(w).style.border='1px red solid';
+		}
+	}
+	if(inputCnt>0){
+		alert("You cannot submit an incompletely filled assessment form!");
+		exit;
+	}
+	var frm = document.getElementById(frmid);
+	var frmData = new FormData(frm);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.write(xmlhttp.responseText);
+				//location.reload();
+				alert(xmlhttp.responseText);
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/submitcdpr",true);      
+        xmlhttp.send(frmData);
+}
+function checkcdprchildnumberformat(){
+	var x = document.getElementById("KeNo").value;
+    var y = document.getElementById("childNo").value;
+    //alert(y);
+    document.getElementById('childNo').style.backgroundColor='white';
+    if(y.length===1){
+    	document.getElementById('childNo').value = x+"-000"+y;
+    }
+    if(y.length===2){
+       document.getElementById('childNo').value = x+"-00"+y;
+    }
+    if(y.length===3){
+     document.getElementById('childNo').value = x+"-0"+y;
+    }
+    if(y.length===4){
+     document.getElementById('childNo').value = x+"-"+y;
+    }
+    if(y.length>4){
+    	alert("Please enter only the mumber part of the child number e.g. for KE980-0675, only enter 675");
+		document.getElementById('childNo').value="";
+        //exit;
+    }
+    
+}
+function  validatecdprscore(el){
+	el.style.border='1px white solid';
+	if(el.value>4){
+		alert("The score cannot be greater 4");
+		el.style.border='1px red solid';
+		el.value="0";
+	}
+}
+function getcdprlistbycst(cst){
+	var frmData = new FormData();
+	frmData.append("cst",cst);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				document.write(xmlhttp.responseText);
+				location.reload();
+
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/pfcdprview",true);      
+        xmlhttp.send(frmData);
+}
+
+
+function runquery(el){
+	var cond = document.getElementById('conditions');
+
+	while (cond.firstChild.nextSibling) {
+    	cond.removeChild(cond.firstChild.nextSibling);
+	}
+	
+	addcondition(cond);
+	
+}
+function deletecondition(el){
+	var pNode = el.parentNode.parentNode;
+	pNode.removeChild(el.parentNode);
+}
+function getQueryResults(frmid){
+
+var reqd = document.getElementsByClassName('flds');
+var cnt=0;
+for(var z=0;z<reqd.length;z++){
+	if(reqd.item(z).value===''){
+		++cnt;
+		reqd.item(z).style.border='1px red solid';
+	}
+}	
+
+if(cnt>0){
+	alert(cnt+" required fields are empty!");
+	exit;
+}
+	
+var frm = document.getElementById('qryfld');
+var frmData = new FormData(frm);
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+				//document.getElementById('qryView').innerHTML=document.getElementById('query').innerHTML;
+                document.getElementById('rsView').innerHTML=xmlhttp.responseText;
+                //highlight('qryView');
+
+          }
+        };
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/getQueryResults",true);      
+        xmlhttp.send(frmData);
+	
+}
+function addcondition(el){
+	xmlhttp.onreadystatechange=function() {
+       if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+          	
+          	//alert(xmlhttp.responseText);
+          	var oprt=["=",">","<","!=",">=","<=","LIKE %%","BETWEEN","IN","NOT IN"];
+          	var obj = JSON.parse(xmlhttp.responseText);
+          	
+			var pr = document.getElementById('conditions');
+			
+			var br = document.createElement("BR");
+			pr.appendChild(br);
+			
+			var div = document.createElement("DIV"); 
+			
+			var img_del = document.createElement("IMG"); 
+			setAttributes(img_del,{"src":''+path+'/system/images/uncheck3.png',"onclick":"deletecondition(this)","class":"flds"});
+			div.appendChild(img_del);
+				
+			var fld = document.createElement("SELECT");
+			var fld_opt1 = document.createElement("OPTION");
+			fld_opt1_text = document.createTextNode("Select Field");
+			setAttributes(fld_opt1,{"value":""});
+			fld_opt1.appendChild(fld_opt1_text);
+			fld.appendChild(fld_opt1);
+				for(var k in obj){
+					var fld_opt2 = document.createElement("OPTION");
+					fld_opt2_text = document.createTextNode(obj[k]);
+					setAttributes(fld_opt2,{"value":k});
+					fld_opt2.appendChild(fld_opt2_text);
+					fld.appendChild(fld_opt2);				
+				}
+			
+			setAttributes(fld,{"style":"width:160px;","class":"flds","name":"fld[]"});
+			div.appendChild(fld);
+			
+			var op = document.createElement("SELECT");
+			var op_opt1 = document.createElement("OPTION");
+			op_opt1_text = document.createTextNode("Select Operator");
+			setAttributes(op_opt1,{"value":""});
+			op_opt1.appendChild(op_opt1_text);
+			op.appendChild(op_opt1);
+				for(l in oprt){
+					var op_opt2 = document.createElement("OPTION");
+					op_opt2_text = document.createTextNode(oprt[l]);
+					setAttributes(op_opt2,{"value":oprt[l]});
+					op_opt2.appendChild(op_opt2_text);
+					op.appendChild(op_opt2);
+				}
+			setAttributes(op,{"style":"width:80px;","class":"flds","name":"op[]"});
+			div.appendChild(op);
+			
+			var val = document.createElement("INPUT");
+			setAttributes(val,{"style":"width:180px;","placeholder":"Field Value","type":"text","class":"flds","name":"val[]","value":""});
+			div.appendChild(val);
+			
+			var img_plus = document.createElement("IMG"); 
+			setAttributes(img_plus,{"src":''+path+'/system/images/plus.png',"onclick":"addcondition(this)","class":"flds"});
+			div.appendChild(img_plus);
+			
+			pr.appendChild(div);
+			
+			}
+        };
+		var frm = document.getElementById('qryfld');
+		var frmData = new FormData(frm);
+		
+      	xmlhttp.open("POST",path+"mvc/Reports/addcondition",true);      
+        xmlhttp.send(frmData);			
 }

@@ -30,8 +30,8 @@ endforeach;
 <td bgcolor="#999999" style="color:#FFFFFF">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
-<td width="50%" align="left"><?php echo a_tag("Events/calendar/month/".$prev_month."/year/".$prev_year."","Previous",array("style"=>"color:#FFFFFF;"));?></td>
-<td width="50%" align="right"><?php echo a_tag("Events/calendar/month/".$next_month."/year/".$next_year."","Next",array("style"=>"color:#FFFFFF"));?></td>
+<td width="50%" align="left"><?php echo Resources::a_href("Events/calendar/month/".$prev_month."/year/".$prev_year."","Previous",array("style"=>"color:#FFFFFF;"));?></td>
+<td width="50%" align="right"><?php echo Resources::a_href("Events/calendar/month/".$next_month."/year/".$next_year."","Next",array("style"=>"color:#FFFFFF"));?></td>
 </tr>
 </table>
 </td>

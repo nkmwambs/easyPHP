@@ -1,6 +1,7 @@
 <?php
 //print_r($data['footnotes']);
-echo Resources::img("print.png",array("title"=>"Print","onclick"=>'printData("tblVoucher");'))." ".Resources::a_href("finance/downloadVoucher/VNum/".$data['details'][0]->VNumber,Resources::img("download.png",array("title"=>"Download")),array("target"=>"__blank"));
+echo Resources::img("print.png",array("title"=>"Print","onclick"=>'printData("tblVoucher");'))."<button onclick='selectCJ(\"".strtotime($data['details'][0]->TDate)."\");'> Back to ".date('F-Y',  strtotime($data['details'][0]->TDate))." Cash Journal</button>".Resources::a_href("finance/downloadVoucher/VNum/".$data['details'][0]->VNumber,Resources::img("download.png",array("title"=>"Download")),array("target"=>"__blank"));
+echo "<INPUT TYPE='hidden' value='".$data['details'][0]->icpNo."' id='icpNo'/>";
     echo "<table id='tblVoucher' border='1'>";
     echo "<tr><th colspan='5'>COMPASSION ASSISTED PROJECT</th></tr>";
     echo "<tr><th colspan='5'>".$data['details'][0]->icpNo."<br>Payment Voucher</th></tr>";

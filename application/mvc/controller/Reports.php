@@ -8,24 +8,180 @@ class Reports_Controller extends E_Controller
     }
     public function viewAll($render=1,$path="",$tags=array("All")){
         //$data = "All Reports!";
-		//return $data;
-		return $this->_model->getAllRecords("","queries");
+		$data=array();
+		$data['rec'] = $this->_model->getAllRecords("","queries");
+		return $data;
     }
+	public function extraReports($render=1,$path='',$tags=array("All")){
+		
+		//List all Reports
+		$relate = $this->_model->getAllRecords("","relationships","",array("rID","qryTitle"));
+		
+		$data =array();
+		$data['relate'] = $relate;
+		
+		return $data;
+		
+	}
+	public function addcondition(){
+		
+		$rid = $_POST['qryTitle'];
+		$arr=array();
+		$fld_arr=array();
+		$alias_arr=array();
+		
+		$conds = $this->_model->where(array(array("WHERE","rID",$rid,"=")));
+		$rst = $this->_model->getAllRecords($conds,"relationships","",array("tables","fields","field_alias","joins"));
+		
+		$flds = $rst[0]->fields;
+		$alias = $rst[0]->field_alias;
+		$joins = $rst[0]->joins;
+		
+		if($flds!=="*"&&!empty($alias)){
+			//Convert field string to array
+			$fld_arr = explode(",", $flds);
+			
+			//Convert field_alias string to array
+			$alias_arr = explode(",", $alias);
+			
+			//Construct array to be rendered to view
+			for ($x=0; $x < count($fld_arr); $x++) { 
+				$arr[$fld_arr[$x]]=$alias_arr[$x];
+			}
+			
+		}else{
+			$arr = $this->_model->getTableColumns($rst[0]->tables);			
+		}
+		
+		
+		print_r(json_encode($arr));
+	}
+		public function getQueryResults($render=2,$path='queryView',$tags=array("All")){
+		//print_r($_POST);
+		$str = $_POST;
+		$data =array();
+		if(isset($str['qryTitle'])){
+			//Initialize variables
+			$f_arr="";
+			$a_arr="";
+			$flds = "";
+			$conds = "";
+			$final_cond = 1;
+			$tbl = "";
+			$fld_arr="";
+			$op_arr="";
+			$val_arr="";
+			$extra = "";
+			$startfrom = 0;
+			$offset = 50;
+			$tbl_cond = $this->_model->where(array(array("where","rID",$str['qryTitle'],"=")));
+			
+			//Get Relationship Table Results
+			$tbl_rst = $this->_model->getAllRecords($tbl_cond,"relationships","",array("tables","fields","field_alias","joins","conditions","extra_conditions","hide_column"));
+			
+			//Set Results to variables
+			
+			$tbl = $tbl_rst[0]->tables;
+			$tbl_flds = $tbl_rst[0]->fields;
+			$tbl_joins = $tbl_rst[0]->joins;
+			$tbl_cd = $tbl_rst[0]->conditions;
+			$tbl_alias = $tbl_rst[0]->field_alias;
+			$tbl_extra = $tbl_rst[0]->extra_conditions;
+			$tbl_col_hide = $tbl_rst[0]->hide_column;
+			
+			if(!empty($tbl_cd)){
+				$conds .=" ".$tbl_cd." AND ";
+			}
+			
+			if($tbl_extra!=="all"){
+				$extra = $tbl_extra;
+			}
+			
+			//Set Fields from default all fields asterik
+			if($tbl_flds!=='*'){
+				//Convert field string to array
+				$f_arr = explode(",", $tbl_flds);
+				
+				//Convert field_alias string to array
+				$a_arr = explode(",", $tbl_alias);
+				
+				//Convert hidden columns to array
+				$h_arr = explode(",", $tbl_col_hide);
+				
+				for ($k=0; $k <count($f_arr) ; $k++) {
+					if(!in_array($f_arr[$k], $h_arr)){
+						$flds.= $f_arr[$k]." As '".$a_arr[$k]."',"; 	
+					} 
+				}
+				
+				$flds = substr($flds,0,-1);
+			}else{
+				$flds="*";
+			}
+			
+			//Set condition for the query
+			if(sizeof($str)>1&&isset($str['fld'])){
+				$fld_arr = $str['fld'];
+				$op_arr = $str['op'];
+				$val_arr = $str['val'];	
+				
+				for ($i=0; $i < sizeof($fld_arr); $i++) {
+					if($op_arr[$i]==='LIKE %%'){
+						$conds .= " ".$fld_arr[$i]." LIKE '%".$val_arr[$i]."%' AND ";
+					}elseif($op_arr[$i]==='BETWEEN'){
+						$conds .= " ".$fld_arr[$i]." ".$op_arr[$i]." ".$val_arr[$i]." AND ";
+					}elseif($op_arr[$i]==='IN' ||$op_arr[$i]==='NOT IN'){
+						$conds .= " ".$fld_arr[$i]." ".$op_arr[$i]." (".$val_arr[$i].") AND ";
+					}else{
+						$conds .= " ".$fld_arr[$i]." ".$op_arr[$i]." '".$val_arr[$i]."' AND ";
+					} 
+					
+				}
+			
+				$final_cond = substr($conds, 0, -4);	
+			}
+				
+			//Construct the sql - Limited Query to 50 items
+				$sql = "SELECT ".$flds." FROM ".$tbl." ".$tbl_joins." WHERE ".$final_cond." ".$extra." LIMIT ".$startfrom.",".$offset;
+			//Total records query
+				$sql_total = "SELECT count(*) as num_records FROM ".$tbl." ".$tbl_joins." WHERE ".$final_cond." ".$extra;
+				
+			//Send query to model	
+				$okQry = substr_count($sql,"SELECT",0);
+				$okQryTwo = substr_count($sql,"SHOW",0);
+				$finSql = str_replace("'", "\"", $sql);
+				$finSql_total = str_replace("'", "\"", $sql_total);
+				if($okQry>0||$okQryTwo){
+					$data['rst'] =  $this->_model->queryTables($sql);
+					$totals = $this->_model->queryTables($sql_total);
+					$data['rst_total'] =  $totals[0]->num_records;
+					$data['sql']=$finSql;
+				}else{
+					$data['rst'] = "Query denied. Contact the administrator!";
+				}
+
+		}else{
+			$data['rst'] = "<b>No Query selected!</b>";
+		}	
+		return $data;
+	}
+	public function runquery(){
+
+	}
 	public function queryView($render=2,$path='',$tags=array("All")){
-		//$sql = "SELECT ".$_POST['query'];
-		//return $this->_model->queryTables($sql);
+		$data=array();
 		$sql = $_POST['query'];
 		$okQry = substr_count($sql,"SELECT",0);
-		if($okQry>0){
-			$data =  $this->_model->queryTables($sql);
+		$okQryTwo = substr_count($sql,"SHOW",0);
+		$finSql = str_replace("'", "\"", $sql);
+		if($okQry>0||$okQryTwo){
+			$data['rst'] =  $this->_model->queryTables($sql);
+			$data['sql']=$finSql;
 		}else{
-			$data = "Query denied. Contact the administrator!";
+			$data['rst'] = "Query denied. Contact the administrator!";
 		}
-		//if(empty($data)){
-			//return "Invalid Query";
-		//}else{
-			return $data;
-		//}
+		
+		return $data;
 		
 	}
     public function csp($render=1,$path="",$tags=array("1")){
@@ -137,19 +293,38 @@ class Reports_Controller extends E_Controller
 		return $qry;
 	}
     public function health($render=1,$path="",$tags=array("All")){
-        $data = "Health Report!";
-		return $data;
+
     }
    
     public function hvcQtrly($render=1,$path="",$tags=array("All")){
         $data = "HVC Report!";
 		return $data;
     }
-    public function pdsreportview($render=1,$path="",$tags=array("All")){
+    public function pdsreportview(){
     	$data=array();
-		$rec_arr=array();
-    	if(Resources::session()->userlevel==='2'){
-    			$cst = Resources::session()->cname;
+		$cdate=date("Y-m-01");
+		
+		if(isset($_POST['cdate'])){
+				$cdate=date('Y-m-d',$_POST['cdate']);
+		}
+		
+		if(Resources::session()->userlevel==='1'){
+			$path='';
+		}elseif(Resources::session()->userlevel==='2'){
+			$data = $this->pdsreportviewpf();
+			$path="pdsreportviewpf";
+		}elseif(Resources::session()->userlevel==='12'){	
+			$data = $this->pdsreportviewers($cdate);
+			$path="pdsreportviewers";
+		}
+		
+		$this->dispatch($render=1,$path, $data,$tags=array("All"));
+    }
+public function pdsreportviewpf(){
+    		$data=array();
+			$rec_arr=array();	
+			$cst = Resources::session()->cname;
+			
     		//Get Selected Month PDs Reports
     		$get_rpts_cond = $this->_model->where(array(array("where","cstName",$cst,"=")));
 			$get_rpts_arr = $this->_model->getAllRecords($get_rpts_cond,"pdsreport","",array("icpNo","rptMonth","status"));
@@ -163,9 +338,33 @@ class Reports_Controller extends E_Controller
 			
 			$data['test']=$get_rpts_arr;
 			$data['rec']=$rec_arr;
-    	}
-		return $data;
-    }
+			
+			return $data;
+}
+public function pdsreportviewers($cdate=""){
+	    	$data=array();
+			$rec_arr=array();
+			$curdate=date('Y-m-01');
+			if($cdate!==""){
+				$curdate=$cdate;
+			}
+			
+			//Get Selected Month PDs Reports
+    		$get_rpts_cond = $this->_model->where(array(array("where","rptMonth",$curdate,"=")));
+			$get_rpts_arr = $this->_model->getAllRecords($get_rpts_cond,"pdsreport","",array("cstName","icpNo","rptMonth","status"));
+			
+			foreach ($get_rpts_arr as $value) {
+				$rw = (array)$value;
+				$arr = array_shift($rw);
+				$rec_arr[$value->cstName][]=$rw;
+			}
+			
+			$data['test']=$get_rpts_arr;
+			$data['rec']=$rec_arr;
+			$data['rptMonth']=$curdate;
+			
+			return $data;
+}
 	public function createpdsreport(){
 		$dt = date("Y-m-d",$this->choice[1]);
 		$prev_dt = date("Y-m-d",strtotime('-1 month',$this->choice[1]));
@@ -206,8 +405,12 @@ class Reports_Controller extends E_Controller
 	public function viewPdsReports($render=2,$path="",$tags=array("All")){
 		$icp=Resources::session()->fname;
 		
+		if(isset($_POST['icp'])){
+			$icp=$_POST['icp'];
+		}
+		
 		$rpt_cond = $this->_model->where(array(array("WHERE","icpNo",$icp,"=")));
-		$rpt_arr = $this->_model->getAllRecords($rpt_cond,"pdsreport","",array("rptMonth"));
+		$rpt_arr = $this->_model->getAllRecords($rpt_cond,"pdsreport","",array("rptMonth","status"));
 		$rpt="";
 		if(!empty($rpt_arr)){
 			$rpt=$rpt_arr;
@@ -216,6 +419,7 @@ class Reports_Controller extends E_Controller
 		$data=array();
 		
 		$data['rec']=$rpt;
+		$data['icp']=$icp;
 		
 		return $data;
 	}
@@ -232,7 +436,7 @@ class Reports_Controller extends E_Controller
 		//Get Attendance
 		$flds = range(1, 31);
 		$att_cond = $this->_model->where(array(array("where","rptMonth",$month,"="),array("AND","icpNo",$icp,"=")));
-		$att_arr = $this->_model->getAllRecords($att_cond,"pdsreport","",array("day1","day2","day3","day4","day5","day6","day7","day8","day9","day10","day11","day12","day13","day14","day15","day16","day17","day18","day19","day20","day21","day22","day23","day24","day25","day26","day27","day28","day29","day30","day31"));
+		$att_arr = $this->_model->getAllRecords($att_cond,"pdsreport","",array("fday1","fday2","fday3","fday4","fday5","fday6","fday7","fday8","fday9","fday10","fday11","fday12","fday13","fday14","fday15","fday16","fday17","fday18","fday19","fday20","fday21","fday22","fday23","fday24","fday25","fday26","fday27","fday28","fday29","fday30","fday31","day1","day2","day3","day4","day5","day6","day7","day8","day9","day10","day11","day12","day13","day14","day15","day16","day17","day18","day19","day20","day21","day22","day23","day24","day25","day26","day27","day28","day29","day30","day31"));
 		$att="";
 		if(!empty($att_arr)){
 			$att = (array)$att_arr[0];;
@@ -246,8 +450,8 @@ class Reports_Controller extends E_Controller
 		}
 		
 		
-		$data['month']=date('m');
-		$data['year']=date('y');
+		$data['month']=date('m',$this->choice[1]);
+		$data['year']=date('y',$this->choice[1]);
 		$data['icp']=$icp;
 		$data['cst']=$cst;
 		$data['attendance']=$att;
@@ -285,8 +489,11 @@ public function savePdsReport(){
 		if(isset($_POST['day'.$value])){
 			$update_set_sec['day'.$value]=$_POST['day'.$value];
 		}
+		if(isset($_POST['fday'.$value])){
+			$update_set_sec_two['fday'.$value]=$_POST['fday'.$value];
+		}
 	}
-	//$update_set = array("day1"=>$_POST['day1'],"day2"=>$_POST['day2'],"day3"=>$_POST['day3'],"day4"=>$_POST['day4'],"day5"=>$_POST['day5'],"day6"=>$_POST['day6'],"day7"=>$_POST['day7'],"day8"=>$_POST['day8'],"day9"=>$_POST['day9'],"day10"=>$_POST['day10'],"day11"=>$_POST['day11'],"day12"=>$_POST['day12'],"day13"=>$_POST['day13'],"day14"=>$_POST['day14'],"day15"=>$_POST['day15'],"day16"=>$_POST['day16'],"day17"=>$_POST['day17'],"day18"=>$_POST['day18'],"day19"=>$_POST['day19'],"day20"=>$_POST['day20'],"day21"=>$_POST['day21'],"day22"=>$_POST['day22'],"day23"=>$_POST['day23'],"day24"=>$_POST['day24'],"day25"=>$_POST['day25'],"day26"=>$_POST['day26'],"day27"=>$_POST['day27'],"day28"=>$_POST['day28'],"day29"=>$_POST['day29'],"day30"=>$_POST['day30'],"day31"=>$_POST['day31']);
+	
 	$other_sets = array(
 		"communityActivitiesParticipation"=>"".$_POST['communityActivitiesParticipation']."",
 		"firstTimeSaved"=>"".$_POST['firstTimeSaved']."",
@@ -319,7 +526,7 @@ public function savePdsReport(){
 	if(isset($_POST['submitting'])){
 		$other_sets['status']=1;
 	}
-	$update_set=array_merge($update_set_sec,$other_sets);
+	$update_set=array_merge($update_set_sec_two,$update_set_sec,$other_sets);
 	$update_cond = $this->_model->where(array(array("where","icpNo",$icp,"="),array("AND","rptMonth",$month,"=")));
 	
 	//Check if Report is already submitted before Updating
@@ -330,8 +537,6 @@ public function savePdsReport(){
 		$this->_model->updateQuery($update_set,$update_cond,"pdsreport");
 		$flag='1';
 	}
-	
-	//print_r($chk_submit_arr);
 	
 	if(isset($_POST['submitting'])&&$flag==='1'){
 		echo "Report Submitted successfully";
@@ -353,8 +558,7 @@ public function getChildrenDetails(){
 	print(json_encode($chk_arr[0]));
 }
         
-    public function hvcIndexing(){
-        //$data = "Annual HVC Indexing Form!";
+public function hvcIndexing(){
         $data = array();
 		$path='';
 		//Get ICP Cluster
@@ -426,9 +630,12 @@ public function getChildrenDetails(){
 		//return $data;
 		if(Resources::session()->userlevel==='1'){
 			$path='';
+		}elseif(Resources::session()->userlevel==='2'){
+			$data = $this->manageHvcPf();
+			$path="manageHvcPf";
 		}else{
-			$data = $this->manageHvc();
-			$path="manageHvc";
+			$data = $this->manageHvcSpecialist();
+			$path="manageHvcSpecialist";
 		}
 		
 		$this->dispatch($render=1,$path, $data,$tags=array("All"));
@@ -498,69 +705,69 @@ public function getChildrenDetails(){
 			}
 		}
 	}
-	public function manageHvc($render=1,$path="",$tags=array("All")){
+public function manageHvcSpecialist($render=1,$path="",$tags=array("All")){
+		//SELECT cst,pNo,count(pNo) as noOfCases FROM `indexing` GROUP BY cst,pNo
+		$hvc_cond = $this->_model->where(array(array("where","active",'1',"=")));
+		$hvc_arr = $this->_model->getAllRecords($hvc_cond,"indexing"," GROUP BY cst,pNo",array("cst","pNo","count(pNo):noOfCases"));
+		
+		$grp_arr=array();
+		foreach ($hvc_arr as $value) {
+			$arr = (array)$value;
+			array_shift($arr);
+			$grp_arr[$value->cst][$arr['pNo']]=array($arr['pNo'],$arr['noOfCases']);;
+		}
+		
 		$data=array();
-		$cases_cond='';
-		$active=1;
-		$icpNo=Resources::session()->fname;
-		$cst=Resources::session()->cname;
 		
-		if(isset($this->choice[1])&&$this->choice[0]==='state'){
-			$active=$this->choice[1];
-		}
-		
-		if(isset($this->choice[3])){
-			$icpNo=$this->choice[3];
-			$data['setPF']=1;	
-			$data['icpNo']=$icpNo;
-		}
-		
-		if(isset($this->choice[1])&&$this->choice[0]==='cst'){
-			$cst=str_replace("_","-",$this->choice[1]);
-			$data['setOther']=1;
-		}
-		
-		if(Resources::session()->userlevel==='1'||isset($data['setPF'])){
-			$cases_cond = $this->_model->where(array(array("where","pNo",$icpNo,"="),array("AND","active",$active,"=")));
-		}elseif(Resources::session()->userlevel==='2'||isset($data['setOther'])){
-			$cases_cond = $this->_model->where(array(array("where","cst",$cst,"="),array("AND","active",$active,"=")));
-		}else{
-			$cases_cond='';
-		}
-		
-		//All HVC Cases
-		$cases_arr = $this->_model->getAllRecords($cases_cond,"indexing");
-		
-		//ICP with Indexed Beneficiaries
-		$icp_arr = array();
-		foreach ($cases_arr as $value) {
-			$icp_arr[$value->pNo][]=$value;
-		}
-		
-		//Clusters With Indexed Beneficiaries
-		$clst_arr = array();
-		foreach ($cases_arr as $value) {
-			$clst_arr[$value->cst][$value->pNo][]=$value;
-			
-		}
-		
-		
-		$data['allCases']=$cases_arr;
-		$data['caseGrpByIcp']=$icp_arr;
-		$data['caseGrpByCst']=$clst_arr;
-		
+		$data['rec']=$grp_arr;
 		$data['test']="";
 		
 		return $data;
+}
+public function manageHvcPf($render=1,$path="",$tags=array("All")){
+	$cst=Resources::session()->cname;	
+	if(isset($_POST['cst'])){
+		$cst=$_POST['cst'];
 	}
-
-	public function inactivateCase(){
-		$cid = $this->choice[1];
+	
+	$hvc_cond = $this->_model->where(array(array("where","active",'1',"="),array("AND","cst",$cst,"=")));
+	$hvc_arr = $this->_model->getAllRecords($hvc_cond,"indexing"," GROUP BY pNo",array("pNo","count(pNo):noOfCases"));
+	
+	$data=array();
+	
+	$data['test']="";
+	$data['rec']=$hvc_arr;
+	$data['cst']=$cst;
+	return $data;
+}
+public function manageHvcIcp($render=1,$path="",$tags=array("All")){
+	$icp=Resources::session()->fname;
+	$state=1;
+	if(isset($_POST['icp'])){
+		$icp=$_POST['icp'];
+	}
+	if(isset($_POST['state'])){
+		$state=$_POST['state'];
+	}
+	
+	$hvc_cond = $this->_model->where(array(array("where","active",$state,"="),array("AND","pNo",$icp,"=")));
+	$hvc_arr = $this->_model->getAllRecords($hvc_cond,"indexing");
+	
+	$data=array();
+	
+	$data['test']="";
+	$data['icpNo']=$icp;
+	$data['rec']=$hvc_arr;
+	return $data;
+	
+}
+public function inactivateCase(){
+		$cid = $_POST['cid'];
 		$inactivate_cond = $this->_model->where(array(array("where","indID",$cid,"=")));
 		$sets = array("active"=>0);
 		echo $this->_model->updateQuery($sets,$inactivate_cond,"indexing");
 	}
-	public function newQuery(){
+public function newQuery(){
 		//print_r($_POST);
 		$data['qryName']=$_POST['qryName'];
 		$data['qryDetail']=$_POST['query'];
@@ -580,6 +787,20 @@ public function history($render=1,$path='',$tags=array("All")){
 }
 public function malnutrition($render=1,$path='',$tags=array("All")){
 	
+}
+public function nonicpmalnutrition($render=1,$path='updateMalCase',$tags=array("All")){
+	
+	if(Resources::session()->userlevel==='2'){
+		$mal_cond = $this->_model->where(array(array("where","cst",Resources::session()->cname,"=")));
+	}else{
+		$mal_cond = "";//$this->_model->where(array(array("where","icpNo",$icpNo,"=")));
+	}
+	
+	$mal_arr = $this->_model->getAllRecords($mal_cond,"malnutrition","",array("malID","childNo","childName","childDOB","sex","diagDate","diagWeight","diagHeight"));
+	
+	$data=array();
+	$data['mal']=$mal_arr;
+	return $data;
 }
 public function registerMalCase($render=1,$path='',$tags=array("All")){
 	$data=array();
@@ -615,6 +836,7 @@ public function updateMalCase($render=1,$path='',$tags=array("All")){
 	$data['mal']=$mal_arr;
 	return $data;
 }
+
 public function newMalCase(){
 	//Check for Duplicates
 	$childNo = $_POST['childNo'];
@@ -762,4 +984,286 @@ public function declineRequest(){
 	$del_cond = $this->_model->where(array(array("where","malID",$malID,"=")));
 	echo $this->_model->deleteQuery($del_cond,"malcaseexit");
 }
+public function pfcdprview($render=1,$path='',$tags=array("All")){
+	//$path="c";
+		$cst = $_POST['cst'];
+		$cdpr_arr = array();
+				
+		//Complete CDPR
+		$comp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",$cst,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",1,"=")));
+		$comp_cdpr_pf_arr = $this->_model->getAllRecords($comp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($comp_cdpr_pf_arr)>0){
+			foreach ($comp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['comp_cnt']=$value->cnt;
+			}
+		}
+		
+		//Incomplete CDPR
+		$incomp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",$cst,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",0,"=")));
+		$incomp_cdpr_pf_arr = $this->_model->getAllRecords($incomp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($incomp_cdpr_pf_arr)>0){
+			foreach ($incomp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['incomp_cnt']=$value->cnt;	
+			}
+		}
+		
+		//Count of Beneficiaries
+		$ben_count_arr="";
+		$ben_count_cond="";
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				$ben_count_cond = $this->_model->where(array(array("WHERE","pNo",$key,"=")));
+				$ben_count_arr = $this->_model->getAllRecords($ben_count_cond,"childdetails","GROUP BY pNo",array("count(pNo):NoOfBen"));	
+				$cdpr_arr[$key]['NoOfBen']=$ben_count_arr[0]->NoOfBen;
+			}
+		}
+		
+		//Set default number of Completed Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['comp_cnt'])){
+				$cdpr_arr[$key]['comp_cnt']=0;
+			}
+		}
+		
+		//Set default number of Incompleted Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['incomp_cnt'])){
+				$cdpr_arr[$key]['incomp_cnt']=0;
+			}
+		}
+		
+		//% Completed Assessments
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				if(!empty($cdpr_arr[$key]['comp_cnt'])||$cdpr_arr[$key]['comp_cnt']===0){
+					$cdpr_arr[$key]['percent']	= ($cdpr_arr[$key]['comp_cnt']/$cdpr_arr[$key]['NoOfBen'])*100;
+				}
+			}
+		}
+		
+		
+		$data=array();
+		
+		$data['rec'] =$cdpr_arr;
+		$data['test']=$ben_count_arr;
+		$data['cst']=Resources::session()->cname;
+		
+		return $data;
+}
+public function cdpr(){
+	$render=1;
+	$tags=array("All");
+	$cdpr_pf_cond="";
+	$cdpr_pf_arr="";
+	$data=array();
+	if(Resources::session()->userlevel==='1'){
+		$path="";
+	}elseif(Resources::session()->userlevel==='2'){
+		$path="pfcdprview";
+		$cdpr_arr = array();
+				
+		//Complete CDPR
+		$comp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",Resources::session()->cname,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",1,"=")));
+		$comp_cdpr_pf_arr = $this->_model->getAllRecords($comp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($comp_cdpr_pf_arr)>0){
+			foreach ($comp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['comp_cnt']=$value->cnt;
+			}
+		}
+		
+		//Incomplete CDPR
+		$incomp_cdpr_pf_cond = $this->_model->where(array(array("WHERE","users.cname",Resources::session()->cname,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",0,"=")));
+		$incomp_cdpr_pf_arr = $this->_model->getAllRecords($incomp_cdpr_pf_cond,"cdpr","GROUP BY cdpr.pNo",array("cdpr.pNo:pNo","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		if(count($incomp_cdpr_pf_arr)>0){
+			foreach ($incomp_cdpr_pf_arr as $value) {
+				$cdpr_arr[$value->pNo]['incomp_cnt']=$value->cnt;	
+			}
+		}
+		
+		//Count of Beneficiaries
+		$ben_count_arr="";
+		$ben_count_cond="";
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				$ben_count_cond = $this->_model->where(array(array("WHERE","pNo",$key,"=")));
+				$ben_count_arr = $this->_model->getAllRecords($ben_count_cond,"childdetails","GROUP BY pNo",array("count(pNo):NoOfBen"));	
+				$cdpr_arr[$key]['NoOfBen']=$ben_count_arr[0]->NoOfBen;
+			}
+		}
+		
+		//Set default number of Completed Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['comp_cnt'])){
+				$cdpr_arr[$key]['comp_cnt']=0;
+			}
+		}
+		
+		//Set default number of Incompleted Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['incomp_cnt'])){
+				$cdpr_arr[$key]['incomp_cnt']=0;
+			}
+		}
+		
+		//% Completed Assessments
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				if(!empty($cdpr_arr[$key]['comp_cnt'])||$cdpr_arr[$key]['comp_cnt']===0){
+					$cdpr_arr[$key]['percent']	= ($cdpr_arr[$key]['comp_cnt']/$cdpr_arr[$key]['NoOfBen'])*100;
+				}
+			}
+		}
+		
+		
+		
+		
+		$data['rec'] =$cdpr_arr;
+		$data['test']=$ben_count_arr;
+		$data['cst']=Resources::session()->cname;
+	}else{
+		$path="allicpcdprview";
+		$cdpr_arr = array();
+				
+		//Complete CDPR
+		$comp_cdpr_all_cond = $this->_model->where(array(array("WHERE","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",1,"=")));
+		$comp_cdpr_all_arr = $this->_model->getAllRecords($comp_cdpr_all_cond,"cdpr","GROUP BY users.cname",array("users.cname:cst","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		foreach ($comp_cdpr_all_arr as $value) {
+			$cdpr_arr[$value->cst]['comp']=$value->cnt;
+		}
+
+				
+		//Incomplete CDPR
+		$incomp_cdpr_all_cond = $this->_model->where(array(array("WHERE","users.userlevel",1,"="),array("AND","users.department",0,"="),array("AND","cdpr.status",0,"=")));
+		$incomp_cdpr_all_arr = $this->_model->getAllRecords($incomp_cdpr_all_cond,"cdpr","GROUP BY users.cname",array("users.cname:cst","count(cdpr.pNo):cnt"),array("LEFT JOIN"=>array("cdpr"=>"pNo","users"=>"fname")));
+		
+		foreach ($incomp_cdpr_all_arr as $value) {
+			$cdpr_arr[$value->cst]['incomp']=$value->cnt;
+		}
+		
+		//Count of Beneficiaries
+		$ben_count_arr="";
+		$ben_count_cond="";
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				$ben_count_cond = $this->_model->where(array(array("WHERE","cstName",$key,"=")));
+				$ben_count_arr = $this->_model->getAllRecords($ben_count_cond,"childdetails","GROUP BY cstName",array("count(cstName):NoOfBen"));	
+				$cdpr_arr[$key]['NoOfBen']=$ben_count_arr[0]->NoOfBen;
+			}
+		}	
+			
+		//Set default number of Completed Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['comp'])){
+				$cdpr_arr[$key]['comp']=0;
+			}
+		}
+		
+		//Set default number of Incompleted Assessment to Zero if non Exists
+		foreach ($cdpr_arr as $key => $value) {
+			if(!isset($cdpr_arr[$key]['incomp'])){
+				$cdpr_arr[$key]['incomp']=0;
+			}
+		}
+		
+		//% Completed Assessments
+		if(count($cdpr_arr)>0){
+			foreach ($cdpr_arr as $key => $value) {
+				if(!empty($cdpr_arr[$key]['comp'])||$cdpr_arr[$key]['comp']===0){
+					$cdpr_arr[$key]['percent']	= ($cdpr_arr[$key]['comp']/$cdpr_arr[$key]['NoOfBen'])*100;
+				}
+			}
+		}
+		
+		$data['rec'] =$cdpr_arr;
+	}
+	$this->dispatch($render,$path, $data,$tags);
+}
+public function savecdpr(){
+	//Update Record	
+	$childNo = $_POST['childNo'];
+	$agegroup = $_POST['cognitiveagegroup'];
+	$ass_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"="),array("AND","cognitiveagegroup",$agegroup,"=")));
+	
+	$this->_model->updateQuery($_POST,$ass_cond,"cdpr");
+	
+	echo "Record Saved Successfully";
+	
+}
+public function submitcdpr(){
+	//Update Record	
+	$childNo = $_POST['childNo'];
+	$agegroup = $_POST['cognitiveagegroup'];
+	$ass_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"="),array("AND","cognitiveagegroup",$agegroup,"=")));
+	
+	$_POST['status']='1';
+	
+	$this->_model->updateQuery($_POST,$ass_cond,"cdpr");
+	
+	echo "Record Submitted Successfully";
+}
+public function viewcdprgrid($render=1,$path='',$tags=array("All")){
+	$data=array();
+	//Extract Assessed Beneficiaries
+	$pNo = Resources::session()->fname;
+	if(isset($this->choice[1])){
+		$pNo=$this->choice[1];
+	}
+	
+	$assessed_ben_cond = $this->_model->where(array(array("WHERE","pNo",$pNo,"=")));
+	$assessed_ben_arr = $this->_model->getAllRecords($assessed_ben_cond,"cdpr","",array("childNo","cognitiveagegroup","status"));
+	
+	$refined_rec = array();
+	foreach ($assessed_ben_arr as $value) {
+		$refined_rec[$value->childNo][$value->cognitiveagegroup]=$value->status;
+	}
+	
+	$data['rec'] = $refined_rec;
+	return $data;
+}
+public function getChildDetailsforCDPR($render=1,$path='',$tags=array("All")){
+	//Check if Child Exists in the the Database
+	$data=array();
+	$childNo = $_POST['childNo'];
+	$agegroup = $_POST['cognitiveagegroup'];
+	$cdpr_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"=")));
+	$cdpr_arr = $this->_model->getAllRecords($cdpr_cond,"childdetails");
+	if(count($cdpr_arr)!==0){
+		//Check if Record exists: If Yes, Update Else Insert New Reord
+		$ass_cond = $this->_model->where(array(array("WHERE","childNo",$childNo,"="),array("AND","cognitiveagegroup",$agegroup,"=")));
+		$ass_arr = $this->_model->getAllRecords($ass_cond,"cdpr","",array("childNo","cognitiveagegroup","status"));
+		$new_rec = array();
+		if(count($ass_arr)===0){
+			//Insert a  Record
+			$new_rec['pNo']=Resources::session()->fname;
+			//$pNo = Resources::session()->fname;//$_POST['pNo'];
+			$new_rec['childNo']=$childNo;
+			$new_rec['childName']=$cdpr_arr[0]->childName;
+			$new_rec['dob']=$cdpr_arr[0]->dob;
+			$new_rec['cognitiveagegroup']=$agegroup;
+			
+			$this->_model->insertRecord($new_rec,"cdpr");
+		}
+		
+		$cur_ass_arr = $this->_model->getAllRecords($ass_cond,"cdpr");	
+		$data['rec']=$cur_ass_arr;
+		
+	}else{
+		$data['rec']="";
+	}	
+	
+	
+	//$data['icp']=Resources::session()->fname;
+	$data['icp']=Resources::session()->fname;
+	$data['cognitiveagegroup']=$agegroup;
+	$data['ben']=$childNo;
+	
+	return $data;
+}
+
+
 }

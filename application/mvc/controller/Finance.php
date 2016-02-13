@@ -7,7 +7,7 @@ class Finance_Controller extends E_Controller
         $this->_model=new Finance_Model("voucher_header");  
         //$this->helper->get_func(array("get_financial_year","test","get_month_number_array"));
     }
-    public function switchboard($render=1,$path='',$tags=array("2","3","9")){
+    public function switchboard($render=1,$path='',$tags=array("2","3","9","22")){
     	$clst='';
     	if(Resources::session()->userlevel==='2'){
     		$cluster_rcd_cond = $this->_model->where(array(array("where","ID",Resources::session()->ID,"=")));
@@ -16,8 +16,68 @@ class Finance_Controller extends E_Controller
     	}
         return $cluster = $this->_model->getClusters($clst);
     }
-	public function view($render=1,$path="",$tags=array("All")){
-
+	public function view(){
+		$data=array();
+		$render=1;
+		$path="";
+		$tags=array("All");
+		
+		//Submitted MFRs
+		$arr_cond ="";
+		$rst_arr=array();
+		$recent_mfr_arr=array();
+		if(Resources::session()->userlevel==='1'){
+			$data['icp']=Resources::session()->fname;
+			$arr_cond=$this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));	
+			$rst_arr_raw = $this->_model->getAllRecords($arr_cond,"bssubmitted","",array("icpNo","month","stmp"));
+			$i=0;
+			foreach ($rst_arr_raw as $value) {
+				$rst_arr[$value->icpNo][$i]['month']=$value->month;
+				$rst_arr[$value->icpNo][$i]['stmp']=$value->stmp;
+				$i++;
+			}
+		}elseif(Resources::session()->userlevel==='2'){
+			$data['cst']=Resources::session()->cname;
+			$path="pfview";
+			$arr_cond=$this->_model->where(array(array("WHERE","users.cname",Resources::session()->cname,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"=")));
+			$rst_arr_raw = $this->_model->getAllRecords($arr_cond,"bssubmitted","",array("bssubmitted.icpNo:icpNo","bssubmitted.month:month","bssubmitted.stmp:stmp"),array("LEFT JOIN"=>array("bssubmitted"=>"icpNo","users"=>"fname")));
+			$i=0;
+			foreach ($rst_arr_raw as $value) {
+				$rst_arr[$value->icpNo][$i]['month']=$value->month;
+				$rst_arr[$value->icpNo][$i]['stmp']=$value->stmp;
+				$i++;
+			}
+		}else{
+			$path="allicpsview";
+			$arr_cond=$this->_model->where(array(array("WHERE","users.cname",Resources::session()->cname,"="),array("AND","users.userlevel",1,"="),array("AND","users.department",0,"=")));
+			$rst_arr_raw=$this->_model->getAllRecords("","bssubmitted","GROUP BY bssubmitted.icpNo",array("users.cname:cname","bssubmitted.icpNo:icpNo","count('bssubmitted.icpNo'):cnt","MAX('bssubmitted.month')"),array("LEFT JOIN"=>array("bssubmitted"=>"icpNo","users"=>"fname")));
+			$j=0;
+			foreach ($rst_arr_raw as $value) {
+				$rst_arr[$value->cname][$j]['icp']=$value->icpNo;
+				$rst_arr[$value->cname][$j]['cnt']=$value->cnt;
+				$j++;
+			}
+			//Max Date
+			//$n=0;
+			//$recent_mfr_arr=array();
+			foreach ($rst_arr as $k=>$v) {
+				foreach ($v as $val) {
+					$new_cond = $this->_model->where(array(array("WHERE","icpNo",$val['icp'],"=")));
+					$new_arr = $this->_model->getAllRecords($new_cond,"bssubmitted","",array("icpNo","MAX(month):recent")); 
+					$recent_mfr_arr[$val['icp']]=$new_arr[0]->recent;
+				}
+				//$n++;
+				
+			}
+		}
+		
+		
+		
+		$data['test']="";
+		$data['recent']=$recent_mfr_arr;
+		$data['rec']=$rst_arr;
+		//return $data;
+		$this->dispatch($render,$path,$data,$tags);
 	}
 
     public function viewAll($render=1){
@@ -29,9 +89,10 @@ class Finance_Controller extends E_Controller
             $AccGrp = 0;
         }elseif($voucherType_code==="CR"){
             $AccGrp = 1;
+        }elseif($voucherType_code==="PCR"){
+        	$AccGrp = 4;
         }
         $cond = $this->_model->where(array(array("where","accounts.AccGrp",$AccGrp,"=")));
-        //$rst = $this->_model->getAllRecords($cond,"accounts","ORDER BY AccNo ASC, prg DESC");
         $rst_rw=$this->_model->civaAccountsMerge($cond,$this->choice[1]);
         $rst=array();
         foreach($rst_rw as $civaAcc):
@@ -45,7 +106,7 @@ class Finance_Controller extends E_Controller
         print_r(json_encode($rst));
     }
 
-    public function voucher($render=1,$tags=array("All")){
+    public function voucher($render=1,$path="",$tags=array("All")){
             try{
                 if(isset($_SESSION['username'])){
                 	
@@ -121,7 +182,7 @@ class Finance_Controller extends E_Controller
         }elseif(isset ($this->choice[1])) {
             $cond = $this->model->where(array(array("where","fname",  $this->choice[1],"=")));
         }
-                    $results = $this->_model->getAllRecords($cond,"users");
+                $results = $this->_model->getAllRecords($cond,"users");
                 foreach($results[0] as $key=>$value):
                     $_SESSION[$key."_backup"]=$value;
                 endforeach;
@@ -376,6 +437,30 @@ class Finance_Controller extends E_Controller
         $data[]=$totals;
         return $data;
     }
+	public function pfSchedulesFromSwitchBoard(){           
+        $fy = $this->choice[3];
+        $icpNo = $this->choice[1];
+        $schedules_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","planheader.icpNo",$icpNo,"=")));
+        $schedules = $this->_model->getScheduleWithAcNames($schedules_cond);
+        //print_r($schedules);
+        
+        $acDetails=array();
+        foreach ($schedules as $filter):
+            $obj = new stdClass();
+            $obj->AccNo=$filter->AccNo;
+            $obj->AccText=$filter->AccText;
+            $obj->AccName=$filter->AccName;
+            $acDetails[$filter->AccText]=$obj;
+        endforeach;
+        
+        $totals=$this->_model->getSchedulesSummaryWithAcNames($schedules_cond);
+        //array_unique((array)$acDetails);
+        $data[]=$acDetails;
+        $data[]=$schedules;
+        $data[]=$totals;
+        //return $data;
+         $this->dispatch($render=2,$path="pfSchedules",$data=$data,$tags=array("2"));
+    }
     public function showNewPlansItems($render=2,$path="",$tags=array("2")){
     	
         $fy = $this->choice[1];
@@ -402,45 +487,20 @@ class Finance_Controller extends E_Controller
         $fy = $this->choice[1];
 		$r=$fy-1;
 		$closureDate = '20'.$r.'-06-30';
-        $all_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","users.cname",$_SESSION['cname'],"=")));
+        $all_cond = $this->_model->where(array(array("where","planheader.fy",$fy,"="),array("AND","users.cname",Resources::session()->cname,"=")));
         $all = $this->_model->countNewSchedules($all_cond);
 		
 		if(empty($all)){
 			$data['error']="<div id='error_div'>Budget Schedules for the FY{$fy} missing</div>";
 			return $data;
 			exit;
-		}
-		
-		//Calculate Dollar and Exchange rates and include them in $all array
-		$params_cond = $this->_model->where(array(array("where","fy",$fy,"=")));
-		$param = $this->_model->getAllRecords($params_cond,"fundparameters");
-		$cnt=0;
-		foreach($param as $value):
-			foreach($value as $key=>$val):
-				if($val==='dollar_rate'){
-					$all[0]->dollar_rate=$param[$cnt]->paramVal;
-				}
-				if($val==='exchange_rate'){
-					$all[0]->exchange_rate=$param[$cnt]->paramVal;
-				}
-			endforeach;
-			$cnt++;
-		endforeach;
-		
-		//for($i=0;$i<sizeof($all);$i++){
-			//$all[$i]->totalCDSP = $all[$i]->noOfBen*$all[$i]->dollar_rate*$all[$i]->exchange_rate*$all[$i]->noOfMonths;
-			//$all[$i]->aggTotal=$all[$i]->totalCDSP+$all[$i]->supportBal;
-		//}
-		
-		
-		//Calulate total support fund balance in the previous Fy and include it in $all array
-		//$total_support_bal_cond = $this->_model->where(array(array("where","opfundsbal.funds",100,"="),array("AND","opfundsbalheader.icpNo")));
+		}	
 		
         $data[]=$fy;
         $data[]=$all;
-		$data[]=$param;
+		//$data[]=$param;
 		return $data;
-        //$this->template->view("",$data);
+
     }
 
     public function checkSchedule(){
@@ -651,16 +711,24 @@ class Finance_Controller extends E_Controller
         
     }
 
-    public function mfr($render=1,$path="",$tags=array("1")){
+    public function mfr($render=1,$path="",$tags=array("All")){
     		$data=array();
 	        $year=date("Y");
 			$month=date("m");
-			$fullDate=date("Y-m-d");     
-			
-			$acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+			$fullDate=date("Y-m-d");   
+		
+		$icpNo="";
+		if(Resources::session()->userlevel==='1'){
+				$icpNo = Resources::session()->fname;
+			}else{
+				$icpNo=$this->choice[1];
+				$_SESSION['fname_backup']=$icpNo;
+		}
+						
+			$acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 			$acc = $this->_model->accountsForMfr($acc_cond);//An array of current month transactions
 			
-			$balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('last day of previous month',strtotime($fullDate))),"=")));
+			$balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",$icpNo,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('last day of previous month',strtotime($fullDate))),"=")));
 			$balBf = $this->_model->balFundsBf($balBf_cond);//An array of opening funds balances per month
 			
 			//An array whose keys are accounts and values are opening balances for the month
@@ -794,7 +862,7 @@ class Finance_Controller extends E_Controller
 			 */
 			
 		//Opening Bank Balances		 //date("t/m/Y", strtotime("last month"));
-		$bc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","BC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$bc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","BC","="),array("AND","icpNo",$icpNo,"=")));
 		$bc_end_bal=$this->_model->getAllRecords($bc_end_bal_cond,"cashbal");//Previous month Closing Bank Balance
 		if(!empty($bc_end_bal)){
 			$bcBalBf=$bc_end_bal[0]->amount;
@@ -804,7 +872,7 @@ class Finance_Controller extends E_Controller
 			
 		
 		//Opening PC Balances		
-		$pc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","PC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$pc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month')),"="),array("AND","accNo","PC","="),array("AND","icpNo",$icpNo,"=")));
 		$pc_end_bal=$this->_model->getAllRecords($pc_end_bal_cond,"cashbal");//Previous month Closing Petty Cash Balance
 		if(!empty($pc_end_bal)){
 			$pcBalBf=$pc_end_bal[0]->amount;
@@ -814,7 +882,7 @@ class Finance_Controller extends E_Controller
 			
 		
 		//All Bank Incomes for the month
-		$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_bank_inc=$this->_model->getAllRecords($month_bank_inc_cond,"voucher_body");
 		$bank_inc=0;
 		foreach ($month_bank_inc as $value) {
@@ -822,7 +890,7 @@ class Finance_Controller extends E_Controller
 		}
 		
 		//All Bank Expenses for the month
-		$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_bank_exp=$this->_model->getAllRecords($month_bank_exp_cond,"voucher_body");
 		$bank_exp=0;
 		foreach ($month_bank_exp as $value) {
@@ -830,7 +898,7 @@ class Finance_Controller extends E_Controller
 			}
 		
 		//All PC Income for the month
-		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_pc_inc=$this->_model->monthPcIncome($month_pc_inc_cond);
 		$pc_inc=$month_pc_inc;
 		//foreach ($month_pc_inc as $value) {
@@ -838,7 +906,7 @@ class Finance_Controller extends E_Controller
 			//}
 		
 		//All PC Expenses for the month
-		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_pc_exp=$this->_model->getAllRecords($month_pc_exp_cond,"voucher_body");
 		$pc_exp=0;
 		foreach ($month_pc_exp as $value) {
@@ -850,12 +918,16 @@ class Finance_Controller extends E_Controller
 		$close_pc_balance=$pcBalBf+$pc_inc-$pc_exp;
 		
 		//Deposit in Transit
-		$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
+		$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
 		$month_dep_in_transit=$this->_model->getAllRecords($month_dep_in_transit_cond,"voucher_header");
 		
 		//Oustanding Cheques
-		$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
-		$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
+		//$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
+		//$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array(array("AND","clrMonth","0000-00-00","="),array("OR","clrMonth",date('Y-m-t',$this->choice[1]),">"))));
+		//$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
+		$icpname=$icpNo;
+		$curmonth = date('Y-m-t');
+		$month_oc = $this->_model->current_month_outstanding_cheques($icpname, $curmonth);
 		
 		//All Expense Accounts
 		$exp_acc_cond = $this->_model->where(array(array("where","AccGrp",0,"="),array("AND","Active",1,"=")));
@@ -879,7 +951,7 @@ class Finance_Controller extends E_Controller
 		$maxID = $this->_model->getMaxVoucherID($maxID_cond);
 		
 		//Expenses to date
-		$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",Resources::session()->fname,"="),array("AND","voucher_header.Fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));	
+		$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",$icpNo,"="),array("AND","voucher_header.Fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));	
 		$year_todate_exp=$this->_model->get_todate_expenses($year_todate_exp_cond);
 		$exp_to_date=array();
 		foreach($year_todate_exp as $value){
@@ -910,7 +982,7 @@ class Finance_Controller extends E_Controller
 		}
 		
 		//Budget To Date
-		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","plansschedule.approved","2","=")));
+		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",$icpNo,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","plansschedule.approved","2","=")));
 		$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
 		$budget_to_date=array();
 		foreach($todate_budget as $value){
@@ -938,7 +1010,7 @@ class Finance_Controller extends E_Controller
 		}
 			
 		//Find Variance Explanation Statements
-		$variance_explanation_cond=$this->_model->where(array(array("where","reportMonth",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$variance_explanation_cond=$this->_model->where(array(array("where","reportMonth",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",$icpNo,"=")));
 		$variance_explanation=$this->_model->getAllRecords($variance_explanation_cond,"varjustify");
 		$varJustify=array();
 		foreach($variance_explanation as $value){
@@ -1035,7 +1107,7 @@ class Finance_Controller extends E_Controller
 				}
 				
 				//Add B/F Cheques to reconstruct_oc array
-				$bf_oc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","chqState",0,"=")));
+				$bf_oc_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","chqState",0,"=")));
 				$bf_oc = $this->_model->getAllRecords($bf_oc_cond,"oschqbf");
 				$cnt=count($reconstruct_oc);
 				foreach($bf_oc as $value){
@@ -1067,7 +1139,7 @@ class Finance_Controller extends E_Controller
 				}
 				
 				//Add B/F Cash Received to reconstruct_oc array
-				$bf_dep_in_transit_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","TState",0,"=")));
+				$bf_dep_in_transit_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","TState",0,"=")));
 				$bf_dep_in_transit = $this->_model->getAllRecords($bf_dep_in_transit_cond,"transitfundsbf");
 				$ct=count($reconstruct_dep_in_transit);
 				foreach($bf_dep_in_transit as $value){
@@ -1081,9 +1153,9 @@ class Finance_Controller extends E_Controller
 				}		
 		
 		//MFR State
-		//$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
+		//$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",$icpNo,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
 		//$chk_end_bal_qry = $this->_model->balFundsBf($chk_end_bal_cond);// Used to calculate submit state
-		$chk_state_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","closureDate",date('Y-m-t',strtotime($fullDate)),"="))); 
+		$chk_state_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","closureDate",date('Y-m-t',strtotime($fullDate)),"="))); 
 		$chk_state=$this->_model->getAllRecords($chk_state_cond,"opfundsbalheader");
 		$state=0;
 		$mfrClosureFundsID=0;
@@ -1100,7 +1172,7 @@ class Finance_Controller extends E_Controller
 		 
 				
 		//Find Bank Statement Date
-		$bs_date_check_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));		
+		$bs_date_check_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",$icpNo,"=")));		
 		$bs_date_check=$this->_model->getAllRecords($bs_date_check_cond,"statementbal");
 		$statementDate = "";
 		$statementAmount=0;
@@ -1114,9 +1186,14 @@ class Finance_Controller extends E_Controller
 		$getBs = $this->_model->getAllRecords($bs_date_check_cond,"bssubmitted");
 				//$data['getBs']=$getBs;
 		
-				
+		//Get MFR Notes
+		
+		$notes_cond = $this->_model->where(array(array("WHERE","period",date('Y-m-t'),"="),array("AND","noteto",$icpNo,"=")));
+		$notes_arr = $this->_model->getAllRecords($notes_cond,"mfrnotes","ORDER BY noteID DESC");
+		
 		
 		$data['balbf'] = $refined_balbf;
+		$data['notes']=$notes_arr;
 		$data['inc']=$all_inc;
 		$data['exp']=$all_exp;
 		$data['bal']=$end_bal;
@@ -1134,6 +1211,7 @@ class Finance_Controller extends E_Controller
 		$data['varJustify']=$varJustify;
 		$data['time']=time();
 		$data['getBs']=$getBs;
+		$data['icp']=$icpNo;
 		$data['test']="";
 		
 		
@@ -1145,50 +1223,95 @@ public function validateMFR(){
 	$validateMFR_cond = $this->_model->where(array(array("where","balHdID",$this->choice[1],"=")));
 	$sets = array("allowEdit"=>0);
 	$validateMFR=$this->_model->updateQuery($sets,$validateMFR_cond,"opfundsbalheader");
-	print($validateMFR);
+	//print($validateMFR);
+	echo "Validation done successfully!";
 }
 public function changeState(){
 	if($this->choice[3]==='2'){
 		$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
-		$sets = array("ChqState"=>1);
+		$sets = array("ChqState"=>1,"clrMonth"=>date('Y-m-t',$this->choice[7]));
 		$this->_model->updateQuery($sets,$cond,"voucher_header");
 	}elseif($this->choice[5]==="dep"){
 		$cond = $this->_model->where(array(array("where","transitBfID",$this->choice[1],"=")));
-		$sets = array("TState"=>1);
+		$sets = array("TState"=>1,"clrMonth"=>date('Y-m-t',$this->choice[7]));
 		$this->_model->updateQuery($sets,$cond,"transitfundsbf");		
 	}elseif($this->choice[5]==="oc"){
 		$cond = $this->_model->where(array(array("where","osBfID",$this->choice[1],"=")));
-		$sets = array("chqState"=>1);
+		$sets = array("chqState"=>1,"clrMonth"=>date('Y-m-t',$this->choice[7]));
 		$this->_model->updateQuery($sets,$cond,"oschqbf");		
 	}
 }
 public function undochangeState(){
 	if($this->choice[3]==='2'){
 		$cond = $this->_model->where(array(array("where","hID",$this->choice[1],"=")));
-		$sets = array("ChqState"=>0);
+		$sets = array("ChqState"=>0,"clrMonth"=>'0000-00-00');
 		$this->_model->updateQuery($sets,$cond,"voucher_header");
 	}elseif($this->choice[5]==="dep"){
 		$cond = $this->_model->where(array(array("where","transitBfID",$this->choice[1],"=")));
-		$sets = array("TState"=>0);
+		$sets = array("TState"=>0,"clrMonth"=>'0000-00-00');
 		$this->_model->updateQuery($sets,$cond,"transitfundsbf");		
 	}elseif($this->choice[5]==="oc"){
 		$cond = $this->_model->where(array(array("where","osBfID",$this->choice[1],"=")));
-		$sets = array("chqState"=>0);
+		$sets = array("chqState"=>0,"clrMonth"=>'0000-00-00');
 		$this->_model->updateQuery($sets,$cond,"oschqbf");		
 	}	
 }
+public function postMfrNotes(){
+	$data=array();		
+	
+	//Post a note
+	$this->_model->insertRecord($_POST,"mfrnotes");
+	
+	//Retrieve Notes
+	$period = $_POST['period'];
+	$icpNo = $_POST['noteto'];
+	
+	$notes_cond = $this->_model->where(array(array("WHERE","period",$period,"="),array("AND","noteto",$icpNo,"=")));
+	$notes_arr = $this->_model->getAllRecords($notes_cond,"mfrnotes","ORDER BY noteID DESC");
+	
+	//Mail a notification
+	$icp_mail_cond = $this->_model->where(array(array("WHERE","username",$icpNo,"=")));
+	$icp_mail_arr=$this->_model->getAllRecords($icp_mail_cond,"users","",array("email"));
+	$email = $icp_mail_arr[0]->email;
+	 
+	$title = "MFR Notification for the Period ending ".$period;
+	$body = "You a notification from {$_POST['userfirstname']}:\n\n {$_POST['notes']}";
+	 
+	Resources::mailing($email, $title, $body); 
+	
+	$data['notes']=$notes_arr;
+	//return $data;
+	$this->dispatch($render=2,$path='',$data,$tags=array("All"));
+}
 
-public function mfrNav($render=2,$path="",$tags=array("1")){
-			$data=array();
-			$year=date("Y",$this->choice[1]);
-			$month=date("m",$this->choice[1]);
-			$fullDate=date("Y-m-d",$this->choice[1]);
+public function mfrNav($render=2,$path="",$tags=array("All")){
+		//Set Year, month and full date from choices received
+		$data=array();
+		$year=date("Y",$this->choice[1]);
+		$month=date("m",$this->choice[1]);
+		$fullDate=date("Y-m-d",$this->choice[1]);
+		
+		//Set ICP Number
+		$icpNo ="";
+		if(Resources::session()->userlevel==='1'){
+				$icpNo = Resources::session()->fname;
+			}else{
+				$icpNo=$this->choice[3];
+				$_SESSION['fname_backup']=$icpNo;
+		}
 	
 	
-			$acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
-			$acc = $this->_model->accountsForMfr($acc_cond);//An array of current month transactions
-			
-			$balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('last day of previous month',strtotime($fullDate))),"=")));
+		$acc_cond = $this->_model->where(array(array("where","voucher_body.icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$acc = $this->_model->accountsForMfr($acc_cond);//An array of current month transactions
+		
+		$transactions_arr=array();
+		
+		
+		$data['chk']=$transactions_arr;
+		
+		
+		
+			$balBf_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",$icpNo,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime('last day of previous month',strtotime($fullDate))),"=")));
 			$balBf = $this->_model->balFundsBf($balBf_cond);//An array of opening funds balances per month
 			
 			//An array whose keys are accounts and values are opening balances for the month
@@ -1322,7 +1445,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			 */
 			
 		//Opening Bank Balances		 //date("t/m/Y", strtotime("last month"));
-		$bc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month',strtotime($fullDate))),"="),array("AND","accNo","BC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$bc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month',strtotime($fullDate))),"="),array("AND","accNo","BC","="),array("AND","icpNo",$icpNo,"=")));
 		$bc_end_bal=$this->_model->getAllRecords($bc_end_bal_cond,"cashbal");//Previous month Closing Bank Balance
 		$bcBalBf=0;
 		if(!empty($bc_end_bal)){
@@ -1331,7 +1454,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			
 		
 		//Opening PC Balances		
-		$pc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month',strtotime($fullDate))),"="),array("AND","accNo","PC","="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$pc_end_bal_cond = $this->_model->where(array(array("where","month",date('Y-m-d', strtotime('last day of previous month',strtotime($fullDate))),"="),array("AND","accNo","PC","="),array("AND","icpNo",$icpNo,"=")));
 		$pc_end_bal=$this->_model->getAllRecords($pc_end_bal_cond,"cashbal");//Previous month Closing Petty Cash Balance
 		$pcBalBf=0;
 		if(!empty($pc_end_bal)){
@@ -1340,7 +1463,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			
 		
 		//All Bank Incomes for the month
-		$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_inc_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_bank_inc=$this->_model->getAllRecords($month_bank_inc_cond,"voucher_body");
 		$bank_inc=0;
 		foreach ($month_bank_inc as $value) {
@@ -1348,7 +1471,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		}
 		
 		//All Bank Expenses for the month
-		$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_bank_exp_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_bank_exp=$this->_model->getAllRecords($month_bank_exp_cond,"voucher_body");
 		$bank_exp=0;
 		foreach ($month_bank_exp as $value) {
@@ -1356,12 +1479,12 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 			}
 		
 		//All PC Income for the month
-		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_inc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_pc_inc=$this->_model->monthPcIncome($month_pc_inc_cond);
 		$pc_inc=$month_pc_inc;
 		
 		//All PC Expenses for the month
-		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
+		$month_pc_exp_cond = $this->_model->where(array(array("where","VType","PC","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_body.TDate)",$year,"="),array("AND","Month(voucher_body.TDate)",$month,"=")));
 		$month_pc_exp=$this->_model->getAllRecords($month_pc_exp_cond,"voucher_body");
 		$pc_exp=0;
 		foreach ($month_pc_exp as $value) {
@@ -1377,12 +1500,16 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		//}
 		//$data['test']=$bcBalBf;
 		//Deposit in Transit
-		$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
+		$month_dep_in_transit_cond = $this->_model->where(array(array("where","VType","CR","="),array("AND","icpNo",$icpNo,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
 		$month_dep_in_transit=$this->_model->getAllRecords($month_dep_in_transit_cond,"voucher_header");
 		
 		//Oustanding Cheques
-		$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",Resources::session()->fname,"="),array("AND","Year(voucher_header.TDate)",$year,"="),array("AND","Month(voucher_header.TDate)",$month,"="),array("AND","voucher_header.ChqState",0,"=")));
-		$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
+		//$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array("AND","voucher_header.ChqState",0,"=")));
+		//$month_oc_cond = $this->_model->where(array(array("where","VType","CHQ","="),array("AND","icpNo",$icpNo,"="),array(array("AND","clrMonth","0000-00-00","="),array("OR","clrMonth",date('Y-m-t',$this->choice[1]),">"))));
+		//$month_oc=$this->_model->getAllRecords($month_oc_cond,"voucher_header");
+		$icpname=$icpNo;
+		$curmonth = date('Y-m-t',$this->choice[1]);
+		$month_oc = $this->_model->current_month_outstanding_cheques($icpname, $curmonth);
 		
 		//All Expense Accounts
 		$exp_acc_cond = $this->_model->where(array(array("where","AccGrp",0,"="),array("AND","Active",1,"=")));
@@ -1406,7 +1533,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		$maxID = $this->_model->getMaxVoucherID($maxID_cond);
 		
 		//Expenses to date
-		$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",Resources::session()->fname,"="),array("AND","voucher_header.Fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));	
+		$year_todate_exp_cond=$this->_model->where(array(array("where","voucher_header.icpNo",$icpNo,"="),array("AND","voucher_header.Fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","voucher_body.bID",$maxID,"<=")));	
 		$year_todate_exp=$this->_model->get_todate_expenses($year_todate_exp_cond);
 		$exp_to_date=array();
 		foreach($year_todate_exp as $value){
@@ -1437,8 +1564,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		}
 		
 		//Budget To Date
-		//$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","plansshedule.approved",2,"=")));
-		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",Resources::session()->fname,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"=")));
+		//$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",$icpNo,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"="),array("AND","plansshedule.approved",2,"=")));
+		$todate_budget_cond=$this->_model->where(array(array("where","planheader.icpNo",$icpNo,"="),array("AND","planheader.fy",Resources::func("get_financial_year",array($fullDate)),"=")));
 		$todate_budget = $this->_model->get_todate_budget($todate_budget_cond,date("n",strtotime($fullDate)));
 		$budget_to_date=array();
 		foreach($todate_budget as $value){
@@ -1466,7 +1593,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		}
 			
 		//Find Variance Explanation Statements
-		$variance_explanation_cond=$this->_model->where(array(array("where","reportMonth",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));
+		$variance_explanation_cond=$this->_model->where(array(array("where","reportMonth",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",$icpNo,"=")));
 		$variance_explanation=$this->_model->getAllRecords($variance_explanation_cond,"varjustify");
 		$varJustify=array();
 		foreach($variance_explanation as $value){
@@ -1475,14 +1602,15 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		
 		//Variance -/+ 10%
 		$var_to_explain=array();
-		foreach($accs as $key=>$value){
-			
-			if($value['varPer']>10 || $value['varPer']<-10){
-				if(count($varJustify)>0){
-					$value['notes']=$varJustify[$key];
+		foreach($accs as $key=>$value){	
+				if($value['varPer']>10 || $value['varPer']<-10){
+					if(count($varJustify)>0&&array_key_exists($key, $varJustify)){
+						$value['notes']=$varJustify[$key];
+					}else{
+						$value['notes']="";
+					}
+					$var_to_explain[$key]=$value;
 				}
-				$var_to_explain[$key]=$value;
-			}
 		}
 		
 		//Monthly Parameters -- Begin
@@ -1570,8 +1698,13 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 				}
 				
 				//Add B/F Cheques to reconstruct_oc array
-				$bf_oc_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","chqState",0,"=")));
-				$bf_oc = $this->_model->getAllRecords($bf_oc_cond,"oschqbf");
+				
+				$icpname=$icpNo;
+				$curmonth = date('Y-m-t',$this->choice[1]);
+				$bf_oc = $this->_model->outstanding_cheques_bf($icpname, $curmonth);
+				
+				//$bf_oc_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","chqState",0,"=")));
+				//$bf_oc = $this->_model->getAllRecords($bf_oc_cond,"oschqbf");
 				$cnt=count($reconstruct_oc);
 				foreach($bf_oc as $value){
 					$reconstruct_oc[$cnt]['rId']=$value->osBfID;
@@ -1602,7 +1735,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 				}
 				
 				//Add B/F Cash Received to reconstruct_oc array
-				$bf_dep_in_transit_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","TState",0,"=")));
+				$bf_dep_in_transit_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","TState",0,"=")));
 				$bf_dep_in_transit = $this->_model->getAllRecords($bf_dep_in_transit_cond,"transitfundsbf");
 				$ct=count($reconstruct_dep_in_transit);
 				foreach($bf_dep_in_transit as $value){
@@ -1616,12 +1749,12 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 				}		
 		
 		//MFR State
-		//$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
+		//$chk_end_bal_cond = $this->_model->where(array(array("where","opfundsbalheader.icpNo",$icpNo,"="),array("AND","opfundsbalheader.closureDate",date('Y-m-t',strtotime($fullDate)),"=")));            
 		//$chk_end_bal_qry = $this->_model->balFundsBf($chk_end_bal_cond);// Used to calculate submit state
-		$chk_state_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","closureDate",date('Y-m-t',strtotime($fullDate)),"="))); 
+		$chk_state_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","closureDate",date('Y-m-t',strtotime($fullDate)),"="))); 
 		$chk_state=$this->_model->getAllRecords($chk_state_cond,"opfundsbalheader");
 		
-		$cnt_close_funds_bal_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$cnt_close_funds_bal_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"=")));
 		$cnt_close_funds_bal=$this->_model->getAllRecords($cnt_close_funds_bal_cond,"opfundsbalheader");
 		
 		$cnt_close_funds=count($cnt_close_funds_bal);
@@ -1647,7 +1780,7 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		 
 				
 		//Find Bank Statement Date
-		$bs_date_check_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",Resources::session()->fname,"=")));		
+		$bs_date_check_cond = $this->_model->where(array(array("where","month",date("Y-m-t",strtotime($fullDate)),"="),array("AND","icpNo",$icpNo,"=")));		
 		$bs_date_check=$this->_model->getAllRecords($bs_date_check_cond,"statementbal");
 		$statementDate = "";
 		$statementAmount=0;
@@ -1659,6 +1792,11 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		
 		//Get Bank Statement File Name
 		$getBs = $this->_model->getAllRecords($bs_date_check_cond,"bssubmitted");
+		
+		//Get MFR Notes
+		
+		$notes_cond = $this->_model->where(array(array("WHERE","period",date('Y-m-t',$this->choice[1]),"="),array("AND","noteto",$icpNo,"=")));
+		$notes_arr = $this->_model->getAllRecords($notes_cond,"mfrnotes","ORDER BY noteID DESC");
 		
 		//$data=array();
 		//if($sysOpen==='0'||$cnt_close_funds<=1&&date('m',strtotime($fullDate))!==$closureMonth){
@@ -1680,6 +1818,8 @@ public function mfrNav($render=2,$path="",$tags=array("1")){
 		$data['varJustify']=$varJustify;
 		$data['time']=$this->choice[1];
 		$data['getBs']=$getBs;
+		$data['icp']=$icpNo;
+		$data['notes']=$notes_arr;
 		$data['test']="";
 		//}		
 		
@@ -1720,25 +1860,9 @@ public function attachBs($cst,$icpNo,$month,$fy,$sbDate){
         }
 }
     public function viewBs(){
-        $bsKey = $this->choice[1].".pdf";
-        $cst=$this->choice[3]; //str_replace("__", " ", $this->choice[3]);
-		//$cst=urldecode($this->choice[3]);
-		//$cst="";
-		
-		if(strpos($this->choice[3],"_")){
-			$cst = str_replace("_","-", $this->choice[3]);
-		}
-		//elseif(strpos($this->choice[3],"__")){
-			//$cst = str_replace("__"," -", $this->choice[3]);
-		//}elseif(strpos($this->choice[3],"___")){
-			//$cst = str_replace("___"," ", $this->choice[3]);
-		//}
-		
-		//$cst = urldecode($this->choice[3]);
-	
-        $icpNo = $this->choice[5];
-        //$childno_rand = substr($rct_raw,5);
-        //$rct = $icpNo."-".$childno_rand.".pdf";
+        $bsKey = $_POST['bsKey'].".pdf";
+        $cst=$_POST['clst'];
+        $icpNo = $_POST['icp'];
 
         $file = BASE_PATH.DS."application".DS.$GLOBALS['app'].DS."ftp".DS."finance".DS."bankstatements".DS.$cst.DS.$icpNo.DS.$bsKey;
         header('Content-type: application/pdf');
@@ -1762,14 +1886,14 @@ public function submitMfr(){
 		
 		$cond_last_mfr=$this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
 		$maxMfrDate = $this->_model->maxMfrDate($cond_last_mfr);
-		$curClosuredate=date("Y-m-t",strtotime("+1 month",strtotime($maxMfrDate)));
+		$curClosuredate=date("Y-m-t",strtotime("+1 month",strtotime(date("Y-m-01",strtotime($maxMfrDate)))));
 		//print($curClosuredate);
 		if(strtotime($curClosuredate)>strtotime($_POST['curDate'])){
 				print("Reporting dealine is not yet!");
 		}elseif(strtotime($curClosuredate)<strtotime($_POST['curDate'])){
 				print("You have previous unsubmitted report(s) or missing funds closing balances for the previous month!");
-		}elseif(date("d")==="06"&&!Resources::session()->userlevel_backup===1){
-				print("Submission time elapsed!");
+		//}elseif(date("d")==="06"&&!Resources::session()->userlevel_backup===1){
+			//	print("Submission time elapsed!");
 		}else{
 			//Fund Balance Header
 			$balHd=array();
@@ -1822,6 +1946,20 @@ public function submitMfr(){
 			$this->_model->insertArray($varianceExplain,"varjustify");
 			$this->attachBs(Resources::session()->cname, Resources::session()->fname,date("m",strtotime($_POST['curDate'])), Resources::func("get_financial_year",array(date("Y-m-t",strtotime($_POST['curDate'])))),date("Y-m-t",strtotime($_POST['curDate'])));
 			
+			//Mail Voucher to PF
+			$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel","2","=")));
+			$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users");
+			$pf_email="";
+			if(count($pf_email_arr)!==0){
+				$pf_email = $pf_email_arr[0]->email;
+			}else{
+				$pf_email="NKarisa@ke.ci.org";
+			}
+			
+			$title = "MFR submission notification";
+			$body =Resources::session()->fname." has submitted ".date('F-Y',strtotime($curClosuredate))." MFR";
+			
+			Resources::mailing($pf_email, $title, $body); 
 			
 			print("Report submitted Successfully!");
 			
@@ -1841,8 +1979,33 @@ public function submitMfr(){
         set_time_limit(3600); 
         $lists = $_POST['lists'];
         $file = $_FILES['csv']['tmp_name'];
-        //$handle = fopen($file,"r");
-        $this->_model->uploadFunds($lists,$file);
+		$handle = fopen($file,"r");
+	  	$rec=array();
+		$recNums=0;
+		if($lists === 'fundsSchedules'){
+			while($data = fgetcsv($handle,1000,",","'")){
+				$recNums++;
+				$rec['KENumber']=$data[0];
+				$rec['AccountCode']=$data[1];
+				$rec['AccountDescription']=$data[2];
+				$rec['civCode']=$data[3];
+				$rec['Amount']=$data[4];
+				$rec['Month']=$data[5];
+				$this->_model->insertRecord($rec,"fundsschedule");
+			}
+			echo $recNums." records uploaded successfully";
+		}elseif($lists === 'specialgifts'){
+			while($data = fgetcsv($handle,1000,",","'")){
+				$recNums++;
+				$rec['KENumber']=$data[0];
+				$rec['ChildNumber']=$data[1];
+				$rec['Amount']=$data[2];
+				$rec['Instructions']=$data[3];
+				$rec['Month']=$data[4];
+				$this->_model->insertRecord($rec,"specialgifts");
+			}
+			echo $recNums." records uploaded successfully";			
+		}
     }
     public function advicePerICP($render=1){
             $cluster_cond = $this->_model->where(array(array("where","ID",$_SESSION['ID'],"=")));
@@ -1870,19 +2033,20 @@ public function submitMfr(){
     }
 
     public function viewSlip(){
+    	$icp=Resources::session()->fname;
+    	if(isset($this->choice[3])){
+    		$icp=$this->choice[3];
+    	}
     	if(isset($this->choice[1])){
-    		//echo date('Y-m-d',$this->choice[1]);
-    		$funds_cond = $this->_model->where(array(array("where","KENumber",Resources::session()->fname,"="),array("AND","Month",date('Y-m-01',$this->choice[1]),"=")));
-            //$funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
-            
+    		$funds_cond = $this->_model->where(array(array("where","KENumber",$icp,"="),array("AND","Month",date('Y-m-01',$this->choice[1]),"=")));
             $data[] = $this->_model->getAllRecords($funds_cond,"fundsschedule");
 			$data[]=$this->choice[1];		
-			$this->dispatch($render=2,"",$data,array("1"));
+			$this->dispatch($render=2,"",$data,array("All"));
 		}else{
-            $funds_cond = $this->_model->where(array(array("where","KENumber",$_SESSION['fname'],"="),array("AND","Month",date('Y-m-01'),"=")));
+            $funds_cond = $this->_model->where(array(array("where","KENumber",$icp,"="),array("AND","Month",date('Y-m-01'),"=")));
             $data[] = $this->_model->getAllRecords($funds_cond,"fundsschedule");
 			//$data[]=0;
-			$this->dispatch($render=1,"",$data,array("1"));
+			$this->dispatch($render=1,"",$data,array("All"));
 		}	
             //return $data; 
 
@@ -1925,9 +2089,9 @@ public function submitMfr(){
     public function downloadVoucher($render=1,$path='',$tags=array("1")){
     	$VNum=  $this->choice[1];
 	        if($_SESSION['userlevel']==="1"){
-	            $icpNo = $_SESSION['username'];
+	            $icpNo = $_SESSION['fname'];
 	        }  elseif ($_SESSION['userlevel']==="2") {
-	            $icpNo = $_SESSION['username_backup'];
+	            $icpNo = $_SESSION['fname_backup'];
 	        }  else {
 	            
 	        }
@@ -1951,13 +2115,23 @@ public function submitMfr(){
 		$footnote_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","VNumber",$VNum,"=")));
 		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes"," ORDER BY footnoteID DESC");
 		
+		//Mail a notification
+		$icp_mail_cond = $this->_model->where(array(array("WHERE","username",$icpNo,"=")));
+		$icp_mail_arr=$this->_model->getAllRecords($icp_mail_cond,"users","",array("email"));
+		$email = $icp_mail_arr[0]->email;
+		 
+		$title = "Voucher #{$VNum} Notification ";
+		$body = "You a notification from {$_POST['msg_from']}:\n\n {$_POST['msg']}";
+		 
+		Resources::mailing($email, $title, $body); 
+		
 		$data['details']=$this->_model->showVoucher($VNum,$icpNo);
 		$data['footnotes']=$footnote_arr;
 		
 		$this->dispatch($render=2,$path='',$data,$tags=array("All"));
 	}
 	
-    public function postVoucher(){
+public function postVoucher(){
         $header = array();
         for($i=0;$i<8;$i++){
             $header[]=  array_shift($_POST);
@@ -1970,7 +2144,7 @@ public function submitMfr(){
 		//Get Bank Bank Code
 		$bank_code=0;
 		$bank_code_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
-		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails");
+		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails","",array("bankID"));
 		if(count($bank_code_qry)>0){
 			$bank_code=$bank_code_qry[0]->bankID;
 		}
@@ -2002,7 +2176,7 @@ public function submitMfr(){
         //print_r($qry_array);
         
         $hID_cond=$this->_model->where(array(array("where","VNumber",$qry_array['VNumber'],"="),array("AND","icpNo",$qry_array['icpNo'],"=")));
-        $hID_rst = $this->_model->getAllRecords($hID_cond,"voucher_header");
+        $hID_rst = $this->_model->getAllRecords($hID_cond,"voucher_header","",array("hID"));
 		
 		//print_r($hID_rst);
         
@@ -2032,7 +2206,7 @@ public function submitMfr(){
                     
         //Mail Voucher to PF
 		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel","2","=")));
-		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users");
+		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users","",array("email"));
 		$pf_email="";
 		if(count($pf_email_arr)!==0){
 			$pf_email = $pf_email_arr[0]->email;
@@ -2080,6 +2254,35 @@ public function submitMfr(){
         return $data;
 
     }
+public function showVoucherFromExternalSource($render=1,$path="showVoucher",$tags=array("All")){       
+        $VNum=  $this->choice[1];
+         $icpNo = $this->choice[3]; 
+        
+		$footnote_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","VNumber",$VNum,"=")));
+		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes"," ORDER BY footnoteID DESC");
+		
+		$data['details']=$this->_model->showVoucher($VNum,$icpNo);
+		$data['footnotes']=$footnote_arr;
+		
+        return $data;
+
+}
+public function previewvoucher($render=2,$path="showVoucher",$tags=array("All")){       
+        $VNum=  $_POST['VNumber'];
+        $icpNo = Resources::session()->fname;
+        
+        //$VNum = '150702';
+		//$icpNo = 'KE903';
+        
+		$footnote_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"="),array("AND","VNumber",$VNum,"=")));
+		$footnote_arr = $this->_model->getAllRecords($footnote_cond,"voucherfootnotes"," ORDER BY footnoteID DESC");
+		
+		$data['details']=$this->_model->showVoucher($VNum,$icpNo);
+		$data['footnotes']=$footnote_arr;
+		
+        return $data;
+
+}
     public function getFlds(){
         $arr_tables=$this->_model->dbTables();
         $flds = $this->_model->getVoucherTableFields($arr_tables[$this->choice[1]]);
@@ -2095,16 +2298,154 @@ public function submitMfr(){
 		return $rst;
 
     }
-public function civ($render=1,$path='',$tags=array("3")){       
-        $civa_cond = $this->_model->where(array(array("where","civa.open","1","="),array("AND","accounts.AccGrp","0","=")));
-        //$civa = $this->_model->getAllRecords($civa_cond,"civa");
-        $civa[] = $this->_model->civaExpenseAccounts($civa_cond);
-            return $civa;
+public function civ($render=1,$path='',$tags=array("All")){
+		$civa = array();   
+		
+		$status='1';
+		if(isset($this->choice[1])){
+			$status=$this->choice[1];
+		}
+		
+		$cname = Resources::session()->cname;
+		$icps_cond = $this->_model->where(array(array("WHERE","cname",$cname,"="),array("AND","department",0,"="),array("AND","userlevel",1,"=")));
+		$icps_arr = $this->_model->getAllRecords($icps_cond,"users","",array("fname"));
+		$refined_icps_arr = array();
+		foreach ($icps_arr as $value) {
+			$refined_icps_arr[]=$value->fname;
+		}
+		
+        $civa_cond = $this->_model->where(array(array("where","civa.open",$status,"="),array("AND","accounts.AccGrp","0","=")));
+        $civa['rec'] = $this->_model->civaExpenseAccounts($civa_cond);
+		$civa['icps']=$refined_icps_arr;
+        return $civa;
 }
-public function AddCIVA($render=1){
-           
+public function AddCIVA($render=1,$path='',$tags=array("All")){
+		$data=array();
+       	
+		//CIV Grants Group Accounts
+	    $civa_acc_arr = $this->_model->getcivaaccounts();
+		
+		//Get CIVs From Funds Disbursement
+		$disbursed_civs_cond = $this->_model->where(array(array("where","fundsschedule.civCode"," ","<>"))); 
+		$disbursed_civs_arr = $this->_model->getAllRecords($disbursed_civs_cond,"fundsschedule","GROUP BY fundsschedule.civCode",array("civCode"));
+	    
+		//Find Existing CIV Accounts Codes
+		$existing_acc_arr=array();
+		$existing_acc_arr_raw = $this->_model->getAllRecords("","civa","GROUP BY AccNoCIVA",array("AccTextCIVA"));
+		foreach ($existing_acc_arr_raw as $value) {
+			$existing_acc_arr[]=trim($value->AccTextCIVA);
+		}
+		
+		//Refine Funds Disbursed Codes Array
+		$final_codes_arr=array();
+		foreach ($disbursed_civs_arr as $value) {
+			if(!in_array(trim($value->civCode), $existing_acc_arr)){
+				$final_codes_arr[]=$value->civCode;
+			}
+		}
+		
+		$data['test']="";
+		$data['civaAc']=$civa_acc_arr;
+		$data['disbursedAc']=$final_codes_arr;
+		
+		return $data;
 }
-
+public function getCivAllocatedIcps(){
+	//echo "Kudos";
+	$civCode = $_POST['civCode'];
+	
+	//Get Allocated ICPs
+	$alloc_icps_cond = $this->_model->where(array(array("where","civCode",$civCode,"=")));
+	$alloc_icps_arr = $this->_model->getAllRecords($alloc_icps_cond,"fundsschedule","",array("KENumber"));
+	
+	$icps =array();
+	foreach ($alloc_icps_arr as $value) {
+		$icps[]=$value->KENumber;
+	}
+	
+	echo implode(",", $icps);
+}
+public function createCivAccount(){
+	//Create an Income Account	
+	$this->_model->insertRecord($_POST,"civa");
+	
+	//Create an Expense Account
+		//=>Get Expense Group
+		$exp_group_cond = $this->_model->where(array(array("WHERE","accID",$_POST['accID'],"=")));
+		$exp_group_arr = $this->_model->getAllRecords($exp_group_cond,"accounts","",array("AccNo"));
+		//=>Expense Account
+		$exp_group_acc = (integer)$exp_group_arr[0]->AccNo+1000;
+		//=>Expense Account ID
+		$exp_accID_cond = $this->_model->where(array(array("WHERE","AccNo",$exp_group_acc,"=")));
+		$exp_accID_arr = $this->_model->getAllRecords($exp_accID_cond,"accounts","",array("accID"));
+		$exp_accID = $exp_accID_arr[0]->accID;
+		//=>Expense Array
+		$exp_arr=array();
+		$exp_arr['accID']=$exp_accID;
+		$exp_arr['AccNoCIVA']=$_POST['AccNoCIVA'];
+		$exp_arr['AccTextCIVA']=$_POST['AccTextCIVA'];
+		$exp_arr['allocate']=$_POST['allocate'];
+		$exp_arr['closureDate']=$_POST['closureDate'];
+		
+		$this->_model->insertRecord($exp_arr,"civa");
+		
+	echo "Account(s) for {$_POST['allocate']} Created Successfully for {$_POST['AccNoCIVA']}";
+}
+public function manageCivDate(){
+	$flag = $_POST['flag'];
+	$AccNo = $_POST['AccNoCIVA'];
+	
+	$final_flag="";
+	if($flag==='1'){
+		$final_flag='0';
+	}else{
+		$final_flag='1';	
+	}
+	
+	//echo $civID;
+	$set_civ_update = array("open"=>$final_flag);
+	$update_cond = $this->_model->where(array(array("WHERE","AccNoCIVA",$AccNo,"=")));
+	
+	$this->_model->updateQuery($set_civ_update,$update_cond,"civa");
+	
+	echo "Account Updated successfully";
+	
+}
+public function viewicpcivacounts($render=2,$path='',$tags=array("All")){
+	$data=array();
+	$civaID=$_POST['civaID'];
+	$AccText = $_POST['AccTextCIVA'];
+	
+	$cname = Resources::session()->cname;
+	$icps_cond = $this->_model->where(array(array("WHERE","cname",$cname,"="),array("AND","department",0,"="),array("AND","userlevel",1,"=")));
+	$icps_arr = $this->_model->getAllRecords($icps_cond,"users","",array("fname"));
+	$refined_icps_arr = array();
+	foreach ($icps_arr as $value) {
+		$refined_icps_arr[]=$value->fname;
+	}	
+	
+	$civRs = $this->_model->calcIcpCivAccounts($civaID,$AccText);
+	
+	$data['icpAc'] = $civRs;
+	$data['cap']=$AccText;
+	$data['icps']=$refined_icps_arr;
+	
+	return $data; 
+}
+public function showcivimpbreakdown($render=2,$path='',$tags=array("All")){
+	$data=array();
+	$icpNo = $_POST['icpNo'];
+	$civaID=$_POST['civaID'];
+	$AccText = $_POST['AccTextCIVA'];
+	
+	$civimp=$this->_model->icpcivimpbreakdown($icpNo,$civaID,$AccText);
+	
+	$data['imp']=$civimp;
+	$data['cap']=$AccText;
+	$data['icp']=$icpNo;
+	
+	return $data;
+}
 public function viewFunds(){
 			if(isset($this->choice[1])){
 				$funds_cond=  $this->_model->where(array(array("where","Month",date('Y-m-01',$this->choice[1]),"=")));
@@ -2117,8 +2458,16 @@ public function viewFunds(){
 				$funds[]=time();
 				$this->dispatch($render=1,"viewFunds",$funds,array("2","3"));
 			}
-
-
+}
+public function reviewcivclosuredate(){
+	$AccNoCIVA = $_POST['AccNoCIVA'];
+	$closureDate = $_POST['closureDate'];
+	$review_cond = $this->_model->where(array(array("WHERE","AccNoCIVA",$AccNoCIVA,"=")));
+	$review_set = array("closuredate"=>$closureDate);
+	
+	$this->_model->updateQuery($review_set,$review_cond,"civa");
+	
+	echo "Date review successful";
 }
 public function fundsOpBal($render=1,$path="",$tags=array("1")){
   
@@ -2332,5 +2681,293 @@ public function ticket($render=1,$path="",$tags=array("All")){
 	$data['cur_month_vouchers']=$next_rec_arr;
 	return $data;
 }
+public function managefunds($render=1,$path="",$tags=array("All")){
+	
+}
+public function civedit($render=1,$path="",$tags=array("All")){
+	
+}
+public function civfundsschedule($render=1,$path="",$tags=array("All")){
+	$data = array();
+	
+	$curDate = date("Y-m-01");
+	if(isset($_POST['Month'])){
+		$curDate = $_POST['Month'];
+	}
+	
+	
+	//Get Items from Current Month Schedule Without CIV Code
+	$non_civ_schedules_cond = $this->_model->where(array(array("WHERE","civCode","","="),array("AND","Month",$curDate,"=")));
+	$non_civ_schedules_arr = $this->_model->getAllRecords($non_civ_schedules_cond,"fundsschedule","",array("DISTINCT(AccountDescription):fund"));
+	
+	$data['funds']=$non_civ_schedules_arr;
+	$data['curDate']=$curDate;
+	return $data;
+	
+}
+public function addfundtocivschedule(){
+	$acDesc = $_POST['AccountDescription'];
+	$month = $_POST['Month'];
+	$civCode = $_POST['civCode'];
+	
+	$set_update = array("civCode"=>$civCode);
+	$cond_update = $this->_model->where(array(array("WHERE","Month",$month,"="),array("AND","AccountDescription",$acDesc,"=")));
+	
+	$update_qry = $this->_model->updateQuery($set_update,$cond_update,"fundsschedule");
+	
+}
+public function addicptociv(){
+	
+	$icps = $_POST['icpNos'];
+	$civCode = $_POST['civCode'];
+	
+	//Find If CIV Code Exists in the Schedules for Each ICP to be added
+	
+	$icps_arr = explode(",", $icps);
+	
+	$missing="";
+	foreach ($icps_arr as $value) {
+		//$chk_code_cond = $this->_model->where(array(array("WHERE","civCode",$civCode,"="),array("AND","KENumber",$value,"=")));
+		//$chk_code_arr = $this->_model->getAllRecords($chk_code_cond,"fundsschedule","",array("KENumber"));
+		$chk_code_arr = $this->_model->chkicpswithciv($civCode,$value);
+		//if(empty($chk_code_arr)){
+			//$missing.=$value.", ";
+		//}
+		print_r($chk_code_arr);
+	}
+	echo $missing;
+	//Extract the existing ICPs List from the Account
+	
+	//Only for those that pass the step One add the list to the list extracted in step 2 above
+	
+	//Update the Revenue and Expense Account of the CIV Accout with the list formed in 3 above
+	
+}
 
+//Start from Here
+
+public function editvoucherview($render=1,$path="",$tags=array("All")){
+            //try{
+              //  if(isset($_SESSION['username'])){
+                	
+					//Date Control
+					$date_control_cond=$this->_model->where(array(array("where","extraID",6,"=")));
+					$date_control=$this->_model->getAllRecords($date_control_cond,"extras");
+					$date_control_flag=$date_control[0]->flag;
+					
+					//Max Voucher - Get Max Date and Voucher Number
+					$max_date_cond=$this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+					$max_date=$this->_model->maxICPVoucher($max_date_cond);
+					
+					$max_close_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+					$max_close=$this->_model->maxCloseBal($max_close_cond);
+					
+					$max_voucher=array();
+					if(!empty($max_close)&&empty($max_date)){
+							//$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($max_close[0]->closureDate)))));
+							$fy=date("y",strtotime('next month',strtotime($max_close[0]->closureDate)));
+							$m=date("m",strtotime('next month',strtotime($max_close[0]->closureDate)));					
+							$max_voucher['TDate']=date("Y-m-01",strtotime('next month',strtotime($max_close[0]->closureDate)));
+							$max_voucher['VNumber']=$fy.$m."00";
+					}elseif(!empty($max_date)){
+							$max_voucher['TDate']=$max_date[0]->TDate;
+							$max_voucher['VNumber']=$max_date[0]->VNumber;
+					}else{
+								
+						$open_bc_bal_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=",array("AND","accNo","BC","="))));
+						$open_bc_bal=$this->_model->getAllRecords($open_bc_bal_cond,"cashbal");
+						if(empty($open_bc_bal)){
+							$fy_begin_date = '2015-06-30';
+						}else{
+							$fy_begin_date = $open_bc_bal[0]->month;
+						}	
+								//$fy_begin_date = '2015-06-30';
+								//$fy=Resources::func("get_financial_year",array(date("Y-m-d",strtotime('next month',strtotime($fy_begin_date)))));
+								$fy=date("y",strtotime('next month',strtotime($fy_begin_date)));
+								$m=date("m",strtotime('next month',strtotime($fy_begin_date)));
+								$max_voucher['TDate']=	$fy_begin_date;//$open_bc_bal[0]->month;
+								$max_voucher['VNumber']=$fy.$m."00";				
+					}
+					
+                    $mth = date('m');
+                    $icp = $_SESSION['fname'];
+					
+					//Check if MFR was submitted
+					$max_voucher_month=date("m",strtotime($max_voucher['TDate']));
+					$max_voucher_year=date("Y",strtotime($max_voucher['TDate']));
+					
+					$chk_mfr_cond = $this->_model->where(array(array("where","Month(month)",$max_voucher_month,"="),array("AND","Year(month)",$max_voucher_year,"="),array("AND","icpNo",Resources::session()->fname,"=")));
+					$chk_mfr_arr = $this->_model->getAllRecords($chk_mfr_cond,"bssubmitted");
+					
+					$data['cDate']=$max_voucher['TDate'];
+					if(!empty($chk_mfr_arr)){
+						$data['cDate']=date('Y-m-d',strtotime("+1 day",strtotime($chk_mfr_arr[0]->month)));
+					}
+					
+					$data['months'] = $this->_model->getMonthByNumber($mth,$icp);
+					$data['date_flag']=$date_control_flag;
+					$data['maxRec']=$max_voucher;
+					$data['test']="";
+                    return $data; 
+            //    }  else {
+              //      throw new customException("Session ID username is not set!");
+                //}
+            //}catch(customException $e){
+              //  echo $e->errorMessage();
+            //} 
+    }
+public function voucheredit(){
+	//$userlevel = $_POST['userlevel'];
+	$icpNo = $_POST['icpNo'];
+	$VNumber = $_POST['VNumber'];
+	$cDate = $_POST['TDate'];
+	$Payee = $_POST['Payee'];
+	$Address = $_POST['Address'];
+	$VType = $_POST['VType'];
+	$TDesc = $_POST['TDescription'];
+	
+	//Get Voucher
+	$render = 1;
+	$path = 'editvoucherview';
+	$data['cDate']=$cDate;
+	$data['months'] = $this->_model->getMonthByNumber(date('m',strtotime($cDate)),$icpNo);
+	$data['date_flag']=1;
+	$data['maxRec']=$VNumber;
+	$data['Payee']=$Payee;
+	$data['Address']=$Address;
+	$data['VType']=$VType;
+	$data['TDesc'] = $TDesc;
+	$data['ChqNo']=$_POST['ChqNo'];
+	$data['test']="";
+	$tags = array("All");
+	
+	$this->dispatch($render,$path, $data,$tags);
+
+}
+public function editVoucher(){
+	//Delete former Voucher
+	$icpNo = $_POST['KENo'];
+	$VNo = $_POST['VNumber'];
+	
+	$vch_del_cond = $this->_model->where(array(array("WHERE","icpNo",$icpNo,"="),array("AND","VNumber",$VNo,"=")));
+	$vch_del_header_qry = $this->_model->deleteQuery($vch_del_cond,"voucher_header");
+	$vch_del_body_qry = $this->_model->deleteQuery($vch_del_cond,"voucher_body");
+	
+	//Insert New
+        $header = array();
+        for($i=0;$i<8;$i++){
+            $header[]=  array_shift($_POST);
+        }
+        $header[]=array_pop($_POST);
+        $fy = Resources::func("get_financial_year",array(date("Y-m-d")));
+        $tm = time();
+        $chqState =0;
+        
+		//Get Bank Bank Code
+		$bank_code=0;
+		$bank_code_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$bank_code_qry=$this->_model->getAllRecords($bank_code_cond,"projectsdetails");
+		if(count($bank_code_qry)>0){
+			$bank_code=$bank_code_qry[0]->bankID;
+		}
+			
+		
+		$rwChqNo=$header[6];
+		if($rwChqNo===""){
+			$header[6]="";
+		}else{
+			$header[6]=ltrim($rwChqNo,'0')."-".$bank_code;
+		}
+			
+		
+		//print_r($header);
+		
+        $fld_header_arr = array("icpNo","TDate","Fy","VNumber","Payee","Address","VType","ChqNo","ChqState","TDescription","totals","unixStmp");
+        $header_one = array_splice($header,0,2);
+        $header_two = array_splice($header,0,5);
+        array_push($header_two, $chqState);
+        array_push($header, $tm);
+        array_push($header_one,$fy);
+        $new_header = array_merge($header_one, $header_two,$header);
+        $qry_array = array_combine($fld_header_arr, $new_header);
+        
+        $qry_array['totals']=  str_replace(",","",$qry_array['totals']);
+		echo $this->_model->insertRecord($qry_array,"voucher_header");
+		
+		 
+        //print_r($qry_array);
+        
+        $hID_cond=$this->_model->where(array(array("where","VNumber",$qry_array['VNumber'],"="),array("AND","icpNo",$qry_array['icpNo'],"=")));
+        $hID_rst = $this->_model->getAllRecords($hID_cond,"voucher_header");
+		
+		//print_r($hID_rst);
+        
+        $body_raw =array();
+        foreach($_POST as $val):
+            $cnt_rows = count($val);
+            for($j=0;$j<$cnt_rows;$j++){
+                $body_raw[$j][]=$val[$j];
+            }
+        endforeach;
+        $lead_body_fld_vals=array($hID_rst[0]->hID,$qry_array['icpNo'],$qry_array['VNumber'],$qry_array['TDate']);
+        $end_body_fld_vals=array($qry_array['VType'],$qry_array['ChqNo'],$qry_array['unixStmp']);
+        foreach($body_raw as $arr):
+            $arr_fin=array_merge($lead_body_fld_vals,$arr,$end_body_fld_vals);
+            $fld_body_arr=array("hID","icpNo","VNumber","TDate","Qty","Details","UnitCost","Cost","AccNo","civaCode","VType","ChqNo","unixStmp");
+            $body_raw_two = array_combine($fld_body_arr, $arr_fin);
+            $body[]=$body_raw_two;
+        endforeach;
+        
+        //print_r($body);
+        foreach($body as $value):
+            $this->_model->insertRecord($value,"voucher_body");
+        endforeach;
+		            //$mth = date('m');
+                    //$icp = $_SESSION['username'];
+                    //return $data = $this->_model->getMonthByNumber($mth,$icp);
+                    
+        //Mail Voucher to PF
+		$pf_email_cond=$this->_model->where(array(array("where","cname",Resources::session()->cname,"="),array("AND","userlevel","2","=")));
+		$pf_email_arr = $this->_model->getAllRecords($pf_email_cond,"users");
+		$pf_email="";
+		if(count($pf_email_arr)!==0){
+			$pf_email = $pf_email_arr[0]->email;
+		}else{
+			$pf_email="NKarisa@ke.ci.org";
+		}
+			
+	
+		
+		//Mail Body
+		$body = "<b>Voucher Number:</b>".$qry_array['VNumber']."<br>";
+		$body.= "<b>Total Amount:</b>".$qry_array['totals']."<br>";
+		$body.="<b>Voucher Type:</b>".$qry_array['VType']."<br>";
+		$body.="<b>Description:</b>".$qry_array['TDescription']."<br>";
+		$body.="<b>Posting Date and Time:</b>".date('Y-m-d H:i:s',strtotime('+9 hours',$qry_array['unixStmp']))."<br>";
+		$body.="<b>Transaction Date:</b>".$qry_array['TDate']."<br>";
+		$body.="<b>Posted By:</b>".Resources::session()->username."<br>";
+		
+		
+		//Mail Header
+		
+		$title = $qry_array['icpNo']." Voucher Posting: V# ".$qry_array['VNumber'];
+		
+		Resources::mailing($pf_email, $title, $body); 
+		
+		//$action = "Posted voucher Number ".$qry_array['VNumber'];
+		//user_history($userid,$langid,$lang="eng",$actionParam=array())
+		Resources::user_history(Resources::session()->ID,"post_voucher",$lang="eng",$action=array("VNumber"=>$qry_array['VNumber']));
+		
+    }
+public function allowvoucheredit(){
+	$icpNo = $_POST['icpNo'];
+	$VNumber = $_POST['VNumber'];
+	
+	$set_for_edit = array("editable"=>1);
+	$set_for_cond= $this->_model->where(array(array("WHERE","icpNo",$icpNo,"="),array("AND","VNumber",$VNumber,"=")));
+	
+	$update_vch = $this->_model->updateQuery($set_for_edit,$set_for_cond,"voucher_header");
+	
+	echo "Voucher editing for voucher number ".$VNumber." allowed!";
+}
 }

@@ -4,6 +4,7 @@ $sess = Resources::session();
 <html>
     <head>
         <title><?php echo $sess->userfirstname;?> - Toolkit | Compassion Kenya</title>
+		
         <?php
         //Resources::link_tag(array("coolBlue_template.css","elements.css","designerTables.css","error.css"));
         ?>
@@ -46,14 +47,14 @@ $sess = Resources::session();
             echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/0","Register User",array("onclick"=>"")).'</li><hr>';
 			}
             if(isset($_SESSION['adm'])){echo '<li>'.Resources::img("switch.png").' '.Resources::a_href("Welcome/switchUser","Switch User").'</li><hr>';}
-            echo "<li>".Resources::img("logout.png")." ".Resources::a_href("Welcome/logout/public/1","Log Out",array())."</li><hr>";
+            echo "<li>".Resources::img("logout.png")." ".Resources::a_href("Welcome/logout/public/1",Resources::translate_item("logout_welcome_menu"),array())."</li><hr>";
             //echo "<li>";
             	//echo "<select onchange='changeLang(this);'>";
 				//echo "<option value=''>Select Preferred Language ...</option>";
 				//echo "<option value='eng'>English</option>";
 				//echo "<option value='swa'>Swahili</option>";
 				//echo "</select>";
-            //echo "</li>";
+            //echo "</li>"; 
             echo '</ul>';
         }else{
             echo '<li>'.Resources::img("welcome.png").Resources::translate_item("welcome_welcome_menu").' '.Resources::translate_item("guest_welcome_menu").' <span style="float:right;">&Del;</span>';
@@ -80,7 +81,12 @@ $sess = Resources::session();
                     
                       <?php
  	foreach ($data as $value) {
-		echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],Resources::translate_item($value["langid"]),array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$sess->ID.'","'.$value['img'].'");')).'</li>';
+ 		//if(isset($value["langid"])){
+ 			//echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],Resources::translate_item($value["langid"]),array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$sess->ID.'","'.$value['img'].'","'.$value['langid'].'");')).'</li>';
+ 		//}else{
+ 			echo '<li>'.Resources::img($value["img"]).' '.Resources::a_href($value["url"],$value["name"],array('onclick'=>'recentItems("'.$value['name'].'","'.$value['url'].'","'.$sess->ID.'","'.$value['img'].'","None");')).'</li>';
+ 		//}
+			
 	 }
                       ?>
                 </ul><br><br>

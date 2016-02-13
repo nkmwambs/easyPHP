@@ -61,5 +61,13 @@
     "faqs_resource_sub_menu":"Support Chat",
     "switchboard_finance_sub_menu":"Switchboard",
     "ticket_finance":"Finance Ticket",
-    "pc":"Program Communication"
+    "pc":"Program Communication",
+    "civ_finance_sub_menu":"CIV",
+    "managefunds_finance_sub_menu":"Manage Funds",
+    "reports_cdpr_sub_menu":"Beneficiary Assessment",
+    "reports_training_sub_menu":"Learning Evaluation",
+    "training_top_menu":"Training and Support",
+    "trainingsettings_training_sub_menu":"Trainings",
+    "register_training_sub_menu":"Participants Register",
+    "calender_training_sub_menu":"Calender"
 }

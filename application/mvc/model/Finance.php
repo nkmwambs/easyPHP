@@ -229,30 +229,93 @@ public function civaAccountsMerge($cond,$VType){
     }
     return $rs;
 }
+public function getcivaaccounts(){
+	$s = "SELECT * FROM accounts WHERE AccNo BETWEEN 300 AND 399";
+    $q=$this->conn->prepare($s);
+	$q->execute();
+    $rs = array();
+    while($rows= $q->fetch(PDO::FETCH_OBJ)){
+        $rs[]=$rows;
+    }
+    return $rs;
+}
+
 public function civaExpenseAccounts($cond){
-    $s = "SELECT * FROM accounts RIGHT JOIN civa ON accounts.accID=civa.accID $cond ORDER BY AccNo ASC, prg DESC";
+    $s = "SELECT accounts.AccName,accounts.AccText,civa.civaID,civa.AccNoCIVA,civa.AccTextCIVA,civa.allocate,civa.open,civa.closureDate FROM accounts RIGHT JOIN civa ON accounts.accID=civa.accID $cond ORDER BY civa.closureDate ASC";
     //$q = mysql_query($s);
     $q=$this->conn->prepare($s);
     $q->execute();
     $rs = array();
     while($rows=  $q->fetch(PDO::FETCH_OBJ)){
-        $s1 = "SELECT sum(Cost) as amt FROM voucher_body WHERE civaCode=$rows->civaID";
-        //$q1 =  mysql_query($s1);
-        //$obj = mysql_fetch_object($q1);
-        $q1 = $this->conn->prepare($s1);
-		$q1->execute();
-		$obj = $q1->fetch(PDO::FETCH_OBJ);
-        $rows->AmountDisbursed=0;
-        $rows->AmountSpent=$obj->amt;
+        $sE = "SELECT sum(Cost) as amt FROM voucher_body WHERE civaCode=$rows->civaID AND (VType='PC' OR VType='CHQ')";
+        $qE = $this->conn->prepare($sE);
+		$qE->execute();
+		$objE = $qE->fetch(PDO::FETCH_OBJ);
+		
+		$sR = "SELECT sum(Amount) as tot FROM fundsschedule WHERE civCode='".$rows->AccTextCIVA."'";
+        $qR = $this->conn->prepare($sR);
+		$qR->execute();
+		$objR = $qR->fetch(PDO::FETCH_OBJ);
+		
+		$bal = $objR->tot-$objE->amt;
+		
+        $rows->AmountDisbursed=$objR->tot;
+        $rows->AmountSpent=$objE->amt;
+		$rows->BalanceToDate=$bal;
+		
         $rs[]=$rows;
     }
     return $rs;     
 }
+public function calcIcpCivAccounts($civaID,$AccText){
+	$s = "SELECT KENumber FROM fundsschedule WHERE civCode='".$AccText."'";
+    $q=$this->conn->prepare($s);
+	$q->execute();
+    $rs = array();
+    while($rows= $q->fetch(PDO::FETCH_OBJ)){
+    	$sE = "SELECT sum(Cost) as amt FROM voucher_body WHERE civaCode=$civaID AND icpNo='".$rows->KENumber."' AND (VType='PC' OR VType='CHQ')";
+        $qE = $this->conn->prepare($sE);
+		$qE->execute();
+		$objE = $qE->fetch(PDO::FETCH_OBJ);
+		
+		$sR = "SELECT sum(Amount) as tot FROM fundsschedule WHERE civCode='".$AccText."' AND KENumber='".$rows->KENumber."'";
+        $qR = $this->conn->prepare($sR);
+		$qR->execute();
+		$objR = $qR->fetch(PDO::FETCH_OBJ);
+		
+		$bal = $objR->tot-$objE->amt;
+		
+        $rows->AmountDisbursed=$objR->tot;
+        $rows->AmountSpent=$objE->amt;
+		$rows->BalanceToDate=$bal;
+		
+        $rs[]=$rows;
+    }
+    return $rs;
+}
+public function icpcivimpbreakdown($icpNo,$civaID,$AccText){
+	$sE = "SELECT VNumber,SUM(Cost) as totExp FROM voucher_body WHERE icpNo='".$icpNo."' AND civaCode=$civaID GROUP BY VNumber";
+    $qE=$this->conn->prepare($sE);
+	$qE->execute();
+    $rs = array();
+    while($rows= $qE->fetch(PDO::FETCH_OBJ)){
+        $rs['exp'][]=$rows;
+    }
+    
+    $sR = "SELECT Month,Amount FROM fundsschedule WHERE KENumber='".$icpNo."' AND civCode='".$AccText."'";
+    $qR=$this->conn->prepare($sR);
+	$qR->execute();
+    while($rows= $qR->fetch(PDO::FETCH_OBJ)){
+        $rs['rev'][]=$rows;
+    }
+    
+    return $rs;
+}
 public function getClusters($cond=''){
 	if($cond===''){
-		$s="SELECT cname as cluster FROM users WHERE cname<>'KE'  GROUP BY cname";
+		$s="SELECT cname as cluster FROM users WHERE cname<>'KE' AND department=0  GROUP BY cname";
 	}else{
-		$s="SELECT cname as cluster FROM users WHERE cname='".$cond."' AND cname<>'KE'  GROUP BY cname";
+		$s="SELECT cname as cluster FROM users WHERE cname='".$cond."' AND cname<>'KE'  AND department=0  GROUP BY cname";
 	}
     
     //$q=mysql_query($s);
@@ -260,7 +323,7 @@ public function getClusters($cond=''){
 	$q->execute();
     $clusters = array();
     while($rows=  $q->fetch(PDO::FETCH_ASSOC)){
-            $s1 = "SELECT fname as fname FROM users WHERE cname='".$rows['cluster']."'  AND userlevel='1'";
+            $s1 = "SELECT fname as fname FROM users WHERE cname='".$rows['cluster']."'  AND department=0 AND userlevel='1'";
             //$q1 = mysql_query($s1);
             $q1=$this->conn->prepare($s1);
 			$q1->execute();
@@ -273,11 +336,8 @@ public function getClusters($cond=''){
 
 public function uploadFunds($lists,$file){
     set_time_limit(3600); 
-    //get the csv file
-    //$file = $_FILES[csv][tmp_name];
     $handle = fopen($file,"r");
    
-  // $counter = 0;
     $data=array();
    
     //loop through the csv file and insert into database
@@ -285,63 +345,23 @@ public function uploadFunds($lists,$file){
     if($lists === 'fundsSchedules') {
     
     do {
-       // if ($data[0]) {
-            //mysql_query("INSERT INTO batch_list (ChildNo, ChildName) VALUES
-            $this->conn->query("INSERT INTO fundsschedule (KENumber, AccountCode,AccountDescription,Amount,Month) VALUES
-                (
-                    '".addslashes($data[0])."',
-                    '".addslashes($data[1])."',
-                    '".addslashes($data[2])."',
-                    '".addslashes($data[3])."',
-                    '".addslashes($data[4])."'
-                )
-            ") or die(mysql_error());
-            //if($query){
-              //  echo "Upload Completed";
-            //}  else {
-              //  echo "Error in uploading: ".mysql_error();
-           // }
-            
-            //if($counter = 10) break;
-            //$counter++;
-            //$_SESSION['cnt']=$counter;
-            //echo 'counter ='.$counter;
-        //}
-    } while ($data = fgetcsv($handle,1000,",","'"));
-    }
-    elseif($lists=="projectsDetails")
-    {
-	    do {
-       // if ($data[0]) {
-            $this->conn->query("INSERT INTO projectsdetails (KENumber, ProjectName,AccNumber,AccountName,Bank,Branch,BranchCode,PFName,Cluster,PEmail) VALUES
-            
+            $this->conn->query("INSERT INTO fundsschedule (KENumber, AccountCode,AccountDescription,civCode,Amount,Month) VALUES
                 (
                     '".addslashes($data[0])."',
                     '".addslashes($data[1])."',
                     '".addslashes($data[2])."',
                     '".addslashes($data[3])."',
                     '".addslashes($data[4])."',
-                    '".addslashes($data[5])."',
-                    '".addslashes($data[6])."',
-                    '".addslashes($data[7])."',
-                    '".addslashes($data[8])."',
-                    '".addslashes($data[9])."'
-               
+                    '".addslashes($data[5])."'
                 )
             ") or die(mysql_error());
-            
-            //if($counter = 10) break;
-            //$counter++;
-            //$_SESSION['cnt']=$counter;
-            //echo 'counter ='.$counter;
-        //}
-    } while ($data = fgetcsv($handle,1000,",","'"));    
-    
+           
+    } while ($data = fgetcsv($handle,1000,",","'"));
     }
+
     elseif($lists=="specialgifts")
     {
 	    do {
-       // if ($data[0]) {
             $this->conn->query("INSERT INTO specialgifts (KENumber,ChildNumber,Amount,Instructions,Month) VALUES
             
                 (
@@ -354,15 +374,9 @@ public function uploadFunds($lists,$file){
                 )
             ") or die(mysql_error());
             
-            //if($counter = 10) break;
-            //$counter++;
-            //$_SESSION['cnt']=$counter;
-            //echo 'counter ='.$counter;
-        //}
     } while ($data = fgetcsv($handle,1000,",","'"));    
     
     }
-    //
         $sql = "DELETE FROM fundsschedule WHERE KENumber=''";
         $this->conn->query($sql);
 }
@@ -478,8 +492,11 @@ public function getRequestsQuery($cond){
 }
 public function countNewSchedules($cond){
 	//SET SESSION SQL_BIG_SELECTS=1 SET GLOBAL max_join_size=18446744073709551615;
-    $s = "SELECT planheader.icpNo,count(plansschedule.approved) as cnt,sum(plansschedule.totalCost) as Cost,icppopulation.noOfBen as noOfBen,icppopulation.noOfMonths as noOfMonths FROM planheader RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID LEFT JOIN users ON planheader.icpNo=users.fname LEFT JOIN icppopulation ON planheader.icpNo=icppopulation.icpNo ".$cond." GROUP BY planheader.icpNo";
-    //$q =  mysql_query($s);
+	//$q1=$this->conn->prepare("SET SQL_BIG_SELECTS=1");
+	//$q1->execute();
+	
+    //$s = "SELECT planheader.icpNo,count(plansschedule.approved) as cnt,sum(plansschedule.totalCost) as Cost,icppopulation.noOfBen as noOfBen,icppopulation.noOfMonths as noOfMonths FROM planheader RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID LEFT JOIN users ON planheader.icpNo=users.fname LEFT JOIN icppopulation ON planheader.icpNo=icppopulation.icpNo ".$cond." GROUP BY planheader.icpNo";
+    $s="SELECT planheader.icpNo,sum(plansschedule.totalCost) as Cost FROM planheader LEFT JOIN users ON planheader.icpNo=users.fname RIGHT JOIN plansschedule ON planheader.planHeaderID=plansschedule.planHeaderID $cond GROUP BY planheader.icpNo";
     $q=$this->conn->prepare($s);
 	$q->execute();
     $rst=array();
@@ -488,16 +505,6 @@ public function countNewSchedules($cond){
     }
     return $rst;
     
-}
-public function getSupportFundsInCluster($cond){
-    $s = "SELECT opfundsbalheader.icpNo as icpNo,opfundsbal.amount as funds FROM opfundsbalheader LEFT JOIN opfundsbal ON opfundsbalheader.balHdID=opfundsbal.balHdID $cond";
-    $q=$this->conn->prepare($s);
-	$q->execute();
-    $rst=array();
-    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
-        $rst[$row->icpNo]=$row->funds;
-    }
-    return $rst;	
 }
 public function viewFundsBal($cond){
     $s = "SELECT  opfundsbalheader.closureDate, opfundsbal.funds,opfundsbalheader.icpNo,opfundsbal.amount FROM opfundsbal LEFT JOIN opfundsbalheader ON opfundsbal.balHdID=opfundsbalheader.balHdID $cond";
@@ -600,6 +607,39 @@ public function totalExpPerAc($cond){
     }
     
     return $rst;	
+}
+
+public function current_month_outstanding_cheques($icp,$month){
+	$s="SELECT * FROM `voucher_header` WHERE icpNo='".$icp."' AND VType='CHQ' AND ((clrMonth > '".$month."' AND TDate <='".$month."') OR(TDate <= '".$month."' AND ChqState=0))";
+	$q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+        $rst[]=$row;
+    }
+    return $rst;
+}
+
+public function outstanding_cheques_bf($icp,$month){
+	$s="SELECT * FROM `oschqbf` WHERE icpNo='".$icp."' AND (clrMonth > '".$month."' OR clrMonth='0000-00-00')";
+	$q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+        $rst[]=$row;
+    }
+    return $rst;
+}
+
+public function chkicpswithciv($code,$icp){
+	$s="SELECT KENumber FROM `fundsschedule` WHERE civCode LIKE '%{$code}%' AND KENumber LIKE '%{$icp}%'";
+	$q=$this->conn->prepare($s);
+	$q->execute();
+    $rst=array();
+    while ($row = $q->fetch(PDO::FETCH_OBJ)) {
+        $rst[]=$row;
+    }
+    return $rst;
 }
 
 }

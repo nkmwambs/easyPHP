@@ -1,5 +1,5 @@
 <?php 
-//print_r($data[6]);
+//print_r($data[0]);
 //print($data[6]);
 echo "<br>";
 if(isset($data[4])){
@@ -121,18 +121,54 @@ if(isset($data[4])){
         <?php
             foreach($data[1] as $arr):
 				$rwChq=explode("-",$arr->ChqNo);
-                echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
-                //Bank Deposit
-                if($arr->VType==="CR"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
-                if($arr->VType==="CHQ"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
-                echo "<td>&nbsp;</td>";
-                if($arr->VType==="CHQ"&&(isset($arr->Ac2000)||isset($arr->Ac2001))){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
-                if($arr->VType==="PC"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
-                echo "<td>&nbsp;</td>";//1st 12 cells
+                if(Resources::session()->userlevel==='1'&&$arr->editable==='1'){
+                	echo "<tr><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Edit Voucher","onclick"=>"voucheredit(\"".Resources::session()->userlevel."\",\"".Resources::session()->fname."\",\"".$arr->VNumber."\",\"".$arr->TDate."\",\"".$arr->Payee."\",\"".$arr->Address."\",\"".$arr->VType."\",\"".$arr->TDescription."\",\"".$arr->ChqNo."\")"))."</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td onmouseover='winpopon()'  onmouseout='winpopoff()'>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                }elseif(Resources::session()->userlevel==='2'&&$arr->editable==='0'){
+                	echo "<tr><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Allow Edit Voucher","onclick"=>"allowvoucheredit(this,\"".$data[5]."\",\"".$arr->VNumber."\")"))."</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td onmouseover='winpopon()'  onmouseout='winpopoff()'>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                }else{
+                	echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td onmouseover='winpopon()'  onmouseout='winpopoff()'>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                }	
                 
+                //Bank Income
+                if($arr->VType==="CR"||$arr->VType==="PCR")
+                	{
+                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
+					}
+				//Bank Expense
+                if($arr->VType==="CHQ")
+                	{
+                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
+					}
+				//Bank Balances		
+                echo "<td>&nbsp;</td>";
+				
+				//PC Income
+                if($arr->VType==="CHQ"&&(isset($arr->Ac2000)||isset($arr->Ac2001)))
+                	{
+                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
+					}
+				
+				//PC Expense
+                if($arr->VType==="PC"||$arr->VType==="PCR")
+                	{
+                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
+                	}
+				
+				//PC Balance
+                echo "<td>&nbsp;</td>";//1st 12 columns
+                
+                
+                //Spread                
                 foreach($data[0] as $vals):
                     $acc = "Ac".$vals->AccNo;
-                   if(isset($arr->$acc)){echo "<td class='".$acc."'>{$arr->$acc}</td>";}elseif(array_key_exists($acc, $dis_arr)) {echo "<td class='".$acc."'>&nbsp;</td>";} 
+                   if(isset($arr->$acc))
+                   	{
+                   		echo "<td class='".$acc."'>{$arr->$acc}</td>";
+                   	}
+                   	elseif(array_key_exists($acc, $dis_arr)) 
+                   	{
+                   		echo "<td class='".$acc."'>&nbsp;</td>";
+					} 
                 endforeach;                
                 echo "</tr>";
             endforeach;

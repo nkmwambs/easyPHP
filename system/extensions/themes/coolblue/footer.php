@@ -11,7 +11,12 @@
                                     echo '<ul class="side-bar">';
                                 //if(is_array($data)){
                                     foreach ($data as $value) {
-                                        echo '<li>'.Resources::img($value->link_img).' '.Resources::a_href($value->url,$value->itemTitle,array('onclick'=>'recentItems("'.$value->itemTitle.'","'.$value->url.'","'.$_SESSION['ID'].'","'.$value->link_img.'");')).'</li>' ;
+                                    	//if(isset($value->langid)||!empty($value->langid)){
+                                    		//echo '<li>'.Resources::img($value->link_img).' '.Resources::a_href($value->url,Resources::translate_item($value->langid),array('onclick'=>'recentItems("'.$value->itemTitle.'","'.$value->url.'","'.$_SESSION['ID'].'","'.$value->link_img.'");')).'</li>' ;
+                                    	//}else{
+                                    		echo '<li>'.Resources::img($value->link_img).' '.Resources::a_href($value->url,$value->itemTitle,array('onclick'=>'recentItems("'.$value->itemTitle.'","'.$value->url.'","'.$_SESSION['ID'].'","'.$value->link_img.'","None");')).'</li>' ;
+                                    	//}
+                                        	
                                     }
                                     //}
                                     echo '</ul>';
