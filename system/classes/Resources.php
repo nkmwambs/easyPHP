@@ -132,7 +132,7 @@ public static function smart_grid($gridArray){
 		$grid .= "<legend class='smart_legend'><b>".$key." <span onclick='smartmainexpand()' id='smart_main_expand'>&nabla;</span></b></legend>";
 		
 		foreach ($value as $ky => $val) {
-				$grid .= "<div class='smart_hr_heading'><b>".$ky." <span class='smart_expand' onclick='smartexpand(\"smart_".$cnt."\",this)'>&nabla;<span></b></div><hr class='smart_hr'><br>";
+				$grid .= "<div class='smart_hr_heading'>".Resources::img("information.png",array("style"=>"width:15px;cursor:pointer;","Title"=>"No Documentation"))." <b>".$ky." <span class='smart_expand' onclick='smartexpand(\"smart_".$cnt."\",this)'>&nabla;<span></b></div><hr class='smart_hr'><br>";
 	
 				$grid .= "<div class ='smart_body' id='smart_".$cnt."'>";
 					foreach ($val as $v) {
