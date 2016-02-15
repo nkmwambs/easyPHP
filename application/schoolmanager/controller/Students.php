@@ -106,6 +106,213 @@ class Students_Controller extends E_Controller{
 		
 		return $rs;
     }
-   
+   public function findstudent(){
+	//$cond_users =  Resources::create_condition($_POST);
+	//$qry = $this->_model->getAllRecords($cond_users,"fundsschedule");
+	//print_r(json_encode($qry));
+	
+	$this->create_grid($_POST,"students");
+}
+	public function manageStudents($render=1,$path='',$tags=array("All")){
+		
+	}   
+   public function finance($render=1,$path='',$tags=array("All")){
+
+    }
+   public function academic($render=1,$path='',$tags=array("All")){
+
+    }
+   public function classmanager($render=1,$path='',$tags=array("All")){
+   	
+   }
+   public function schoolmanager(){
+   		//Populate Tutors
+   		$teacher_cond = $this->_model->where(array(array("where","userlevel",4,"=")));
+		$teacher_qry = $this->_model->getAllRecords($teacher_cond,"users","",array("ID","fname","lname"));
+		
+		//Populate Classes
+		$class_cond = $this->_model->where(array(array("WHERE","academicyear",date("Y"),"=")));
+		$class_qry = $this->_model->getAllRecords($class_cond,"classes","",array("classID","classname"));
+	
+   		//Populate Grades
+   		$grade_qry = $this->_model->getAllRecords("","gradelevels","",array("lvlID","levelName"));
+		
+		$data = array();
+		
+		$data['gradelevels'] = $grade_qry;
+		$data['tutors'] = $teacher_qry;
+		$data['classes']=$class_qry;
+		
+		return $data;
+   }
+   public function createclass($render=1,$path='',$tags=array("All")){
+   		//Populate Tutors
+   		$teacher_cond = $this->_model->where(array(array("where","userlevel",4,"=")));
+		$teacher_qry = $this->_model->getAllRecords($teacher_cond,"users","",array("ID","fname","lname"));
+		
+		//Populate Classes
+		$class_cond = $this->_model->where(array(array("WHERE","academicyear",date("Y"),"=")));
+		$class_qry = $this->_model->getAllRecords($class_cond,"classes","",array("classID","classname"));
+	
+   		//Populate Grades
+   		$grade_qry = $this->_model->getAllRecords("","gradelevels");
+		
+		$data = array();
+		
+		$data['rst'] = $grade_qry;
+		$data['tutor'] = $teacher_qry;
+		$data['class']=$class_qry;
+		
+		return $data;
+   }
+  public function viewclass($render=1,$path='',$tags=array("All")){
+   	return $this->schoolmanager();
+   }   
+  public function newclass(){
+  	//print_r($_POST);
+  	$arr = $_POST;
+	
+	$tutor = $arr['tutorid'];
+	$grade = $arr['gradelevelid'];
+	$academicyear = $arr['academicyear'];
+	$classname = $arr['classname'];
+	
+	//Check if record exist
+	$rec_cond = $this->_model->where(array(array("where","tutorid",$tutor,"="),array("AND","gradelevelid",$grade,"="),array("AND","academicyear",$academicyear,"=")));
+	$rec_qry = $this->_model->getAllRecords($rec_cond,"classes");
+	
+	if(count($rec_qry)===0){	
+		echo $this->_model->insertRecord($arr,"classes");
+	}else{
+		echo "There is already a class created for the same tutor and grade with a class name ".$classname." in year ".$academicyear;
+	}
+  }
+  
+  public function enrollclass(){
+  	$ctrl = array_shift($_POST);
+  	$arr_fin  = $_POST;
+	$msg ="No record added or deleted. Student not found!";//implode(",", array_keys($arr_fin));
+	$skey = "";
+	$enrolled = 0;
+	$flag=0;
+	$enrollID = "";
+	
+	//Find if child record is available and active
+	$available_cond = $this->_model->where(array(array("WHERE","admNo",$arr_fin['admissionnum'],"="),array("AND","active","Yes","=")));
+	$available_qry = $this->_model->getAllRecords($available_cond,"students","",array("studentKey"));
+	if(count($available_qry)>0){
+		$skey = $available_qry[0]->studentKey;
+		$arr_fin['studentkey'] = $skey;
+		$admNo = array_shift($arr_fin);
+		$flag=1;
+	}
+	
+
+	//Find if child record is already in the class
+	if($flag===1){
+		$in_class_cond = $this->_model->where(array(array("WHERE","classenroll.studentkey",$skey,"="),array("AND","classes.academicyear",date("Y"),"=")));//array("AND","classenroll.classid",$arr_fin['classid'],"="),
+		$in_class_qry = $this->_model->getAllRecords($in_class_cond,"classenroll","",array("classenroll.enrollID:enrollID","classes.classname:classname"),array("LEFT JOIN"=>array("classenroll"=>"classid","classes"=>"classID")));
+		
+		if(count($in_class_qry)>0&&$ctrl==="1"){
+			$msg = "The student number ".$admNo." is already enrolled in {$in_class_qry[0]->classname} in the academic year ".date("Y");
+		}else if(count($in_class_qry)>0&&$ctrl==="0"){
+			$enrollID = $in_class_qry[0]->enrollID;
+			$enrolled = 2;
+		}else if(count($in_class_qry)===0&&$ctrl==="1"){
+			$enrolled = 1;		
+		}
+	}
+
+	if($enrolled===1){
+			//$msg = implode(",",array_keys($arr_fin));
+			$msg = $this->_model->insertRecord($arr_fin,"classenroll");
+	}else if($enrolled===2){
+			$del_cond = $this->_model->where(array(array("WHERE","enrollID",$enrollID,"=")));
+			$msg = $this->_model->deleteQuery($del_cond,"classenroll");
+	}
+
+	echo $msg;
+	
+  }
+public function studentinclasssearch(){
+		$admNo = $_POST['admissionnum'];
+		$msg = "No record found";
+		$flag=0;
+		
+		//Find if child record is available and active
+		$available_cond = $this->_model->where(array(array("WHERE","admNo",$admNo,"="),array("AND","active","Yes","=")));
+		$available_qry = $this->_model->getAllRecords($available_cond,"students","",array("studentKey"));
+			if(count($available_qry)>0){
+				$skey = $available_qry[0]->studentKey;
+				$msg ="<b>Student's Summary for student number: ".$admNo."</b><br>";
+				$msg .="Student is Registered and Active<br>";
+				$flag=1;
+			}
+		
+		if($flag===1){
+			$in_class_cond = $this->_model->where(array(array("WHERE","classenroll.studentkey",$skey,"="),array("AND","classes.academicyear",date("Y"),"=")));
+			$in_class_qry = $this->_model->getAllRecords($in_class_cond,"classenroll","",array("classes.classname:classname","gradelevels.levelName:gradelevel"),array("LEFT JOIN"=>array("classenroll"=>"classid","classes"=>"classID"),"RIGHT JOIN"=>array("classes"=>"gradelevelid","gradelevels"=>"lvlID")));
+			if(count($in_class_qry)>0){
+				$msg .="Student is enrolled in class ".$in_class_qry[0]->classname." grade level ".$in_class_qry[0]->gradelevel;
+			}
+		}
+		
+		echo $msg;
+	}
+	public function classesjoin(){
+		$data = array("LEFT JOIN"=>array("classes"=>"classID","classenroll"=>"classid"));
+		return $data;
+	}
+	public function searchclass($render=2,$path='',$tags=array("All")){
+		$inp_arr = $_POST;
+		
+		$classname = $inp_arr['classname'];
+		$gradelevelid = $inp_arr['gradelevelid'];
+		$academicyear = $inp_arr['academicyear'];
+		
+		$search_cond="";
+		
+		if(empty($classname)&&!empty($gradelevelid)&&!empty($academicyear)){
+			$search_cond = $this->_model->where(array(array("WHERE","classes.gradelevelid",$gradelevelid,"="),array("AND","classes.academicyear",$academicyear,"=")));
+		}elseif(empty($gradelevelid)&&!empty($classname)&&!empty($academicyear)){
+			$search_cond = $this->_model->where(array(array("WHERE","classes.classname",$classname,"LIKE"),array("AND","classes.academicyear",$academicyear,"=")));	
+		}elseif(empty($academicyear)&&!empty($classname)&&!empty($gradelevelid)){
+			$search_cond = $this->_model->where(array(array("WHERE","classes.classname",$classname,"LIKE"),array("AND","classes.gradelevelid",$gradelevelid,"=")));
+		}elseif(empty($classname) && empty($gradelevelid)&& !empty($academicyear)){
+			$search_cond = $this->_model->where(array(array("WHERE","classes.academicyear",$academicyear,"=")));
+		}elseif(empty($classname)&& empty($academicyear)&& !empty($gradelevelid)){
+			$search_cond = $this->_model->where(array(array("WHERE","classes.gradelevelid",$gradelevelid,"=")));
+		}elseif(empty($gradelevelid)&& empty($academicyear)&& !empty($classname)){
+			$search_cond = $this->_model->where(array(array("WHERE","classes.classname",$classname,"LIKE")));
+		}else{
+			$search_cond="";
+		}
+		
+		//$search_cond = $this->_model->where(array(array("WHERE","classes.classname",$classname,"LIKE"),array("AND","classes.gradelevelid",$gradelevelid,"="),array("AND","classes.academicyear",$academicyear,"=")));
+		
+		
+		$search_qry = $this->_model->getAllRecords($search_cond,"classes","GROUP BY classes.classname",array("classes.classID:Class ID","classes.classname:Class Name","classes.academicyear:Academic Year","COUNT('classenroll.studentkey'):Count Of Students"),$this->classesjoin());
+		
+		$data=array();
+		
+		$data['rec'] = $search_qry;
+		
+		//echo $search_cond;
+		
+		return $data;
+	}
+	public function showStudents($render=2,$path='',$tags=array("All")){
+		$classid = $_POST['classid'];
+		
+		$enrol_cond = $this->_model->where(array(array("WHERE","classenroll.classid",$classid,"=")));
+		$enrol_qry = $this->_model->getAllRecords($enrol_cond,"classenroll","",array("students.admNo:Admission Number","students.fname:First Name","students.lname:Last Name","students.sex:Gender"),array("LEFT JOIN"=>array("classenroll"=>"studentkey","students"=>"studentKey")));
+	
+		$data=array();
+		
+		$data['rec'] = $enrol_qry;
+		
+		return $data;
+	
+	}
 }
 ?>

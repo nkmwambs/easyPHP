@@ -17,13 +17,13 @@
     <tr>
         <td>First Name: <input class="mandatory" type="text"  onchange='clearHighlight(this);' id="fname" name="fname" placeholder="First Name" title="First Name"/></td>
         <td>Last Name: <input  class="mandatory" type="text" onchange='clearHighlight(this);' id="lname" name="lname" placeholder="Last Name" title="Last Name"/></td>
-        <td>Gender: <select class="mandatory"  id="sex" name="sex"><option>Gender ...</option><option value="1">Female</option><option value="2">Male</option></select></td>
+        <td>Gender: <select class="mandatory"  id="sex" name="sex"><option>Gender ...</option><option value="Female">Female</option><option value="Male">Male</option></select></td>
     </tr>
     
     <tr><th colspan="3">&nbsp;</th></tr>
     
         <tr>
-            <td>Date Of Birth: <input class="mandatory" type="text" onchange='clearHighlight(this);' id="dob" name="dob" placeholder="Date Of Birth" title="Date Of Birth" readonly="readonly"/></td>
+            <td>Date Of Birth: <input class="mandatory" type="text" onchange='clearHighlight(this);' id="dob" name="dob" placeholder="Date Of Birth" title="Date Of Birth"/></td>
             <td> Nationality: <input  class="mandatory" type="text" onchange='clearHighlight(this);' value="Kenya" id="nationality" name="nationality" title="Nationality" placeholder="Nationality"/></td><td>Active? <select class="mandatory" id="active" name="active"><option value="">Active?</option><option value="Yes">Yes</option><option value="No">No</option></select></td>
             
         </tr>
@@ -70,7 +70,7 @@
     <tr><th colspan="4">Student's Parent/ Guardian Information (Page 3/6)</th></tr>
              <tr><td colspan="4">&nbsp;</td></tr>
 
-    <tr><td>Parent/Guardian 1</td><td><input class="mandatory"  type="text" onchange='clearHighlight(this);' id="parentOneFullname" name="parentOneFullname" title="Full Name" placeholder="Full Name"/></td><td><select class="mandatory"  id="parentOneRel" name="parentOneRel" title="Relationship"><option value="">Relationship ... </option><option value="1">Father</option><option value="2">Mother</option><option value="3">Brother</option><option value="4">Sister</option><option value="5">Aunt</option><option value="6">Uncle</option><option value="7">Grand-Father</option><option value="8">Grand-Mother</option><option value="9">Other</option></select></td><td><input type="text" onchange='clearHighlight(this);' id="parentOneRelOther" name="parentOneRelOther" title="Other Relationship" placeholder="If Other, Specify"/></td></tr>
+    <tr><td>Parent/Guardian 1</td><td><input class="mandatory"  type="text" onchange='clearHighlight(this);' id="parentOneFullname" name="parentOneFullname" title="Full Name" placeholder="Full Name"/></td><td><select class="mandatory"  id="parentOneRel" name="parentOneRel" title="Relationship"><option value="">Relationship ... </option><option value="Father">Father</option><option value="Mother">Mother</option><option value="Brother">Brother</option><option value="Sister">Sister</option><option value="Aunt">Aunt</option><option value="Uncle">Uncle</option><option value="Grand-Father">Grand-Father</option><option value="Grand-Mother">Grand-Mother</option><option value="Other">Other</option></select></td><td><input type="text" onchange='clearHighlight(this);' id="parentOneRelOther" name="parentOneRelOther" title="Other Relationship" placeholder="If Other, Specify"/></td></tr>
     
     <tr><td><td><input class="mandatory"  type="text" onchange='clearHighlight(this);' id="parentOnePhone" name="parentOnePhone" title="Phone Number" placeholder="Phone Number"/></td></td><td><input type="text" onchange='clearHighlight(this);' id="parentOneEmail" name="parentOneEmail" title="Email" placeholder="Email"/></td><td><input type="text" onchange='clearHighlight(this);' id="parentOneJob" name="parentOneJob" title="Occupation" placeholder="Occupation"/></td></tr>
     
@@ -78,7 +78,7 @@
     
     <tr><td colspan="4">&nbsp;</td></tr>
 
-    <tr><td>Parent/Guardian 2</td><td><input  type="text" onchange='clearHighlight(this);' id="parentTwoFullname" name="parentTwoFullname" title="Full Name" placeholder="Full Name"/></td><td><select  id="parentTwoRel" name="parentTwoRel" title="Relationship"><option value="">Relationship ... </option><option value="1">Father</option><option value="2">Mother</option><option value="3">Brother</option><option value="4">Sister</option><option value="5">Aunt</option><option value="6">Uncle</option><option value="7">Grand-Father</option><option value="8">Grand-Mother</option><option value="9">Other</option></select></td><td><input type="text" onchange='clearHighlight(this);' id="parentTwoRelOther" name="parentTwoRelOther" title="Other Relationship" placeholder="If Other, Specify"/></td></tr>
+    <tr><td>Parent/Guardian 2</td><td><input  type="text" onchange='clearHighlight(this);' id="parentTwoFullname" name="parentTwoFullname" title="Full Name" placeholder="Full Name"/></td><td><select  id="parentTwoRel" name="parentTwoRel" title="Relationship"><option value="">Relationship ... </option><option value="Father">Father</option><option value="Mother">Mother</option><option value="Brother">Brother</option><option value="Sister">Sister</option><option value="Aunt">Aunt</option><option value="Uncle">Uncle</option><option value="Grand-Father">Grand-Father</option><option value="Grand-Mother">Grand-Mother</option><option value="Other">Other</option></select></td><td><input type="text" onchange='clearHighlight(this);' id="parentTwoRelOther" name="parentTwoRelOther" title="Other Relationship" placeholder="If Other, Specify"/></td></tr>
     
     <tr><td><td><input  type="text" onchange='clearHighlight(this);' id="parentTwoPhone" name="parentTwoPhone" title="Phone Number" placeholder="Phone Number"/></td></td><td><input type="text" onchange='clearHighlight(this);' id="parentTwoEmail" name="parentTwoEmail" title="Email" placeholder="Email"/></td><td><input type="text" onchange='clearHighlight(this);' id="parentTwoJob" name="parentTwoJob" title="Occupation" placeholder="Occupation"/></td></tr>
     
@@ -101,10 +101,10 @@
         <td colspan="2">First School?: <select id="firstSchool" name="firstSchool"><option value="">First School? ... </option><option value="1">Yes</option><option value="0">No</option></select></td>
     </tr>
     <tr>
-        <td colspan="2">If Yes, Name previous School: <input type="text" onchange='clearHighlight(this);' id="formerSchool" name="formerSchool" title="Former School" placeholder="If No, Former School"/></td>
+        <td colspan="2">If No, Name previous School: <input type="text" onchange='clearHighlight(this);' id="formerSchool" name="formerSchool" title="Former School" placeholder="If No, Former School"/></td>
         <td colspan="2">Last Exam score from last school: <input type="text" onchange='clearHighlight(this);' id="lastScore" name="lastScore" title="Last Score" placeholder="If No, Last Score"/></td>
     </tr>
-    <tr><td colspan="2"> Interviewed?<input type="checkbox" name="interviewed" id="interviewed" value="1"/></td>
+    <tr><td colspan="2"> Interviewed?<input type="checkbox" name="interviewed" id="interviewed" value="Yes"/></td>
         <td colspan="2">If Yes, Interview Score<input type="text" onchange='clearHighlight(this);' id="interviewScore" name="interviewScore" title="Interview Score" placeholder="Interview Score"/></td>
     </tr>
     
@@ -172,7 +172,7 @@
                 <div style="float:left;height:100px;width: auto;">
                     <select class="mandatory" id="getMed" name="medical[]" multiple style="height:125px;min-width:250px;"></select>
                 </div>
-                    <input type="text" onchange='clearHighlight(this);' id="medicalOther" name="medicalOther" title="Other Medical Condition" placeholder="If other, Specify"/><input type="hidden" name="draft" value="1" id="draft"/>
+                    <input type="text" onchange='clearHighlight(this);' id="medicalOther" name="medicalOther" title="Other Medical Condition" placeholder="If other, Specify"/><input type="hidden" name="draft" value="Yes" id="draft"/>
             </td></tr>
              
             <tr><td colspan="4" align="center"><?php echo Resources::img("previous.png",array("title"=>"Previous","onclick"=>'gotoFrame("tbl_Health","tbl_Talents");',"style"=>"float:left;cursor:pointer;"))." ".Resources::img("unreject.png",array("title"=>'Submit',"onclick"=>'addStudentRecord("frmBioData");',"style"=>"margin-left:auto;margin-right:auto;cursor:pointer;"));?></td></tr>  

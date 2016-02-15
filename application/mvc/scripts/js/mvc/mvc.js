@@ -1,8 +1,4 @@
-function setAttributes(el, attrs) {
-  for(var key in attrs) {
-    el.setAttribute(key, attrs[key]);
-  }
-}//setAttributes(elem, {"src": "http://example.com/something.jpeg", "height": "100%", ...});  
+ 
 
 var tArea = document.getElementsByTagName("textarea");
 for (var f=0; f < tArealength; f++) {

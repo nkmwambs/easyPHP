@@ -20,6 +20,7 @@ echo Resources::img("books.png",array("style"=>"width:50px;position:absolute;top
 </div>
 
 <div id="foot"></div>
+</div>
 
 </body>
 </html>

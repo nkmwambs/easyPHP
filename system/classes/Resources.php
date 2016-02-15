@@ -122,6 +122,136 @@ public static function create_condition($multi_array){
 	
 	return $str;
 }
+public static function smart_grid($gridArray){
+	
+	foreach ($gridArray as $key => $value) {
+		$cnt=1;
+		
+		$grid = "<fieldset class='smart_fieldset'>";
+		
+		$grid .= "<legend class='smart_legend'><b>".$key." <span onclick='smartmainexpand()' id='smart_main_expand'>&nabla;</span></b></legend>";
+		
+		foreach ($value as $ky => $val) {
+				$grid .= "<div class='smart_hr_heading'><b>".$ky." <span class='smart_expand' onclick='smartexpand(\"smart_".$cnt."\",this)'>&nabla;<span></b></div><hr class='smart_hr'><br>";
+	
+				$grid .= "<div class ='smart_body' id='smart_".$cnt."'>";
+					foreach ($val as $v) {
+						$grid .= $v;
+					}
+				$grid .= "</div>";
+			
+			$cnt++;
+		}
+		
+		$grid .= "<div id='smart_rst'></div>";
+	}
+
+	$grid .= "</fieldset>";
+	$grid .= Resources::a_href($GLOBALS['Controller']."/".$GLOBALS['Method'],"<INPUT TYPE='button' value='Refresh Page'/>");
+	
+	
+	/*
+
+	$grid .= "<legend class='smart_legend'><b>Create Class</b></legend>";
+ 
+	$grid .= "<div class='smart_hr_heading'><b>Class Details <span class='smart_expand' onclick='smartexpand(\"smart_1\",this)'>&nabla;<span></b></div><hr class='smart_hr'><br>";
+
+	$grid .= "<div class ='smart_body' id='smart_1'><INPUT TYPE='text' placeholder='Class Name'/><SELECT><OPTION>Select Grade</OPTION></SELECT><INPUT TYPE='text' placeholder='Class Teacher'/><INPUT TYPE='text' placeholder='Academic Year'/></div>";
+
+	$grid .= "<br><div class='smart_hr_heading'><b>Add Students <span class='smart_expand' onclick='smartexpand(\"smart_2\",this)'>&nabla;<span></b></div><hr class='smart_hr'><br>";
+
+	$grid .= "<div class ='smart_body' id='smart_2'><INPUT TYPE='text' placeholder='Search Student'/><span>[Search] [Add]</span></div>";
+
+	*/
+	
+	
+	return $grid;
+}
+public static function load_message(){
+	
+	$getMsg = ""; 
+	
+	$model = new E_Model("messages");
+	
+	$cntl = $GLOBALS['Controller'];
+	$mthd = $GLOBALS['Method'];
+	
+	$pnt = $cntl."_".$mthd;
+	$msg_type ="2";
+	
+	$cnd = $model->where(array(array("WHERE","pointer",$pnt,"=")));
+	$qry = $model->getAllRecords($cnd,"messages","",array("msg","msg_type"));
+	
+	if(count($qry)>0){
+		if($qry[0]->msg_type==="1"){
+			$getMsg = "";
+		}
+			$getMsg .= $qry[0]->msg;
+			$msg_type = $qry[0]->msg_type;
+	}else{
+		$getMsg .="Module description not available";
+	}
+	
+	$fin = "";
+	
+	if($msg_type==='2'){
+		$fin = Resources::img("help.png",array("style"=>"cursor:pointer;","title"=>"Click to view Module Description","onclick"=>"moduledesc(\"".$getMsg."\")"))."<br>";
+	}else{
+		$fin = "<div id='moduledesc".$msg_type."'>".$getMsg."</div><br>";
+	}
+	 
+	return $fin;
+}
+public static function db_table($array){
+	
+	$keys = array_keys($array);
+	$caption = $keys[0];
+	
+	$tbl = "<table id='info_tbl' style='margin-top:20px;max-width:95%;min-width:50%;'>";
+
+	$tbl .= "<caption>".$caption."</caption>";
+	
+	if(count($array[$caption]['records'])===0){
+		$tbl .= "<tr><td><div id='error_div'>No results found for the search</div></td></tr>";
+	}else{
+	
+			$hdr = array_keys((Array)$array[$caption]['records'][0]);
+			
+			$func = "func";
+			
+			$tbl .= "<tr>";
+			foreach ($hdr as $value) {
+				$tbl .= "<th>".$value."</th>";
+			}
+			$tbl .= "</tr>";
+			
+			
+			foreach ($array[$caption]['records'] as $value) {
+				$tbl .= "<tr>";
+				$cnt_rws = 0;
+				$style = "color:#0000FF;";
+					foreach ($value as $k => $v) {
+						
+					if(isset($array[$caption]['functions'])){
+						if(array_key_exists($cnt_rws,$array[$caption]['functions'])){
+							$func = $array[$caption]['functions'][$cnt_rws];
+							$style = "color:violet;cursor:pointer;";
+						}
+					}	
+						
+						
+						$tbl .= "<td style='".$style."' onclick=".$func."(this)>".$v."</td>";
+						$cnt_rws++;
+					}
+				$tbl .= "</tr>";
+			}
+	}
+	
+	$tbl .= "</table>";
+
+return $tbl;
+
+}
 public static function link($links=array()){
     
         //Load grouped default app level css

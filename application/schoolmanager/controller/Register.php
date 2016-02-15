@@ -7,7 +7,13 @@ private $_model;
     }
 
     public function userRegister($render=1,$path='',$tags=array("All")) {
-            
+            $acl_qry = $this->_model->getAllRecords("","acl");
+			
+			$data = array();
+			
+			$data['rst'] = $acl_qry;
+			
+			return $data;
     }
 
     public function submitUser(){
@@ -17,7 +23,7 @@ private $_model;
                 }
             endforeach; 
             array_pop($_POST);
-            $cond = $this->_model->where(array("where"=>array("username",$_POST['username'],"="),"OR"=>array("email",$_POST['email'],"=")));
+            $cond = $this->_model->where(array(array("where","username",$_POST['username'],"="),array("OR","email",$_POST['email'],"=")));
             $rst = $this->_model->getAllRecords($cond,"users");
             if(count($rst)===0){
                 

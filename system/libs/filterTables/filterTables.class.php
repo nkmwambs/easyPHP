@@ -23,7 +23,7 @@ class filterTables{
 		
 		$elem = "<INPUT TYPE='hidden' id='editcallback' VALUE='".$this->_editcallback."'/>";
 		
-		$elem .= "<button  id='btnExport'>Export</button>";
+		$elem .= "<button  id='btnExport'>Export</button><br><br>";
 		
 		$elem .= "<form id='filterform'>";
 		$elem .= "<fieldset id='fldset'>";

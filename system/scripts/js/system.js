@@ -1,11 +1,75 @@
+var path = 'http://'+location.hostname+'/easyPHP/';
+
+function xmlhttprequest(url,cnfrm1,confrm2){
+//alert(url);
+    if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+                 xmlhttp=new XMLHttpRequest();
+                  } else { // code for IE6, IE5
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+    xmlhttp.onreadystatechange=function() {    
+        if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+            if(confrm2==="1"){
+                document.write(xmlhttp.responseText);
+            }else{
+                location.reload();
+                alert(xmlhttp.responseText);
+            }
+        }
+    };
+    if(cnfrm1==="1"){
+    var response = confirm("Are you sure you want to perform this action?");
+        if(response){
+            xmlhttp.open("GET",path+"system/index.php?url="+url+"/rnd/"+Math.random(),true);
+            xmlhttp.send();
+        }
+        else{
+            alert("Your action has been cancelled!");
+        }
+    }else{
+        xmlhttp.open("GET",path+"system/index.php?url="+url+"/rnd/"+Math.random(),true);
+        xmlhttp.send();        
+    }
+}
+
+function editMenu(el){
+    var elemid=el.id;
+    var tdid_arr = elemid.split("_");
+    var tdid = tdid_arr[0];
+    var tdFld = tdid_arr[2];
+    var elem = document.getElementById(elemid);
+    if(elem.childNodes[0].tagName!=='INPUT'){
+        var value = elem.innerHTML;
+        document.getElementById(elemid).innerHTML = "<input id='"+tdFld+"' type='text' value='"+value+"' onchange='effectEdit(this,\""+tdid+"\");'/>";
+    }
+}
+
+function effectEdit(el,mnid){
+    var url = "mvc/Settings/editMenu/"+el.id+"/"+el.value+"/mnID/"+mnid+"";
+    xmlhttprequest(url,"1","0");
+}
+
+function removeInput(el){
+    var id=el.id;
+    var elem = document.getElementById(id);
+    if(elem.childNodes[0].tagName==='INPUT'){
+        var value = elem.firstChild.value;
+        elem.removeChild(elem.firstChild);
+        elem.innerHTML=value;
+        
+    }
+}
+
 /**
  * Table Filter Functions ---- Start Here
  */
+
 function addfilters(val,text){
-	
 	var inputs = document.getElementsByTagName("INPUT");
 	var cnt = inputs.length;
-	
+
 	var vals = val.split(",");
 	var txt = text.split(",");
 	var op = ["=",">","<",">=","<=","!=","Contains"];
@@ -81,6 +145,7 @@ function addfilters(val,text){
 }
 
 function getfiltercontroller(callback,div){
+	//alert(callback);
         xmlhttp.onreadystatechange=function() {
             if(xmlhttp.readyState!==4){
                 document.getElementById('overlay').style.display='block';
@@ -88,7 +153,8 @@ function getfiltercontroller(callback,div){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-                	if(xmlhttp.responseText===''){
+                	//alert(Object.keys(xmlhttp.responseText).length);
+                	if(Object.keys(xmlhttp.responseText).length === 2){
                 		alert("Results not found or Controller Method Missing!");
                 	}
                 	create_grid(div,xmlhttp.responseText);
@@ -102,19 +168,19 @@ function getfiltercontroller(callback,div){
         	alert("DIV rst not present. Create a DIV with id rst or supply another DIV id in the resource as a forth argument");
         	exit;
         }
-        
+        //alert(callback);
         var frm = document.getElementById('filterform');  
     	var frmData = new FormData(frm);                                     
-         xmlhttp.open("POST",path+"/mvc/"+callback,true);
+         xmlhttp.open("POST",path+"schoolmanager/"+callback,true);
          xmlhttp.send(frmData);
 }
 function deletefilter(cname){
-	
+
 	var flds = document.getElementsByClassName(cname);
 	
 	var inp = document.getElementsByTagName('INPUT');
-	
-	if(inp.length===1){
+	//alert(inp.length);
+	if(inp.length===1||inp.length===2){
 		alert("You should have atleast one filter");
 		exit;
 	}
@@ -154,6 +220,7 @@ function create_grid(div,objRaw){
 		tbl.appendChild(tr);
 	}
 	pg.appendChild(tbl);
+	
 }
 function editgrid(elem){
 	var tbl = elem.parentNode.parentNode;
@@ -235,3 +302,165 @@ function excelexport(){
 		        //e.preventDefault();
 	
 }
+function setAttributes(el, attrs) {
+  for(var key in attrs) {
+    el.setAttribute(key, attrs[key]);
+  }
+}//setAttributes(elem, {"src": "http://example.com/something.jpeg", "height": "100%", ...}); 
+function validaterequired(){
+	var req = document.getElementsByClassName('req');
+	var local_cnt = 0;
+	
+	for (var i=0; i < req.length; i++) {
+		req.item(i).style.backgroundColor='white';
+	  	if(req.item(i).value===''){
+	  		req.item(i).style.backgroundColor='red';
+	  		local_cnt++;
+	  	}
+	};
+	
+	if(local_cnt>0){
+		alert(local_cnt+" mandatory fields are empty!");
+		exit;
+	}
+}
+/*
+ * Smart Table starts here
+ */
+
+function smartexpand(smartid,elem){
+	
+	document.getElementById('smart_rst').style.display='none';
+	
+	var sid = document.getElementById(smartid);
+	var sc = document.getElementsByClassName('smart_body');
+	var smart_expand = document.getElementsByClassName('smart_expand');
+	
+	for (var k=0; k < smart_expand.length; k++) {
+		smart_expand.item(k).innerHTML='&nabla;';
+		smart_expand.item(k).parentNode.style.color='white'; 	
+	}
+		
+	for (var j=0; j < sc.length; j++) {
+		if(sc.item(j).style.display==='block'){
+			sc.item(j).style.display='none';
+		}
+	 	
+	}
+	
+	sid.style.display='block';
+	elem.innerHTML='&Delta;';		
+	elem.parentNode.style.color='blue';
+	
+	document.getElementById('smart_main_expand').innerHTML="&Delta;";
+
+}
+function smartmainexpand(){
+	document.getElementById('smart_rst').style.display='none';
+	
+	var sc = document.getElementsByClassName('smart_body');
+	var smart_expand = document.getElementsByClassName('smart_expand');
+	
+	for (var k=0; k < smart_expand.length; k++) {
+		smart_expand.item(k).innerHTML='&nabla;';
+		smart_expand.item(k).parentNode.style.color='white'; 	
+	}
+
+	for (var j=0; j < sc.length; j++) {
+		if(sc.item(j).style.display==='block'){
+			sc.item(j).style.display='none';
+		}
+	 	
+	}
+	
+	document.getElementById('smart_main_expand').innerHTML="&nabla;";
+}
+function func(elem){
+	alert("No Function Available");
+}
+function create_table(obj){
+	if(document.getElementById('smart_rst').children.length>0){
+		document.getElementById('smart_rst').removeChild(document.getElementById('smart_rst').children[0]);
+	}
+	
+	var TABLE = document.createElement('TABLE');
+	setAttributes(TABLE,{"id":"info_tbl","style":"margin-top:20px;color:green;min-width:50%;max-width:95%;"});
+	
+	var keys = Object.keys(obj[0]);
+	var HR = document.createElement("TR");
+	for(var i in keys){
+		var TH = document.createElement("TH");
+		TH.innerHTML = keys[i];
+		HR.appendChild(TH);
+	}
+	
+	TABLE.appendChild(HR);
+	
+	
+	for (var j=0; j < obj.length; j++) {
+	  var TR = document.createElement("TR");
+	  	for(var k in obj[j]){
+	  		var TD = document.createElement("TD");
+	  		TD.innerHTML = obj[j][k];
+	  		setAttributes(TD,{"style":"color:white;"});
+	  		TD.onclick=function (){
+	  			
+	  		};
+	  		TR.appendChild(TD);
+	  	}
+	  	TABLE.appendChild(TR);
+	}
+	
+
+	
+	return TABLE;
+	
+}
+/*
+ * Smart Table ends here
+ */
+
+
+
+
+/*
+ * Popup - Start
+ */
+
+function popup(rst,header){
+	//alert("Hello");
+	var container = document.getElementById('container');
+	var pop = document.createElement("DIV");
+	setAttributes(pop,{"id":"popup","class":"popup"});
+	var content = document.createElement("DIV");
+	content.innerHTML='<a href="#close" title="Close"  onclick="closepop()" class="close">X</a><b>'+header+"</b><br>";
+	content.appendChild(rst);
+	pop.appendChild(content);
+	container.appendChild(pop);
+	
+}
+function closepop(){
+	document.getElementById('popup').style.display='none';
+}
+/*
+ * Popup -End
+ */
+
+/*
+ * Module desc - start
+ */
+
+function moduledesc(msg){
+		
+		var div = document.createElement("DIV");
+		div.innerHTML = msg;
+		
+		var hdr = "Module Description";
+		
+		popup(div,hdr);
+	
+}
+
+/*
+ * Module desc - end
+ */

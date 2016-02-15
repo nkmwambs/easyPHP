@@ -3,29 +3,8 @@ echo Resources::a_href("Students/newStudent/public/0",Resources::img("plus.png",
 ?>
 <br>
 <hr width='85%' style="float: left;"><br>
-Search Student:<br><br>
-<form id="qryFrm">
-    <textarea rows="3" id="results_sql" name="results_sql" readonly>
-        &nbsp;
-    </textarea>
-</form>
-<div id="fieldset_wrapper">
-    <fieldset class="fieldsets" style="width:100px;float: left;border:1px black solid;">
-        <legend id="select" class="selectable" onclick="showContent(this);">Select</legend>
-    </fieldset>
-    <fieldset class="fieldsets" style="width:100px;float: left;border:1px black solid;">
-        <legend id="search" class="selectable"  onclick="showContent(this);">Search</legend>
-    </fieldset>
-    <fieldset class="fieldsets" style="width:100px;float: left;border:1px black solid;">
-        <legend id="sort" class="selectable"  onclick="showContent(this);">Sort</legend>
-    </fieldset>
-    <fieldset style="width:70px;float: left;border:1px black solid;">
-        <legend id="limit">Limit</legend>
-        <input type="text" style="max-width:50px" value="50" name="limit" id="limit"/>
-    </fieldset>
-    <fieldset style="width:130px;float: left;border:1px black solid;">
-        <legend>Action</legend>
-        <button onclick="searchResults();">Search</button>
-    <?php echo Resources::a_href("Students/searchStudent","<button>Reset</button>");?>
-    </fieldset>
-</div>
+<?php
+echo Resources::table_filters("Search Student",array("fname"=>"First Name","lname"=>"Last Name","sex"=>"Sex","draft"=>"Draft","active"=>"Active"),"Students/findstudent","Students/editprofile");
+echo "<div id='rst'></div>";
+
+?>

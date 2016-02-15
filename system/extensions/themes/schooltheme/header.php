@@ -8,6 +8,7 @@
 		Resources::link(array());
 		Resources::script(array());
 		?>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
                 <script>
                     	$(document).ready(function(){
                         $("#eventDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
@@ -19,7 +20,7 @@
 <body>
 		
 <div id="overlay"></div> <!--cover all the screen with transparent div-->
-
+ <div id="container">
 <div id="header">
 	<div id="logo" ><?php echo Resources::img("logo.png",array("id"=>"logo_img"));?></div>
 
@@ -58,4 +59,10 @@
  
  
  <div id="contain"> 
+ 	
+<?php
+
+echo Resources::load_message();
+
+?>
   	

@@ -3,7 +3,7 @@
 
 ?>
 <div id="error_log" style="color:red;position: absolute;top:20px;left: 280px;"></div>        
-<h3 style="margin-left:260px;">School Management System</h3>
+<h3 style="margin-left:280px;">School Management System</h3>
         <?php 
             echo Resources::img("logo.png",array("id"=>"welcome_logo"));
         ?>
@@ -19,6 +19,6 @@
 			</form>
 	</div>
         <?php 
-            echo Resources::img("anim_book_two.gif",array("style"=>"position:absolute;bottom:0px;left:260px;"));
+            //echo Resources::img("anim_book_two.gif",array("id"=>"bookgif"));
             
         ?>

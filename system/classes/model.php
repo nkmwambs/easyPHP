@@ -84,6 +84,11 @@ public function where($cond){
             	}else{
             		if($v[3]==='BETWEEN'){
             			$str .= " ".$v[0]." ".$v[1]." ".$v[3]." ".$v[2]." ";
+					
+					}
+					else if($v[3]==='LIKE'){
+						$str .= " ".$v[0]." ".$v[1]." LIKE '%".$v[2]."%' ";
+					
             		}else{
             			$str .= " ".$v[0]." ".$v[1]." ".$v[3]." '".$v[2]."' ";
             		}
@@ -154,7 +159,7 @@ public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array(),
 				if($count<count($fields_arr)){
 					if(substr_count($value,":")>0){
 						$rwfld = explode(":", $value);
-						$fields_final .= $rwfld[0]." as ".$rwfld[1].",";
+						$fields_final .= $rwfld[0]." as '".$rwfld[1]."',";
 						$final_fld_arr[]= $rwfld[1];
 					}else{
 						$fields_final .=$value.",";
@@ -164,7 +169,7 @@ public function getAllRecords($cond="",$_table="",$extra="",$fields_arr=array(),
 				}else{
 					if(substr_count($value,":")>0){
 						$rwfld = explode(":", $value);
-						$fields_final .= $rwfld[0]." as ".$rwfld[1];
+						$fields_final .= $rwfld[0]." as '".$rwfld[1]."'";
 						$final_fld_arr[]= $rwfld[1];
 					}else{
 						$fields_final .=$value;

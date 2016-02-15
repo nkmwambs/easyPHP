@@ -6,7 +6,19 @@
     <tr><td>First Name:</td><td><input type="text" id="fname" name="fname" placeholder="First Name"/></td></tr>
     <tr><td>Last Name:</td><td><input type="text" id="lname" name="lname" placeholder="Last Name"/></td></tr>
     <tr><td>Email:</td><td><input type="text" id="email" name="email" placeholder="Personal Email" onblur="validate(this);"/></td></tr>
-    <tr><td>Role:</td><td><select name="usrlvl"><option>Select Role</option><option value='6'>Secretary</option><option value="5">Accountant</option><option value="4">Teacher</option><option value="3">Senior Teacher</option><option value="2">Head-Teacher</option><option value="1">Manager</option></select></td></tr>
+   
+    <tr><td>Role:</td><td><select name="userlevel"><option value=''>Select Role ...</option>
+    	
+    	<?php
+    		foreach ($data['rst'] as $value) {
+				echo "<OPTION VALUE='".$value->aclID."'>".$value->aclTitle."</OPTION>";
+			}
+    	?>
+    	
+    	<!--<option value='6'>Secretary</option><option value="5">Accountant</option><option value="4">Teacher</option><option value="3">Senior Teacher</option><option value="2">Head-Teacher</option><option value="1">Manager</option>-->
+    		
+    	</select></td></tr>
+   
     <tr><td>Password:</td><td><input type="password" id="password" name="password" placeholder="Password" onkeyup="check_pswd_len(this);"/></td></tr>
     <tr><td>Repeat Password:</td><td><input type="password" id="rptPassword" name='rptPassword' placeholder="Repeat Password" onkeyup="check_pswd_rpt();"/></td></tr>
     <tr><td align='center' colspan="2" style="color:red;font-size: 8pt;" id="register_error"></td></tr>
