@@ -244,6 +244,7 @@ h2{
 	position:absolute; 
 	top:auto; 
 	bottom:auto;
+	opacity: 0.1;
        
 }
 #bookgif{

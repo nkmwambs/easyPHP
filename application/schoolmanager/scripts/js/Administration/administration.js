@@ -27,3 +27,6 @@ function postmsg(){
 	xmlhttp.open("POST",path+"/schoolmanager/Administration/postmsg",true);
     xmlhttp.send(frmData);
 }
+function pullexistingmessage(){
+	alert("Hello");
+}

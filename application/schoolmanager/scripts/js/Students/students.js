@@ -538,13 +538,26 @@ function enrollstudent(){
     
 	var admissionnum = document.getElementById('admissionnum').value;
 	var classid = document.getElementById('classid').value;
-	
     
     var frmData = new FormData();
     frmData.append("ctrl",ctrl);
     frmData.append("admissionnum",admissionnum);
     frmData.append("classid",classid);
-
+    
+    var classname = getOptionText(document.getElementById('classid'),classid);
+	
+	var flag = "";
+	if(ctrl===1){
+		flag = "Are you sure you want to enroll "+admissionnum+" into "+classname+"?";
+	}else{
+		flag = "Are you sure you want remove "+admissionnum+" from "+classname+"?";
+	}
+	
+	var cnf = confirm(flag);
+	if(!cnf){
+		alert("Action aborted!");
+		exit;
+	}
      
 	xmlhttp.open("POST",path+"/schoolmanager/Students/enrollclass",true);
     xmlhttp.send(frmData);	

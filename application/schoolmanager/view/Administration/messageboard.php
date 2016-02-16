@@ -12,6 +12,7 @@ foreach ($data['rst'] as $value) {
 $arr = array();
 
 $arr['Create Message']['New Message'] = array(
+		"<INPUT TYPE='button' VALUE='Pull Existing Message' onclick='pullexistingmessage()'/><br>",
 		"<INPUT TYPE='text' placeholder='Message Title' class='req' id='boardname'/>",
 		"<INPUT TYPE='text' placeholder='Message Pointer' class='req'  id='pointer'/>",
 		"<SELECT id='msg_type' class='req' ><OPTION VALUE=''>Select Message Type ...</OPTION>".$msgtype."</SELECT>",

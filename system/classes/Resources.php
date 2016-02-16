@@ -102,6 +102,13 @@ public static function img($path,$properties=""){
     $str .="/>";
     return $str;
 }
+public static function get_logo(){
+	$model = new E_Model("logos");	
+	$logo_qry = $model->getAllRecords("","logos");
+	$url = self::img($logo_qry[0]->url);
+	
+	return $url;
+}
 public static function table_filters($fieldset,$filter_fields,$callbackjsfunc,$callbackforedit="",$contentdiv='rst'){
 	self::import("filterTables.filterTables");
 	$instance = new filterTables($fieldset,$filter_fields,$callbackjsfunc,$callbackforedit,$contentdiv);
