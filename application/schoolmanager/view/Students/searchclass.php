@@ -1,13 +1,12 @@
 <?php
 
-
 $arr = array();
 
 $arr['Results Grid']['records'] = $data['rec'];
 $arr['Results Grid']['functions'] = array(
-										"3"=>"showStudents"
+										"5"=>"showStudents"
 										);
 
-echo Resources::db_table($arr);
+echo Resources::db_table($arr,0);
 
 ?>

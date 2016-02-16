@@ -261,7 +261,12 @@ public function studentinclasssearch(){
 	}
 	public function classesjoin(){
 		//$data = array("LEFT JOIN"=>array("classes"=>"classID","classenroll"=>"classid"));
-		$data = array(array("LEFT JOIN","classes"=>"classID","classenroll"=>"classid"),array("LEFT JOIN","classes"=>"gradelevelid","gradelevels"=>"lvlID"));
+		$data = array(array("LEFT JOIN","classes"=>"classID","classenroll"=>"classid"),array("LEFT JOIN","classes"=>"gradelevelid","gradelevels"=>"lvlID"),array("LEFT JOIN","classes"=>"tutorid","users"=>"ID"));
+		return $data;
+	}
+	public function classenrolljoin(){
+		//$data = array("LEFT JOIN"=>array("classes"=>"classID","classenroll"=>"classid"));
+		$data = array(array("LEFT JOIN","classenroll"=>"classid","classes"=>"classID"),array("LEFT JOIN","classes"=>"gradelevelid","gradelevels"=>"lvlID"),array("LEFT JOIN","classes"=>"tutorid","users"=>"ID"),array("LEFT JOIN","classenroll"=>"studentkey","students"=>"studentKey"));
 		return $data;
 	}
 	public function searchclass($render=2,$path='',$tags=array("All")){
@@ -289,15 +294,13 @@ public function studentinclasssearch(){
 			$search_cond="";
 		}
 		
-		//$search_cond = $this->_model->where(array(array("WHERE","classes.classname",$classname,"LIKE"),array("AND","classes.gradelevelid",$gradelevelid,"="),array("AND","classes.academicyear",$academicyear,"=")));
+		$search_qry = $this->_model->getAllRecords($search_cond,"classes","GROUP BY classenroll.classid",array("classes.classID:Class ID","classes.classname:Class Name","gradelevels.levelName:Grade","users.fname:Class Teacher","classes.academicyear:Academic Year","COUNT(classenroll.studentkey):Count Of Students"),$this->classesjoin());
 		
-		
-		$search_qry = $this->_model->getAllRecords($search_cond,"classes","GROUP BY classes.classname",array("classes.classID:Class ID","classes.classname:Class Name","classes.academicyear:Academic Year","COUNT('classenroll.studentkey'):Count Of Students"),$this->classesjoin());
 		
 		$data=array();
 		
 		$data['rec'] = $search_qry;
-		
+
 		//echo $search_cond;
 		
 		return $data;
@@ -306,12 +309,13 @@ public function studentinclasssearch(){
 		$classid = $_POST['classid'];
 		
 		$enrol_cond = $this->_model->where(array(array("WHERE","classenroll.classid",$classid,"=")));
-		$enrol_qry = $this->_model->getAllRecords($enrol_cond,"classenroll","",array("students.admNo:Admission Number","students.fname:First Name","students.lname:Last Name","students.sex:Gender"),array("LEFT JOIN"=>array("classenroll"=>"studentkey","students"=>"studentKey")));
-	
+		$enrol_qry = $this->_model->getAllRecords($enrol_cond,"classenroll","",array("students.studentKey:System ID","students.admNo:Admission Number","students.fname:First Name","students.lname:Last Name","gradelevels.levelName:Grade","students.sex:Gender"),$this->classenrolljoin());
+		
+		$dropdwns = $this->schoolmanager();	
 		$data=array();
 		
 		$data['rec'] = $enrol_qry;
-		
+		$data['dropdwns'] = $dropdwns;		
 		return $data;
 	
 	}
@@ -329,6 +333,98 @@ public function studentinclasssearch(){
 		$data['loc'] = $loc_qry;
 		
 		return $data;
+	}
+	
+	public function promoteselectedstudents(){
+		//print_r($_POST);
+		
+		$combArr = $_POST;
+		$classid =  array_shift($combArr);
+		$academicyear = array_shift($combArr);
+		$classname = array_shift($combArr);
+		$msg = "";
+		
+		//check if class exists
+		$class_exists_cond = $this->_model->where(array(array("WHERE","classes.academicyear",$academicyear,"=")));
+		$class_exists_qry = $this->_model->getAllRecords($class_exists_cond,"classes","",array("classID"));
+		
+		//Create an array for SQL insert query	
+		$promo_arr = array();
+		foreach ($combArr as $value) {
+			$promo_arr['studentkey'][]=$value;
+			$promo_arr['classid'][]=$classid;
+		}
+		
+		//check if the students are enrolled to the class by key
+		
+		//$chk_enrolled_cond = $this->_model->where(array(array("WHERE","classenroll.classid",$classid,"="),array("AND","classes.academicyear",$academicyear,"=")));
+		//$chk_enrolled_qry = $this->_model->getAllRecords($chk_enrolled_cond,"classenroll","",array("classenroll.studentkey:studentkey"),$this->classenrolljoin());
+		//$fine_enrolled_arr = array();
+		//foreach ($chk_enrolled_qry as $value) {
+			//$fine_enrolled_arr[]=$value->studentkey;
+		//}
+		
+		
+		
+		//check if the students are enrolled to other class by key
+		//$chk_enrolled_other_cond = $this->_model->where(array(array("WHERE","classenroll.classid",$classid,"<>"),array("AND","classes.academicyear",$academicyear,"=")));
+		$chk_enrolled_other_cond = $this->_model->where(array(array("WHERE","classes.academicyear",$academicyear,"=")));
+		$chk_enrolled_other_qry = $this->_model->getAllRecords($chk_enrolled_other_cond,"classenroll","",array("classenroll.studentkey:studentkey"),$this->classenrolljoin());
+		//$fine_enrolled_other_arr = array();
+		$all_enrolled_arr = array();
+		foreach ($chk_enrolled_other_qry as $value) {
+			//$fine_enrolled_other_arr[]=$value->studentkey;
+			$all_enrolled_arr[]=$value->studentkey;
+		}
+		
+		//Create array for all enrolled		
+		//$all_enrolled_arr = array_merge($fine_enrolled_arr,$fine_enrolled_other_arr);
+		
+		$cnt_new = 0;
+		$cnt_exists = 0;
+		$new_promo_arr = array();
+		$update_promo_arr=array();
+		
+		foreach ($combArr as $value) {
+			if(in_array($value,$all_enrolled_arr)){
+				$update_promo_arr[]=$value;
+				//$cnt_exists++;
+			}else{
+				$new_promo_arr['studentkey'][]=$value;
+				$new_promo_arr['classid'][]=$classid;
+				//$cnt_new++;
+			}
+		}
+		
+		//$cnt_new = count($new_promo_arr['studentkey']);
+		//$cnt_exists = count($update_promo_arr);
+		
+		
+		if(count($update_promo_arr)>0){
+			$cnt_exists = count($update_promo_arr);
+			foreach($update_promo_arr as $key){
+				$set = array("classid"=>$classid);
+				$cnd = $this->_model->where(array(array("WHERE","studentkey",$key,"=")));
+				$this->_model->updateQuery($set,$cnd,"classenroll");
+			}
+		}
+		
+		
+		if(isset($new_promo_arr['studentkey'])){
+			if(count($new_promo_arr['studentkey'])>0){
+				$cnt_new = count($new_promo_arr['studentkey']);
+				$this->_model->insertArray($new_promo_arr,"classenroll").". ";
+			}
+		}
+				
+		if(count($class_exists_qry)===0){
+			$msg = "You can't promoted students to a non existing class. Please consider creating the class before promoting";
+		}else{
+			$sum = $cnt_exists+$cnt_new;
+			$msg = "Updated ".$cnt_exists." Records. Created ".$cnt_new." Records. ".$sum." students promoted/ demoted successfully.";
+		}
+		
+		echo $msg;
 	}
 }
 ?>

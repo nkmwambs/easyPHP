@@ -215,12 +215,20 @@ public static function load_message(){
 	 
 	return $fin;
 }
-public static function db_table($array){
+public static function db_table($array,$action=0){
 	
 	$keys = array_keys($array);
 	$caption = $keys[0];
 	
-	$tbl = "<table id='info_tbl' style='margin-top:20px;max-width:95%;min-width:50%;'>";
+	$tbl = "";//"<INPUT TYPE='button' VALUE='Promote'/>";
+	
+	if(isset($array[$caption]['Resources'])){
+		foreach ($array[$caption]['Resources'] as $value) {
+			$tbl .= $value;
+		}
+	}
+	
+	$tbl .= "<table id='info_tbl' style='margin-top:20px;max-width:95%;min-width:50%;'>";
 
 	$tbl .= "<caption>".$caption."</caption>";
 	
@@ -233,6 +241,11 @@ public static function db_table($array){
 			$func = "func";
 			
 			$tbl .= "<tr>";
+			
+			if($action===1){
+				$tbl .="<th>Action</th>";
+			}
+			
 			foreach ($hdr as $value) {
 				$tbl .= "<th>".$value."</th>";
 			}
@@ -241,6 +254,11 @@ public static function db_table($array){
 			
 			foreach ($array[$caption]['records'] as $value) {
 				$tbl .= "<tr>";
+				
+				if($action===1){
+					$tbl .="<td><INPUT TYPE='checkbox' class='db_table_chkbx'/></td>";
+				}
+				
 				$cnt_rws = 0;
 				$style = "color:#0000FF;";
 					foreach ($value as $k => $v) {

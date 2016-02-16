@@ -11,9 +11,9 @@ echo Resources::a_href("Students/classmanager","[Back]")." ".Resources::a_href("
  $arr = array();
  
  $arr['View/ Manage Class By Criteria']['Criteria'] = array(
- 			"<INPUT TYPE='text' class='req' id='classname' placeholder='Search By Class Name'/>",
- 			"<SELECT id='gradelevel' class='req'><OPTION VALUE=''>Select Grade Level ...</OPTION>".$grades."</SELECT>",
- 			"<INPUT TYPE='text' id='academicyear' class='req' placeholder='Academic Year'/>",
+ 			"<INPUT TYPE='text' class='' id='classname' placeholder='Search By Class Name'/>",
+ 			"<SELECT id='gradelevel' class=''><OPTION VALUE=''>Select Grade Level ...</OPTION>".$grades."</SELECT>",
+ 			"<INPUT TYPE='text' id='academicyear' class='' placeholder='Academic Year'/>",
  			"<INPUT TYPE='button' id='' VALUE='Search' onclick='searchclass()'/>"
  );
  

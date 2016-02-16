@@ -61,6 +61,17 @@ function removeInput(el){
         
     }
 }
+function getOptionText(selection,eq){
+	var text="";
+	
+	for(var x=0;x<selection.children.length;x++){
+		if(selection.item(x).value===eq){
+			text = selection.item(x).innerHTML;
+		}
+	}
+	
+	return text;
+}
 
 /**
  * Table Filter Functions ---- Start Here

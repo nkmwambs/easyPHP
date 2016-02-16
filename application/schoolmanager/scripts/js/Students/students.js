@@ -674,3 +674,60 @@ function findstudent(elem){
     xmlhttp.send(frmData);	
 	
 }
+
+function promoteselectedstudents(){
+	//alert("Hello");
+	var chkbx = document.getElementsByClassName('db_table_chkbx');
+	var classid = document.getElementById('promote_to_grade').value;	
+	var academicyear = document.getElementById('acyear').value;
+	var classSel = document.getElementById('promote_to_grade');
+	var cnt_chkd = 0;
+	var frmData = new FormData();
+	var classname = getOptionText(classSel,classid);
+	
+	validaterequired();
+	
+	
+	
+	frmData.append("gradelevel",classid);
+	frmData.append("academicyear",academicyear);
+	frmData.append("classname",classname);
+		
+	for(var i=0;i<chkbx.length;i++){
+		if(chkbx.item(i).checked===true){	
+			var student = chkbx.item(i).parentNode.parentNode.childNodes[1].innerHTML;
+			frmData.append("student_"+cnt_chkd,student);
+			cnt_chkd++;
+		}
+	}
+	if(cnt_chkd===0){
+		alert("You have not selected any student to be promoted");
+		exit;
+	}
+	
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                alert(xmlhttp.responseText);
+                //document.getElementById('rst').innerHTML=xmlhttp.responseText;
+                //document.getElementById('smart_rst').innerHTML="Hello";
+                
+            }
+        };	
+    
+    var cnf = confirm("Are you sure you want to promote the selected "+cnt_chkd+" students to class "+classname);
+    
+    if(!cnf){
+    	alert("Action aborted. No Student has been promoted!");
+    	exit;
+    }
+     
+	xmlhttp.open("POST",path+"/schoolmanager/Students/promoteselectedstudents",true);
+    xmlhttp.send(frmData);
+}
