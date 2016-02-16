@@ -102,12 +102,20 @@ public static function img($path,$properties=""){
     $str .="/>";
     return $str;
 }
-public static function get_logo(){
+public static function get_logo($param=array()){
 	$model = new E_Model("logos");	
-	$logo_qry = $model->getAllRecords("","logos");
-	$url = self::img($logo_qry[0]->url);
+	$cond = $model->where(array(array("WHERE","viewable",1,"=")));
+	$logo_qry = $model->getAllRecords($cond,"logos");
+	$url = self::img("logos/".$logo_qry[0]->url,$param);
 	
 	return $url;
+}
+public static function get_logo_text(){
+	$model = new E_Model("logos");	
+	$logo_qry = $model->getAllRecords("","logos");
+	$title = $logo_qry[0]->title;
+	
+	return $title;
 }
 public static function table_filters($fieldset,$filter_fields,$callbackjsfunc,$callbackforedit="",$contentdiv='rst'){
 	self::import("filterTables.filterTables");

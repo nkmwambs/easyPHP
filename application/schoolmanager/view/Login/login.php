@@ -5,7 +5,8 @@
 <div id="error_log" style="color:red;position: absolute;top:20px;left: 280px;"></div>        
 <h3 style="margin-left:280px;">School Management System</h3>
         <?php 
-            echo Resources::img("logo.png",array("id"=>"welcome_logo"));
+            //echo Resources::img("logo.png",array("id"=>"welcome_logo"));
+            echo Resources::get_logo(array("id"=>"welcome_logo"));
         ?>
         
   	<div id="login">

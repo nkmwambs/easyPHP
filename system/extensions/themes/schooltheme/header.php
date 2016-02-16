@@ -22,10 +22,10 @@
 <div id="overlay"></div> <!--cover all the screen with transparent div-->
  <div id="container">
 <div id="header">
-	<div id="logo" ><?php echo Resources::img("logo.png",array("id"=>"logo_img"));?></div>
+	<div id="logo" ><?php echo Resources::get_logo(array("id"=>"logo_img"));?></div>
 
     
-    <h2 class="logo_color" id='logo_text'>Vine Garden School</h2>
+    <h2 class="logo_color" id='logo_text'><?php echo Resources::get_logo_text();?></h2>
 
     <ul id='extra_access'>    
     <?php
@@ -38,7 +38,7 @@
         }else{
             echo '<li>'.Resources::img("welcome.png").'Welcome Guest <span style="float:right;">&Del;</span>';
             echo '<ul>';
-            echo '<li id="login_link">'. Resources::img("lock.png")." ". Resources::a_href("Login/login/public/0","Login",array("onclick"=>"login();")).'</li><hr>';
+            echo '<li id="login_link">'. Resources::img("lock.png")." ". Resources::a_href("Login/login","Login").'</li><hr>';
             //echo '<li>'.Resources::img("register.png")." ". Resources::a_href("Register/userRegister/public/1","Register User",array("onclick"=>"recentItems('Register User','Register/userRegister',".$_SESSION['ID'].");")).'</li><hr>';
             echo '</ul>';
         }
