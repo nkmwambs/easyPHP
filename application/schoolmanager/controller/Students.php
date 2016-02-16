@@ -260,7 +260,8 @@ public function studentinclasssearch(){
 		echo $msg;
 	}
 	public function classesjoin(){
-		$data = array("LEFT JOIN"=>array("classes"=>"classID","classenroll"=>"classid"));
+		//$data = array("LEFT JOIN"=>array("classes"=>"classID","classenroll"=>"classid"));
+		$data = array(array("LEFT JOIN","classes"=>"classID","classenroll"=>"classid"),array("LEFT JOIN","classes"=>"gradelevelid","gradelevels"=>"lvlID"));
 		return $data;
 	}
 	public function searchclass($render=2,$path='',$tags=array("All")){

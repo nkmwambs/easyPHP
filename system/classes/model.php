@@ -42,30 +42,7 @@ public function condition($cond){
    }
 } 
     
-public function where($cond){
-/*	
-//$cond = array("where"=>array("fld","val","operator"),"OR"=>array("fld","val","operator"),"AND"=>array("fld","val","operator"));
-    if(!array_key_exists("where", $cond)){
-        return $this->condition($cond);
-    }  else {
-            
-        if(is_array($cond)){
-            $str = "";
-            foreach($cond as $k=>$v){
-                $str .=" ".$k." ".$v[0]." ".$v[2]." '".$v[1]."' ";
-            }
-
-            return $str;
-        }
-    }
- * 
- */
- 
- //$cond = array("where"=>array("fld","val","operator"),"OR"=>array("fld","val","operator"),"AND"=>array("fld","val","operator"));
-    //if(!array_key_exists("where", $cond)){
-      //  return $this->condition($cond);
-    //}  else {
-            
+public function where($cond){    
         if(is_array($cond)){
             $str = "";     
             foreach($cond as $k=>$v){      
@@ -99,32 +76,55 @@ public function where($cond){
             return $str;
         }
     
-	//}
     }
 
 public function tableJoins($joins=array()){
-	//array(JoinType=>array(table1=>table1Key,table2=>table2Key))
-	
+	/*array(JoinType=>array(table1=>table1Key,table2=>table2Key))
+	 * OR
+	 * array(array("JOIN TYPE","table1"=>"table1Key","table2"=>"table2Key")),array("JOIN TYPE","table1"=>"table1Key","table2"=>"table2Key"))
+	 */
+	 
+	 //Check JOIN array type
+	 $flag_old_join = 1;
+	 foreach ($joins as $value) {
+		 if(count($value)>2){
+		 	$flag_old_join = 0;
+		 }
+	 }
+
 	//Output String
 	$join_str="";
 	
 	//Joined Tables array
 	$joinTables = array();
-	
+		
 	//Join Fields
 	$joinFields = array();
-	
-	//Join Fields Number
-	$joinCount = sizeof($joins);
-	
-	foreach ($joins as $key => $value) {
-		$join_str.=$key;
-		$joinTables=array_keys($value);
-		$joinFields=array_values($value);	
 		
-		$join_str .=" ".$joinTables[1]." ON ".$joinTables[0].".".$joinFields[0]."=".$joinTables[1].".".$joinFields[1]." ";
-	}
+	//Join Fields Number
+	$joinCount = sizeof($joins); 
 	
+	if($flag_old_join===1){			
+		foreach ($joins as $key => $value) {
+			$join_str.=$key;
+			$joinTables=array_keys($value);
+			$joinFields=array_values($value);	
+			
+			$join_str .=" ".$joinTables[1]." ON ".$joinTables[0].".".$joinFields[0]."=".$joinTables[1].".".$joinFields[1]." ";
+		}
+	 }else{
+	 	foreach ($joins as $val) {
+				$type = array_shift($val);
+				
+				$join_str .= " ".$type;
+				
+				$joinTables=array_keys($val);
+				$joinFields=array_values($val);	
+				
+				$join_str .=" ".$joinTables[1]." ON ".$joinTables[0].".".$joinFields[0]."=".$joinTables[1].".".$joinFields[1]." ";
+	
+		 }
+	 }
 	
 	return $join_str;
 }
