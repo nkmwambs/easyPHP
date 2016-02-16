@@ -56,6 +56,10 @@ legend{
 	padding:5px 5px 5px 10px;
 	display: none;
 }
+#smart_viewall{
+	float:right;
+	font-weight:bold;
+}
 /*
  * Smart Table Ends here
  */
@@ -171,3 +175,7 @@ legend{
 /*
  * Popup - End
  */
+.mandatory
+{
+    border-left:5px red solid;
+}

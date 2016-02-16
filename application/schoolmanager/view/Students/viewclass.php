@@ -17,6 +17,10 @@ echo Resources::a_href("Students/classmanager","[Back]")." ".Resources::a_href("
  			"<INPUT TYPE='button' id='' VALUE='Search' onclick='searchclass()'/>"
  );
  
+  $arr['View/ Manage Class By Criteria']['Documented']=array(
+  			"Criteria"=>"Provide the criteria to search a class. You can provide all criteria or a few. \n If you leave all fields empty, all classes created will be viewed.\n Click on the Search button to see your results.\n On the results grid, click on the Purple colored values to view more details"
+  );
+ 
  echo Resources::smart_grid($arr);
  
 ?>

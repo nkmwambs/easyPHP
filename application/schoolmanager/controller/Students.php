@@ -111,7 +111,7 @@ class Students_Controller extends E_Controller{
 	//$qry = $this->_model->getAllRecords($cond_users,"fundsschedule");
 	//print_r(json_encode($qry));
 	
-	$this->create_grid($_POST,"students");
+	$this->create_grid($_POST,"students",array("admNo:Admission Number","fname:First Name","lname:Last Name","sex:Gender","dob:Date Of Birth","active:Active?"));
 }
 	public function manageStudents($render=1,$path='',$tags=array("All")){
 		
@@ -313,6 +313,21 @@ public function studentinclasssearch(){
 		
 		return $data;
 	
+	}
+	public function viewfullstudentprofile($render=2,$path='',$tags=array("All")){
+		$admNo = $_POST['admNo'];
+		
+		$s_cond = $this->_model->where(array(array("WHERE","admNo",$admNo,"=")));
+		$bio_qry = $this->_model->getAllRecords($s_cond,"students","",array("studentKey:System ID","AdmNo:Admission Number","fname:First Name","lname:Last Name","sex:Gender","dob:Date Of Birth","nationality:Nationality","active:Active Record"));
+		
+		$loc_qry = $this->_model->getAllRecords($s_cond,"students","",array("county:County Of Residence","ward:Ward","area:Estate/ Area of Residence","street:Street"));
+		
+		$data=array();
+		
+		$data['bio'] = $bio_qry;
+		$data['loc'] = $loc_qry;
+		
+		return $data;
 	}
 }
 ?>

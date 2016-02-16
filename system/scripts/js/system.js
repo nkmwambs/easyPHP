@@ -157,7 +157,7 @@ function getfiltercontroller(callback,div){
                 	if(Object.keys(xmlhttp.responseText).length === 2){
                 		alert("Results not found or Controller Method Missing!");
                 	}
-                	create_grid(div,xmlhttp.responseText);
+                	create_grid(div,xmlhttp.responseText,callback);
                 }
             
         };
@@ -190,7 +190,11 @@ function deletefilter(cname){
 	}
 }
 
-function create_grid(div,objRaw){
+function create_grid(div,objRaw,callback){
+	//alert(callback);
+	var arr = callback.split("/");
+	var func = arr[1];
+	
 	var pg = document.getElementById(div);
 	var obj = JSON.parse(objRaw);
 	var keys = Object.keys(obj[0]);
@@ -198,7 +202,7 @@ function create_grid(div,objRaw){
 	pg.innerHTML = "";
 	
 	var tbl = document.createElement('TABLE');
-	setAttributes(tbl,{"id":"info_tbl","style":"margin-top:25px;"});
+	setAttributes(tbl,{"id":"info_tbl","style":"margin-top:25px;max-width:100%;min-width:90%;"});
 	var tr_one = document.createElement('TR');
 	for(l in keys){
 		var th = document.createElement('TH');
@@ -213,7 +217,8 @@ function create_grid(div,objRaw){
 			var td = document.createElement('TD');	
 			td.innerHTML = obj[i][j];
 			td.onclick = function(){
-				editgrid(this);
+				//editgrid(this);
+				window[func](this);
 			};
 			tr.appendChild(td);
 		}
@@ -415,6 +420,24 @@ function create_table(obj){
 	
 	return TABLE;
 	
+}
+function viewallfields(){
+	var bd = document.getElementsByClassName('smart_body');//smart_viewall_chk
+	var chk = document.getElementById('smart_viewall_chk');//smart_viewall_chk
+	var arrows = document.getElementsByClassName('smart_expand');
+	var hd = document.getElementsByClassName('smart_hr_heading');
+	
+	for (var i=0; i < bd.length; i++) {
+	  if(chk.checked===true){
+	  		arrows.item(i).innerHTML="&Delta;";
+	  		bd.item(i).style.display='block';//smart_hr_heading
+	  		hd.item(i).style.color='#0000FF';
+	  }else{
+	  		arrows.item(i).innerHTML="&nabla;";
+	  		bd.item(i).style.display='none';
+	  		hd.item(i).style.color='white';	  		
+	  }
+	};
 }
 /*
  * Smart Table ends here

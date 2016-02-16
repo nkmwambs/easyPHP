@@ -645,3 +645,32 @@ function showStudents(elem){
 	xmlhttp.open("POST",path+"/schoolmanager/Students/showStudents",true);
     xmlhttp.send(frmData);	
 }
+function findstudent(elem){
+	//alert(elem.innerHTML);
+	var admNo = elem.parentNode.childNodes[0].innerHTML;
+	//alert(admNo);
+	xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                //alert(xmlhttp.responseText);
+                document.getElementById('rst').innerHTML=xmlhttp.responseText;
+                //document.getElementById('smart_rst').innerHTML="Hello";
+                
+            }
+        };	
+    
+    
+    var frmData = new FormData();
+    frmData.append("admNo",admNo);
+
+     
+	xmlhttp.open("POST",path+"/schoolmanager/Students/viewfullstudentprofile",true);
+    xmlhttp.send(frmData);	
+	
+}

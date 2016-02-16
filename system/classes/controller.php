@@ -78,10 +78,10 @@ class E_Controller {
 
 	}
 	
-public function create_grid($array,$tbl){
+public function create_grid($array,$tbl,$arr = array()){
 	$cond_users =  Resources::create_condition($array);
 	
-	$qry = $this->model->getAllRecords($cond_users,$tbl);
+	$qry = $this->model->getAllRecords($cond_users,$tbl,"",$arr);
 	
 	print_r(json_encode($qry));	
 }

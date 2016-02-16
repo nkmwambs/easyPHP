@@ -127,12 +127,24 @@ public static function smart_grid($gridArray){
 	foreach ($gridArray as $key => $value) {
 		$cnt=1;
 		
+		
 		$grid = "<fieldset class='smart_fieldset'>";
+		
+		$grid .= "<span id='smart_viewall' onclick='viewallfields()'>View All Fields<INPUT TYPE='checkbox' id='smart_viewall_chk'/></span>";
 		
 		$grid .= "<legend class='smart_legend'><b>".$key." <span onclick='smartmainexpand()' id='smart_main_expand'>&nabla;</span></b></legend>";
 		
 		foreach ($value as $ky => $val) {
-				$grid .= "<div class='smart_hr_heading'>".Resources::img("information.png",array("style"=>"width:15px;cursor:pointer;","Title"=>"No Documentation"))." <b>".$ky." <span class='smart_expand' onclick='smartexpand(\"smart_".$cnt."\",this)'>&nabla;<span></b></div><hr class='smart_hr'><br>";
+			//Fields documentation	
+			$title="No Documentation available";
+			if(isset($value['Documented'])){
+				if(array_key_exists($ky, $value['Documented'])){
+					$title = $value['Documented'][$ky];
+				}
+			}	
+			
+			if($ky!=='Documented'){
+				$grid .= "<div class='smart_hr_heading'>".Resources::img("information.png",array("style"=>"width:15px;cursor:pointer;","Title"=>$title))." <b>".$ky." <span class='smart_expand' onclick='smartexpand(\"smart_".$cnt."\",this)'>&nabla;<span></b><hr class='smart_hr'></div><br>";
 	
 				$grid .= "<div class ='smart_body' id='smart_".$cnt."'>";
 					foreach ($val as $v) {
@@ -140,7 +152,8 @@ public static function smart_grid($gridArray){
 					}
 				$grid .= "</div>";
 			
-			$cnt++;
+				$cnt++;
+			}
 		}
 		
 		$grid .= "<div id='smart_rst'></div>";
