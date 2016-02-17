@@ -12,10 +12,10 @@
 </div>
 <?php
 
-echo Resources::img("books.png",array("style"=>"width:50px;position:absolute;top:10px;right:-90px;","id"=>"","class"=>"books"));
-echo Resources::img("books.png",array("style"=>"width:50px;position:absolute;top:10px;left:-90px;","id"=>"","class"=>"books"));
-echo Resources::img("books.png",array("style"=>"width:50px;position:absolute;top:310px;left:-90px;","id"=>"","class"=>"books"));
-echo Resources::img("books.png",array("style"=>"width:50px;position:absolute;top:310px;right:-90px;","id"=>"","class"=>"books"));
+echo Resources::img("books.png",array("style"=>"width:50px;position:fixed;top:180px;right:20px;","id"=>"","class"=>"books"));
+echo Resources::img("books.png",array("style"=>"width:50px;position:fixed;top:180px;left:10px;","id"=>"","class"=>"books"));
+echo Resources::img("books.png",array("style"=>"width:50px;position:fixed;top:490px;left:10px;","id"=>"","class"=>"books"));
+echo Resources::img("books.png",array("style"=>"width:50px;position:fixed;top:490px;right:20px;","id"=>"","class"=>"books"));
 ?>
 </div>
 

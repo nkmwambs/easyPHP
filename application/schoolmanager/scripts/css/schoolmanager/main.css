@@ -36,24 +36,29 @@ body{
 {
   	/*max-width:  25%;
 	min-width: 25%;*/
+	position:relative;
+	top:-30px;
 	max-width:95px;
 	min-width:95px;
 	margin:80px 0px 10px 120px;  
 }
 #main_menu
 {
-	min-width: 90%;
-	border-radius:10px;
+	min-width: 100%;
+	//border-radius:10px;
     z-index: 5;
 	height:20px;
 	color:blue;
-	//position:absolute;
+	position:fixed;
     //left: 65px;
-	top:142px;
-	padding:10px;
-    background: linear-gradient(to bottom,white,wheat);
+	top:0px;
+	left:-10px;
+	padding:20px 30px 10px 70px;
+    //background: linear-gradient(to bottom,white,wheat);
+    background: linear-gradient(to bottom, #f0ffff , grey ); /* Standard syntax */
     margin-left:auto;
 	margin-right:auto;
+	opacity: 1.0;
 }
 #main_menu_links{	
 	list-style: none;
@@ -120,8 +125,9 @@ body{
 }
 #extra_access{
     z-index: 30;
-    position:relative;
-    top:15px;
+    position:fixed;
+    top:-19px;
+    right:-30px;
 }
 #extra_access>li{
     position: absolute;
@@ -171,9 +177,9 @@ display: none;
     float: left;
     margin: 10px 20px 10px -110px;
     height: 45%;
-    position: absolute;
-    top: 40px;
-    left: 0px;
+    position: fixed;
+    top: 200px;
+    left: 90px;
     height: 270px;
     //border:1px white solid;
      
@@ -182,9 +188,9 @@ display: none;
     //float: right;
     //margin: 10px -110px 10px 20px;
     //border:1px white solid;
-    position: absolute;
-    top: 40px;
-    right: -100px;
+    position: fixed;
+    top: 210px;
+    right: -10px;
     height: 270px;
 }
 .side_bar_list li{
@@ -237,8 +243,8 @@ h2{
 }
 #logo_text{
 	position:absolute;
-	top:130px;
-	left:275px;
+	top:90px;
+	left:315px;
 }
 #welcome_logo
 {
