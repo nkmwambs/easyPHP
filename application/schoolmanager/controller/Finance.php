@@ -30,9 +30,15 @@ private $_model;
     }
 	public function feeStructure($render=1,$path='',$tags=array("All")){
 		$arr = $this->schoolmanager();
+		
+		//Fees Structures
+		$fee_cond = $this->_model->where(array(array("WHERE","academicyear",date("Y"),"=")));
+		$fee_qry = $this->_model->getAllRecords($fee_cond,"feestructureheader","",array("fID","academicyear","feestructurename"));
+		
 		$data=array();
 		
 		$data['grade'] = $arr['gradelevels'];
+		$data['fees'] = $fee_qry;
 		
 		return $data;	
 	}
@@ -44,7 +50,77 @@ private $_model;
 	}		
 	
 	public function createnewstructure(){
-		print_r($_POST);
+		$sArr = $_POST;
+		
+		$fID = array_shift($sArr);
+		
+		$grades = array_shift($sArr);
+		
+		
+		//Gradelevel Arr
+		$final_grade_arr = array();		
+		
+		for($i=0;$i<count($grades);$i++){
+			$final_grade_arr['fID'][]=$fID;
+			$final_grade_arr['gradelevelid'][]=$grades[$i];
+		}
+		
+		//fees structure details arr
+		
+		//$details = array();
+		
+		for ($j=0; $j < count($sArr['dsc']); $j++) { 
+			$sArr['fID'][]=$fID;
+		}
+		
+		
+		//Insert
+		$this->_model->insertArray($final_grade_arr,"feestructuregrades");
+		echo " (Step 1 of 2)<br>";
+		$this->_model->insertArray($sArr,"feestructure");
+		echo " (Step 2 of 2)";
+	}
+	
+	public function getfeestructurefields(){
+		//get all
+		$qry = $this->_model->getAllRecords("","feestructureperiod");
+		
+		$rev = $this->_model->getAllRecords("","revenucategories");
+		
+		$data =array();
+		
+		$data['cat'] = $rev;
+		$data['period']=$qry;
+		
+		print_r(json_encode($data));
+	}
+	public function newfeestructure(){
+		$arr = $_POST;
+		
+		echo $this->_model->insertRecord($arr,"feestructureheader");
+	}
+	public function feestructurejoin(){
+		$data = array();
+		
+		$data =  array(array("LEFT JOIN","feestructureheader"=>"fID","feestructure"=>"fID"),array("LEFT JOIN","feestructureheader"=>"fID","feestructuregrades"=>"fID"));
+		
+		return $data;
+	}
+	public function deletefeestructure(){
+		$fID=$_POST['fID'];
+		
+		$del_cond = $this->_model->where(array(array("WHERE","fID",$fID,"=")));
+		
+		$this->_model->deleteQuery($del_cond,"feestructureheader");
+		$this->_model->deleteQuery($del_cond,"feestructure");
+		$this->_model->deleteQuery($del_cond,"feestructuregrades");
+		
+		echo "Fee Structure deleted successfully";
+	}
+	
+	public function movefeestructure(){
+		$del_cond = $this->_model->where(array(array("WHERE","fID",$fID,"=")));
+		
 	}
 }
 ?>

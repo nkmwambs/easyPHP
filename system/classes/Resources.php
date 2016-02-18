@@ -453,7 +453,7 @@ public static function script($scripts){
     if (is_dir($dir2)) {
     if ($dh2 = opendir($dir2)) {
         while (($file2 = readdir($dh2)) !== false) {
-            if ($file2 != "." && $file != ".."){
+            if ($file2 != "." && $file2 != ".."){
              print "<script src='".HOST_NAME.DS.'easyPHP'.DS."system".DS."scripts".DS."js".DS.$file2."'></script>\n";
             }
         }
