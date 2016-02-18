@@ -1,4 +1,17 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
+var pathArray = window.location.pathname.split("/");
+
+var app = pathArray[2];
+
+var root = pathArray[1];
+
+var path = 'http://'+location.hostname+'/'+root+'/';
+
+ if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+                 var xmlhttp=new XMLHttpRequest();
+                  } else { // code for IE6, IE5
+                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+ }
 
 function xmlhttprequest(url,cnfrm1,confrm2){
 //alert(url);
@@ -47,7 +60,7 @@ function editMenu(el){
 }
 
 function effectEdit(el,mnid){
-    var url = "mvc/Settings/editMenu/"+el.id+"/"+el.value+"/mnID/"+mnid+"";
+    var url = app+"/Settings/editMenu/"+el.id+"/"+el.value+"/mnID/"+mnid+"";
     xmlhttprequest(url,"1","0");
 }
 
@@ -285,7 +298,7 @@ function editfield(fld_val,db_key,newVal,elem){
     	frmData.append('field',fld_val);
     	frmData.append('newVal',newVal);
     	                                
-        xmlhttp.open("POST",path+"/mvc/"+editcallback,true);
+        xmlhttp.open("POST",path+"/"+app+"/"+editcallback,true);
         xmlhttp.send(frmData);
 }
 

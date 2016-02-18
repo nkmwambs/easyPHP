@@ -179,3 +179,10 @@ legend{
 {
     border-left:5px red solid;
 }
+#tbl_dividers{
+	margin-bottom: 25px;
+}
+
+#tbl_dividers th, td {
+    border-bottom: 1px solid #ddd;
+}

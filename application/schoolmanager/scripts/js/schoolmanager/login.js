@@ -1,14 +1,5 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-if (window.XMLHttpRequest) 
-{
-        // code for IE7+, Firefox, Chrome, Opera, Safari
-      var xmlhttp=new XMLHttpRequest();
-              
- } 
- else 
- { // code for IE6, IE5
-   var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
- }
+//var path = 'http://'+location.hostname+'/easyPHP/';
+
 
 function login()
 {
@@ -30,7 +21,7 @@ function login()
         }
        };
        document.getElementById("login").style.display="none";
-       xmlhttp.open("GET",path+"system/index.php?url=schoolmanager/Login/show_login",true);
+       xmlhttp.open("GET",path+"system/index.php?url="+app+"/Login/show_login",true);
        xmlhttp.send();
    }
    catch(e)
@@ -49,9 +40,11 @@ function log(frmid){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
+                //alert("Hello");
                 if(xmlhttp.responseText==='1'){
                     document.getElementById("error_log").innerHTML='<img id="loadimg" src= "'+path+'/system/images/error.png"/> Access denied, Please contact an administrator if error persists!';
                 }else{
+                	
                 document.write(xmlhttp.responseText);
                 
                 }
@@ -60,7 +53,7 @@ function log(frmid){
             }
         };
                                                
-         xmlhttp.open("POST",path+"/schoolmanager/Login/logged/public/1",true);
+         xmlhttp.open("POST",path+"/"+app+"/Login/logged/public/1",true);
          xmlhttp.send(frmData);
 }
 function checkSecurity(frmid){
@@ -84,7 +77,7 @@ function checkSecurity(frmid){
             }
         };
                                                
-         xmlhttp.open("POST",path+"/schoolmanager/Login/passReset",true);
+         xmlhttp.open("POST",path+"/"+app+"/Login/passReset",true);
          xmlhttp.send(frmData);    
 }
 
@@ -111,6 +104,6 @@ function newPassReset(frmid){
             }
         };
                                                
-         xmlhttp.open("POST",path+"/schoolmanager/Login/newPassReset",true);
+         xmlhttp.open("POST",path+"/"+app+"/Login/newPassReset",true);
          xmlhttp.send(frmData);     
 }

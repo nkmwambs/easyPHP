@@ -1,14 +1,11 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
-if (window.XMLHttpRequest) 
-{
-        // code for IE7+, Firefox, Chrome, Opera, Safari
-      var xmlhttp=new XMLHttpRequest();
-              
- } 
- else 
- { // code for IE6, IE5
-   var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
- }
+/*var path = 'http://'+location.hostname+'/easyPHP/';
+    if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+                 var xmlhttp=new XMLHttpRequest();
+                  } else { // code for IE6, IE5
+                var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+*/
 
 function addStudentRecord(frmid){
     //alert(frmid);
@@ -64,7 +61,7 @@ for(var j=0;j<medical.length;j++){
             }
         };
         
-         xmlhttp.open("POST",path+"/schoolmanager/Students/addStudentRecord/public/1",true);
+         xmlhttp.open("POST",path+"/"+app+"/Students/addStudentRecord/public/1",true);
          xmlhttp.send(frmData);  
 }
 
@@ -83,7 +80,7 @@ function saveRecordNewStudent(frmid){
                 
             }
         };
-         xmlhttp.open("POST",path+"/schoolmanager/Students/addStudentRecord/public/1",true);
+         xmlhttp.open("POST",path+"/"+app+"/Students/addStudentRecord/public/1",true);
          xmlhttp.send(frmData);  
 }
 
@@ -129,7 +126,7 @@ function editstudentfromprofile(el){
                 completeDraftStudent(el);
             }
         };
-	xmlhttp.open("GET",path+"/schoolmanager/Students/editstudentfromprofile",true);
+	xmlhttp.open("GET",path+"/"+app+"/Students/editstudentfromprofile",true);
     xmlhttp.send();
 	
 }
@@ -237,7 +234,7 @@ if(el.tagName==='SELECT'){
         }
        };
  
-       xmlhttp.open("GET",path+"/schoolmanager/Students/completeDraftStudent/studentKey/"+val,true);
+       xmlhttp.open("GET",path+"/"+app+"/Students/completeDraftStudent/studentKey/"+val,true);
        xmlhttp.send();
     }
     
@@ -350,7 +347,7 @@ function searchResults(){
                 
             }
         };
-        xmlhttp.open("POST",path+"/schoolmanager/Students/searchResults/public/0",true);
+        xmlhttp.open("POST",path+"/"+app+"/Students/searchResults/public/0",true);
         xmlhttp.send(frmData);  
 }
 
@@ -448,7 +445,7 @@ function showContent(el){
             var cln = itm.cloneNode(true);
             fieldset.appendChild(cln);
 }
-    xmlhttp.open("GET",path+"/schoolmanager/Students/getFlds/public/0",true);
+    xmlhttp.open("GET",path+"/"+app+"/Students/getFlds/public/0",true);
     xmlhttp.send();  
 }
 function displayScroll(elem){
@@ -475,7 +472,7 @@ function viewprintprofile(sid,el){
                 completeDraftStudent(el);
             }
         };
-	xmlhttp.open("GET",path+"/schoolmanager/Students/viewprintprofile/studentKey/"+sid,true);
+	xmlhttp.open("GET",path+"/"+app+"/Students/viewprintprofile/studentKey/"+sid,true);
     xmlhttp.send();
     
 }
@@ -512,7 +509,7 @@ function createclass(){
     frmData.append("tutorid",tutorid);
     frmData.append("academicyear",academicyear);
      
-	xmlhttp.open("POST",path+"/schoolmanager/Students/newclass",true);
+	xmlhttp.open("POST",path+"/"+app+"/Students/newclass",true);
     xmlhttp.send(frmData);
 }
 function enrollstudent(){
@@ -559,7 +556,7 @@ function enrollstudent(){
 		exit;
 	}
      
-	xmlhttp.open("POST",path+"/schoolmanager/Students/enrollclass",true);
+	xmlhttp.open("POST",path+"/"+app+"/Students/enrollclass",true);
     xmlhttp.send(frmData);	
 	
 }
@@ -590,7 +587,7 @@ function studentinclasssearch(){
     var frmData = new FormData();
     frmData.append("admissionnum",st);
      
-	xmlhttp.open("POST",path+"/schoolmanager/Students/studentinclasssearch",true);
+	xmlhttp.open("POST",path+"/"+app+"/Students/studentinclasssearch",true);
     xmlhttp.send(frmData);		
 	
 }
@@ -626,7 +623,7 @@ function searchclass(){
     frmData.append("gradelevelid",gradelevelid);
     frmData.append("academicyear",academicyear);
      
-	xmlhttp.open("POST",path+"/schoolmanager/Students/searchclass",true);
+	xmlhttp.open("POST",path+"/"+app+"/Students/searchclass",true);
     xmlhttp.send(frmData);	
 }
 function showStudents(elem){
@@ -655,7 +652,7 @@ function showStudents(elem){
     frmData.append("classid",classid);
 
      
-	xmlhttp.open("POST",path+"/schoolmanager/Students/showStudents",true);
+	xmlhttp.open("POST",path+"/"+app+"/Students/showStudents",true);
     xmlhttp.send(frmData);	
 }
 function findstudent(elem){
@@ -683,7 +680,7 @@ function findstudent(elem){
     frmData.append("admNo",admNo);
 
      
-	xmlhttp.open("POST",path+"/schoolmanager/Students/viewfullstudentprofile",true);
+	xmlhttp.open("POST",path+"/"+app+"/Students/viewfullstudentprofile",true);
     xmlhttp.send(frmData);	
 	
 }
@@ -741,6 +738,6 @@ function promoteselectedstudents(){
     	exit;
     }
      
-	xmlhttp.open("POST",path+"/schoolmanager/Students/promoteselectedstudents",true);
+	xmlhttp.open("POST",path+"/"+app+"/Students/promoteselectedstudents",true);
     xmlhttp.send(frmData);
 }

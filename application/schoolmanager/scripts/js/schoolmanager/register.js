@@ -1,10 +1,12 @@
-var path = 'http://'+location.hostname+'/easyPHP/';
+/*var path = 'http://'+location.hostname+'/easyPHP/';
     if (window.XMLHttpRequest) {
             // code for IE7+, Firefox, Chrome, Opera, Safari
                  var xmlhttp=new XMLHttpRequest();
                   } else { // code for IE6, IE5
                 var xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
+*/
+
 function submitUser(frmid){
       var frm = document.getElementById(frmid);
     var frmData = new FormData(frm);
