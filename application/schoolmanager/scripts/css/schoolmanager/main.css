@@ -91,7 +91,8 @@ body{
 	color: white;
 }
 
-#foot{   
+#foot{  
+	/*More details*/ 
 	position:relative;
 	min-width:102%;
 	left:-10px;
