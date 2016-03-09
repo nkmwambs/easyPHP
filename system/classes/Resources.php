@@ -112,7 +112,8 @@ public static function get_logo($param=array()){
 }
 public static function get_logo_text(){
 	$model = new E_Model("logos");	
-	$logo_qry = $model->getAllRecords("","logos");
+	$cond = $model->where(array(array("WHERE","viewable",1,"=")));
+	$logo_qry = $model->getAllRecords($cond,"logos");
 	$title = $logo_qry[0]->title;
 	
 	return $title;
@@ -143,7 +144,7 @@ public static function smart_grid($gridArray){
 		$cnt=1;
 		
 		
-		$grid = "<fieldset class='smart_fieldset'>";
+		$grid = "<fieldset class='smart_fieldset' id='smart_fieldset'>";
 		
 		$grid .= "<span id='smart_viewall' onclick='viewallfields()'>View All Fields<INPUT TYPE='checkbox' id='smart_viewall_chk'/></span>";
 		

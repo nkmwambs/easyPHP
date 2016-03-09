@@ -10,6 +10,17 @@ class Login_Controller extends E_Controller
 	{
 
 	}
+	public function confirm($render=1,$path='',$tags=array("All")){
+	$data = array();
+	$url = $this->choice;
+	//Remove the first GET variable in the pathname
+	array_shift($url);
+	array_shift($url);
+	
+	$data['url']=implode("/",$url);
+	$data['test']="";//implode("/",$this->choice);
+	return $data;
+}
 		
 	public function login($render=1,$path='',$tags=array("All"))
 	{

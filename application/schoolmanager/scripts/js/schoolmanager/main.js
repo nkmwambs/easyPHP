@@ -18,6 +18,13 @@ document.onclick = function(e){
 
 
 };
+function pageload(){
+	window.location.assign(path+app+"/"+controller+"/"+method);
+}
+function successload(){
+	
+	window.location.assign(path+app+"/Login/confirm/"+window.location.pathname);
+}
 function popup(){
     
 	   xmlhttp.onreadystatechange=function() 

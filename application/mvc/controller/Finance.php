@@ -2970,4 +2970,7 @@ public function allowvoucheredit(){
 	
 	echo "Voucher editing for voucher number ".$VNumber." allowed!";
 }
+public function fundstransfer($render=1,$path='',$path=array("2","3","9")){
+	
+}
 }

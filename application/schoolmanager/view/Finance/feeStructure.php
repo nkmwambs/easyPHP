@@ -26,13 +26,13 @@ $grid['Fees Structure']['Create a Fees Structure']=array(
 
 $grid['Fees Structure']['Add Details to Fees Structure']=array(
 	"<form id='frmStructure'><SELECT name='fID'><OPTION VALUE=''>Select a Fee Structure</OPTION>".$fees."</SELECT>",
-	"<FIELDSET><LEGEND>Grade Levels [Check All <INPUT TYPE='checkbox' id='' CHECKED onclick='chkallcreatestructure(this)'/>]</LEGEND>",
+	"<FIELDSET><LEGEND>Grade Levels [Check/ Uncheck All <INPUT TYPE='checkbox' id='' CHECKED onclick='chkallcreatestructure(this)'/>]</LEGEND>",
 	$list,
 	"</FIELDSET><hr>",
-	"<INPUT TYPE='button' id='' VALUE='Add Item' onclick='addstructureitem()'/>",
-	"<INPUT TYPE='button' id='' VALUE='Remove Item'/>",
+	"<INPUT TYPE='button' id='' VALUE='Add Row' onclick='addstructureitem()'/>",
+	"<INPUT TYPE='button' id='' VALUE='Remove Row' onclick='removefeesrow()'/>",
 	"<table id='tbl_dividers'>",
-	"<tr><th>Description</th><th>Amount</th><th>Period</th><th>Category</th></tr>",
+	"<tr><th>Check</th><th>Description</th><th>Amount</th><th>Period</th><th>Category</th></tr>",
 	"</table></form>",
 	"<INPUT TYPE='button' id='' VALUE='Add' style='margin-bottom:30px;' onclick='createnewstructure()'/>"
 );

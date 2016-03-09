@@ -490,6 +490,9 @@ function createclass(){
                 //alert(xmlhttp.responseText);
                 document.getElementById('smart_rst').style.display='block';
                 document.getElementById('smart_rst').innerHTML=xmlhttp.responseText;
+                //successload();
+                //alert(controller);
+                pageload();
             }
         };
     var classname = document.getElementById('classname').value;

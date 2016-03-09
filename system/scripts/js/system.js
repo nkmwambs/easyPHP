@@ -1,5 +1,9 @@
 var pathArray = window.location.pathname.split("/");
 
+var method = pathArray[4];
+
+var controller = pathArray[3];
+
 var app = pathArray[2];
 
 var root = pathArray[1];

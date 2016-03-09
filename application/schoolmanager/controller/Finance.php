@@ -122,5 +122,8 @@ private $_model;
 		$del_cond = $this->_model->where(array(array("WHERE","fID",$fID,"=")));
 		
 	}
+	public function categories($render=1,$path='',$tags=array("All")){
+
+	}
 }
 ?>

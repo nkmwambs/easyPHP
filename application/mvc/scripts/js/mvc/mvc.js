@@ -256,4 +256,3 @@ function changeLang(elem){
          xmlhttp.send(); 
 }
 
-
