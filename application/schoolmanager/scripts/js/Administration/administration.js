@@ -135,13 +135,13 @@ function editmenu(elem){
 	
 	var tds = document.getElementsByClassName("tds");
 	
-	/*for (var i=0; i < tds.length; i++) {
+	for (var i=0; i < tds.length; i++) {
 	  if(tds.item(i).childNodes[0].type==='text'){
 	  		tds.item(i).innerHTML = tds.item(i).childNodes[0].value;
 	  }else{
 	  		tds.item(i).innerHTML = tds.item(i).childNodes[0].value;
 	  }
-	};*/
+	};
 	
 	if(fld==='selfTitle'){
 		elem.innerHTML="<INPUT class='vals' TYPE='text' VALUE='"+val+"' onkeyup='changemenufield(\""+fld+"\")'/>";

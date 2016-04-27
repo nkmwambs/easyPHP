@@ -499,7 +499,7 @@ public static function render($render="1",$path="",$results=""){
 		$users_online_arr=array();
 		if(self::session()->ID!=='0'){
 			$users_online_cond = $model->where(array(array("where","sess_state",1,"=")));
-			$users_online_arr = $model->getAllRecords($users_online_cond,"user_sessions","ORDER BY sess_id DESC LIMIT 0,10");
+			$users_online_arr = $model->getAllRecords($users_online_cond,"user_sessions","ORDER BY sess_start DESC LIMIT 0,10");
 		}
 			
 		 
@@ -651,6 +651,7 @@ public static function render($render="1",$path="",$results=""){
 				
 				include BASE_PATH."/"."system"."/"."logs"."/"."error.php";
 			}
+		
 		if($render===1){
 			if(file_exists(BASE_PATH."/"."system"."/"."extensions"."/"."themes"."/".$GLOBALS['app_default_theme']."/"."footer.php")){
 				$data = $recent;

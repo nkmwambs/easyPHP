@@ -132,18 +132,16 @@ function searchUser(){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-                var rst = xmlhttp.responseText;
-                var header = "Toolkit Users";
-                popup(rst,header);
           }
         };
     xmlhttp.open("GET",path+"mvc/Welcome/userpop",true);
     xmlhttp.send();
 }
 function getUser(username){
-	//alert(username);
 	document.getElementById('username').value = username;
-	closepop();
+	//switchUser();
+	
+
 }
 function delRec(){
     var dels = document.getElementsByClassName("dels");
@@ -256,3 +254,6 @@ function changeLang(elem){
          xmlhttp.send(); 
 }
 
+function successload(){
+	window.location.assign(path+"mvc/Welcome/confirm/"+window.location.pathname);
+}

@@ -33,6 +33,13 @@ public function updateLogs(){
 	//Record a Session
 	$sess_arr = array();
 	$sess_arr['user_id']=Resources::session()->ID;
+	
+	//Check if a session record exists
+	$sess_rec_check = $this->_model->where(array(array("where","user_id",Resources::session()->ID,"=")));
+	$sess_rec_check_qry = $this->_model->getAllRecords($sess_rec_check,"user_sessions","",array("user_id"));
+	
+	
+		
 	if(Resources::session()->userfirstname===""){
 		$sess_arr['user_fname']=Resources::session()->fname;
 	}else{
@@ -41,9 +48,15 @@ public function updateLogs(){
 	$sess_arr['sess_start']=time();
 	$sess_arr['sess_end']=0;
 	$sess_arr['sess_state']=1;
-	if(Resources::session()->ID!=='0'){
-		$this->_model->insertRecord($sess_arr,"user_sessions");
-	}
+	
+	if(count($sess_rec_check_qry)>0){
+		 $this->_model->updateQuery($sess_arr,$sess_rec_check,"user_sessions");
+	}else{
+
+		if(Resources::session()->ID!=='0'){
+			$this->_model->insertRecord($sess_arr,"user_sessions");
+		}
+	}	
 	
 }
 public function end_session(){
@@ -194,16 +207,16 @@ public function switchUser($render=1,$path="",$tags=array("All")){
                     return $_SESSION['fname']; 
     }
 public function userpop($render=2,$path='',$tags=array("All")){
-        
-		if(Resources::session()->userlevel==='2'){
-			$getuser_cond = $this->_model->where(array(array("WHERE","userlevel",1,"="),array("AND","cname",Resources::session()->cname,"="),array("AND","department",0,"=")));	
-		}else{
-			$getuser_cond="";
-		}
-		$search = $this->_model->getAllRecords($getuser_cond,"users","",array("ID","userfirstname","userlastname","username"));
 		
-        //print_r(json_encode($search));
-        $data = $search;
+		
+		if(Resources::session()->userlevel_backup==='2'){
+			$getuser_cond = $this->_model->where(array(array("WHERE","userlevel",1,"="),array("AND","cname",Resources::session()->cname,"=")));	
+		}else{
+			$getuser_cond=$this->_model->where(array(array("WHERE","userlevel",0,"<>")));
+		}
+		$search = $this->_model->getAllRecords($getuser_cond,"users","",array("ID","fname","userfirstname","userlastname","username","department"));
+		
+        $data['users'] = $search;
 		
 		return $data;
         	
@@ -291,22 +304,28 @@ public function test($render=1,$path='',$tags=array("0","All")){
 
 }
 public function filterschedule(){
-	//$cond_users =  Resources::create_condition($_POST);
-	//$qry = $this->_model->getAllRecords($cond_users,"fundsschedule");
-	//print_r(json_encode($qry));
 	
 	$this->create_grid($_POST,"fundsschedule");
 }
 public function editgrid(){
-	//$id = $_POST['id'];
-	//$field = $_POST['field'];
-	//$newVal = $_POST['newVal'];
-	
-	//$update_set = array($field=>$newVal);
-	//$update_cond = $this->_model->where(array(array("where","ID",$id,"=")));
-	//$update_qry = $this->_model->updateQuery($update_set,$update_cond,"fundsschedule");
-	
-	//echo "Update Successfully!";
 	$this->editable_grid($_POST,"fundsschedule","ID");
+}
+public function confirm($render=1,$path='',$tags=array("All")){
+	$data = array();
+	$url = $this->choice;
+	//Remove the first GET variable in the pathname
+	array_shift($url);
+	array_shift($url);
+	
+	$data['url']=implode("/",$url);
+	$data['test']="";//implode("/",$this->choice);
+	return $data;
+}
+public function usersonline(){
+	//Get Online Users
+	$users_online_cond = $this->_model->where(array(array("where","sess_state",1,"=")));
+	$users_online_qry = $this->_model->getAllRecords($users_online_cond,"user_sessions");
+	
+	print_r(json_encode($users_online_qry));
 }
 }

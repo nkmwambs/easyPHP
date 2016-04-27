@@ -36,6 +36,76 @@ class Claims_Controller extends E_Controller
 		}
 		echo $cnt;
 	}
+ public function selectClaims($render=2,$path='viewMedicalClaims',$tags=array("1","2","5")){
+		$data=array();
+		$error="";
+		$limit=50;//Records Per Page
+		$offset=0;
+		$pageNum = $offset*$limit;
+		
+		 if(isset($_POST['offset'])){
+		 	$offset=$_POST['offset']-1;
+			$pageNum = $offset*$limit;
+		 }
+		
+		//Set Date Conditions
+		$frmDate = date("Y-m-01");
+		$toDate = date("Y-m-t");
+		if(isset($_POST['frmDate'])||isset($_POST['toDate'])){
+			$frmDateRaw = $_POST['frmDate'];
+			$toDateRaw = $_POST['toDate'];
+			if(($frmDateRaw===""&&$toDateRaw!=="")||($frmDateRaw!==""&&$toDateRaw==="")){
+				$error='<div id="error_div">Date fields should be filled in pairs</div>';
+			}else{
+				$frmDate = $frmDateRaw;
+				$toDate = $toDateRaw;
+			}
+		}
+		
+		
+		//Active Claims
+		$rmk=0;
+		if(isset($_POST['rmk'])){
+				$rmk=$_POST['rmk'];
+		}
+			$cond_claim = $this->_model->where(array(array("WHERE","rmks",$rmk,"="),array("AND","date",$frmDate,">="),array("AND","date",$toDate,"<=")));
+		if(Resources::session()->userlevel==='1'){
+			if(isset($_POST['rmk'])){
+				$rmk=$_POST['rmk'];
+			}
+			$cond_claim = $this->_model->where(array(array("WHERE","proNo",Resources::session()->fname,"="),array("AND","rmks",$rmk,"="),array("AND","date",$frmDate,">="),array("AND","date",$toDate,"<=")));
+		}elseif(Resources::session()->userlevel==='2'){
+			if(isset($_POST['rmk'])){
+				$rmk=$_POST['rmk'];
+			}
+			$cond_claim = $this->_model->where(array(array("WHERE","cluster",Resources::session()->cname,"="),array("AND","rmks",$rmk,"="),array("AND","date",$frmDate,">="),array("AND","date",$toDate,"<=")));
+		}elseif(Resources::session()->userlevel==='5'){
+			$rmk=2;
+			if(isset($_POST['rmk'])){
+				$rmk=$_POST['rmk'];
+			}
+			$cond_claim = $this->_model->where(array(array("WHERE","rmks",$rmk,"="),array("AND","date",$frmDate,">="),array("AND","date",$toDate,"<=")));
+		}
+		
+		$claim_arr = $this->_model->getAllRecords($cond_claim,"claims","LIMIT $pageNum,$limit");
+		
+		//Total Pages
+		$totalPages_arr = $this->_model->getAllRecords($cond_claim,"claims");
+		$cnt=count($totalPages_arr)/$limit;
+		
+		$data['claims']=$claim_arr;
+		$data['totalPages']=ceil($cnt);
+		$data['pageNum']=$offset;
+		$data['rmk']=$rmk;
+		$data['error']=$error;
+		$data['fromdate']=$frmDate;
+		$data['todate']=$toDate;
+		$data['btn']=$offset+1;
+		$data['rmk']=$rmk;
+		
+		return $data;
+        
+    }	
   public function viewMedicalClaims($render=1,$path='',$tags=array("1","2","5")){
 		$data=array();
 		$error="";
@@ -351,11 +421,11 @@ public function medicalClaimEntry(){
 			$entry['randomID'][]=$rand;	
 			
 			//Format Approval document file name and Assign Random ID if any
-			if($_FILES['refNo']['error'][$i]===0||$_FILES['refNo']['size'][$i]!==0){
-				$support_file_ext_arr = explode(".",$_FILES['refNo']['name'][$i]);
-				$support_file_ext = $support_file_ext_arr[1];	
-				$entry['refNo'][]=$entry['childNo'][$i]."_".$rand.".".$support_file_ext;				
-			}
+			//if($_FILES['refNo']['error'][$i]===0||$_FILES['refNo']['size'][$i]!==0){
+				//$support_file_ext_arr = explode(".",$_FILES['refNo']['name'][$i]);
+				//$support_file_ext = $support_file_ext_arr[1];	
+				//$entry['refNo'][]=$entry['childNo'][$i]."_".$rand.".".$support_file_ext;				
+			//}
 		}
 		
 		//print_r($_FILES['refNo']);
@@ -370,11 +440,11 @@ public function medicalClaimEntry(){
 				$this->ftpupload($cst, $icpNo, $file,$filegrp,$i);
 				
 				//Upload approval support document
-				if($_FILES['refNo']['error'][$i]===0||$_FILES['refNo']['size'][$i]!==0){
-					$support_filegrp = "supportdocs";
-					$support_file = $entry['refNo'][$i];
-					$this->otherftpupload($cst, $icpNo, $support_file,$support_filegrp,$i);
-				}
+				//if($_FILES['refNo']['error'][$i]===0||$_FILES['refNo']['size'][$i]!==0){
+					//$support_filegrp = "supportdocs";
+					//$support_file = $entry['refNo'][$i];
+					//$this->otherftpupload($cst, $icpNo, $support_file,$support_filegrp,$i);
+				//}
 		}
 	
 		
@@ -578,5 +648,99 @@ public function remarkMedicalClaim(){
     }
    public function newHVCCPRClaim($render=1,$path='',$tags=array("All")){
 
-    }    
+    } 
+   public function medicalclaimapproval($render=1,$path='',$tags=array("2","5")){
+   		//Get Requests
+   		$req_cond="";
+   		if(Resources::session()->userlevel==='1'){
+   			$req_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+   		}elseif(Resources::session()->userlevel==='2'){
+   			$req_cond = $this->_model->where(array(array("where","cluster",Resources::session()->cname,"=")));
+   		}
+		
+		$req_qry = $this->_model->getAllRecords($req_cond,"medicalrequests");
+		
+		$data = array();
+		
+		$data['req'] = $req_qry;
+		
+		return $data;
+   		
+   }  
+   public function medicalclaimrequest($render=1,$path='',$tags=array("1")){
+   		//Request Types
+   		$types_cond = $this->_model->where(array(array("where","active",1,"=")));
+		$types_qry = $this->_model->getAllRecords($types_cond,"medicalrequesttypes");
+		
+		//Check if ICP has CSP
+		$has_csp_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"=")));
+		$has_csp_qry = $this->_model->getAllRecords($has_csp_cond,"csp_projects");
+		
+		//Get ICP Details
+		$cluster_cond = $this->_model->where(array(array("WHERE","userfirstname",Resources::session()->fname,"="))); 
+		$cluster_qry = $this->_model->getAllRecords($cluster_cond,"users","",array("fname","cname"));
+		
+		$has_csp = 0;
+		if(count($has_csp_qry)>0){
+			$has_csp = 1;
+		}
+		
+		$data=array();
+		
+		$data['types']=$types_qry;
+		$data['csp'] = $has_csp;
+		$data['icp']=$cluster_qry;
+		
+		return $data; 
+   	
+   }
+   public function medicalrequest(){
+   	//Check if there is approved request not closed
+   	$childNo = $_POST['childNo'];
+	$chk_approved_cond = $this->_model->where(array(array("where","childNo",$childNo,"="),array("AND","reqStatus",2,"=")));
+	$chk_approved_qry = $this->_model->getAllRecords($chk_approved_cond,"medicalrequests");
+	
+	if(count($chk_approved_qry)>0){
+		echo "You can't raise a new request when there is an existing open approved request for the same beneficiary. Consider closing the previous one";
+	}else{
+		$this->_model->insertRecord($_POST,"medicalrequests");
+   	
+		echo "Request submitted successfully";	
+	}
+	
+   } 
+   public function approvemedicalrequest(){
+   		//print_r($_POST);
+   		$reqID = $_POST['reqID'];
+   		$set=array("reqStatus"=>2,"reqApprovedBy"=>Resources::session()->username);
+		$req_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+		
+		$this->_model->updateQuery($set,$req_cond,"medicalrequests");
+		
+		echo "Request approved successful";
+   }
+   public function checkmedicalrequest(){
+   	$childNo = $_POST['childNo'];
+   	
+   	//Check if the child has a request
+   	
+   	$chk_req_cond = $this->_model->where(array(array("where","childNo",$childNo,"="),array("AND","reqStatus",'2',"=")));
+   	$chk_req_qry = $this->_model->getAllRecords($chk_req_cond,"medicalrequests","",array("reqStatus"));
+	
+	if(count($chk_req_qry)>0){
+		echo $chk_req_qry[0]->reqStatus;
+	}else{
+		echo "";
+	}
+   	
+   }
+   public function closemedicalrequest(){
+   	   	$reqID = $_POST['reqID'];
+   		$set=array("reqStatus"=>4);
+		$req_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+		
+		$this->_model->updateQuery($set,$req_cond,"medicalrequests");
+		
+		echo "Request closed successful";
+   }
 }

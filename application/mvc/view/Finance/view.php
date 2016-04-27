@@ -1,5 +1,4 @@
 <?php
-//print_r($data['rec']);
 if(empty($data['rec'])){
 	exit;
 }

@@ -156,7 +156,7 @@ function addRow(tableID) {
                         };
                         cell5.appendChild(x);
                         
-                        var cell6 = row.insertCell(6);
+           	var cell6 = row.insertCell(6);
 			var element6 = document.createElement("input");
 			element6.type = "text";
 			element6.name = "civaCode[]";

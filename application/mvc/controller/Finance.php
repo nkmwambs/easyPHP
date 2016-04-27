@@ -2970,7 +2970,231 @@ public function allowvoucheredit(){
 	
 	echo "Voucher editing for voucher number ".$VNumber." allowed!";
 }
-public function fundstransfer($render=1,$path='',$path=array("2","3","9")){
+
+public function fundstransfer($render=1,$path='',$tags=array("2","3","9")){
+	//Get Accounts
+       $AccGrp = 1;
+    
+        $cond = $this->_model->where(array(array("where","accounts.AccGrp",$AccGrp,"=")));
+        $rst_rw=$this->_model->civaAccountsMerge($cond,"CR");
+        $rst=array();
+        foreach($rst_rw as $civaAcc):
+            if(is_numeric($civaAcc->civaID)&&substr_count($civaAcc->allocate,$_SESSION['fname'])>0){
+                $rst[]=$civaAcc;
+            }elseif(!is_numeric($civaAcc->civaID)){
+                $rst[]=$civaAcc;
+            }
+        endforeach;
+        
+		$data =array();
+		
+		$data['ac']=$rst;
+		
+		return $data;
+}
+public function getfundsamount(){
+	//print_r($_POST);
+	$closureDate = $_POST['monthfrom'];	
+	//Get system opening balance
+	$sys_open_cond = $this->_model->where(array(array("WHERE","opfundsbalheader.icpNo",Resources::session()->fname,"="),array("AND","opfundsbal.funds",300,"="),array("AND","opfundsbalheader.closureDate",$closureDate,"=")));
+	$sys_open_qry = $this->_model->getAllRecords($sys_open_cond,"opfundsbalheader","",array("opfundsbalheader.closureDate:closureDate","opfundsbal.funds:funds","opfundsbal.amount:amount"),array(array("LEFT JOIN","opfundsbalheader"=>"balHdID","opfundsbal"=>"balHdID")));
 	
+	print_r(json_encode($sys_open_qry));
+}
+public function fundstransferrequest(){
+	$rst['icpNo'] = $_POST['icpNo'];
+	$rst['monthfrom'] = $_POST['monthfrom'];
+	$rst['acfrom'] = $_POST['acfrom'];
+	$rst['acto'] = $_POST['acto'];
+	$rst['civaID'] = $_POST['civaID'];
+	$rst['amttotransfer'] = $_POST['amttotransfer'];
+	$rst['description'] = $_POST['description'];
+	
+	//Check for unapproved transfer
+	$chk_transfer_cond = $this->_model->where(array(array("where","icpNo",Resources::session()->fname,"="),array("AND","accepted",2,"<>")));
+	$chk_transfer_qry = $this->_model->getAllRecords($chk_transfer_cond,"fundstransfersrequests","",array("monthfrom","acfrom","acto","amttotransfer","stmp"));
+	
+	if(count($chk_transfer_qry)>0){
+		echo "You have unapproved transfer of Kes. ".$chk_transfer_qry[0]->amttotransfer." from account R".$chk_transfer_qry[0]->acfrom." to R".$chk_transfer_qry[0]->acto." raised on ".date("Y-m-d",strtotime($chk_transfer_qry[0]->stmp)+32400);
+	}else{
+		echo $this->_model->insertRecord($rst,"fundstransfersrequests");	
+	}
+		
+}
+public function fundstransferapproval($render=1,$path='',$tags=array("2")){
+	//Get PF Cluster
+	$cst = Resources::session()->cname;
+	
+	//Get list of transfer requests
+	$req_cond = $this->_model->where(array(array("where","users.cname",$cst,"=")));
+	$req_qry = $this->_model->getAllRecords($req_cond,"fundstransfersrequests","","",array(array("LEFT JOIN","fundstransfersrequests"=>"icpNo","users"=>"userfirstname")));
+
+	
+	$data = array();
+	
+	$data['req'] = $req_qry;
+	
+	return $data;
+
+}
+public function approvetransfer(){
+	$reqID = $_POST['reqID'];
+	
+	//Get ICP Number/ Approval Request Record
+	$approval_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+	$approval_qry = $this->_model->getAllRecords($approval_cond,"fundstransfersrequests");
+	$icpNo = $approval_qry[0]->icpNo;
+	
+	//Get Max voucher_header ID
+	$max_vnumber_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"=")));
+	$max_vnumber_qry = $this->_model->getAllRecords($max_vnumber_cond,"voucher_header","",array("MAX(VNumber):VNumber","TDate"));
+	$max_vnumber = $max_vnumber_qry[0]->VNumber;
+	$max_tdate = $max_vnumber_qry[0]->TDate;
+	//print_r($max_vnumber_qry);
+	
+	//Get last MFR submitted date
+	$last_mfr_date_cond = $this->_model->where(array(array("where","icpNo",$icpNo,"=")));
+	$last_mfr_date_qry = $this->_model->getAllRecords($last_mfr_date_cond,"opfundsbalheader","",array("MAX(closureDate):closureDate"));
+	$last_mfr_date = $last_mfr_date_qry[0]->closureDate;
+	//print_r($last_mfr_date_qry);
+	
+	//Check date of the last submitted MFR is less than max_tdate and set a new voucher number
+	$curVNumber_yr = substr($max_vnumber, 0,2);
+	$curVNumber_month= substr($max_vnumber, 2,2);
+	$max_tdate_month = substr($max_tdate, 5,2);
+	$nextVNumber = $max_vnumber+1;
+	if(strtotime($last_mfr_date)>strtotime($max_tdate)){
+		//Skip voucher numbers
+		$max_tdate_month = $max_tdate_month+1;
+		if($max_tdate_month===13){
+			$curVNumber_yr = $curVNumber_yr+1;
+			$nextVNumber = $curVNumber_yr."0101";
+		}else{
+			if(strlen($max_tdate_month)===1){
+				$max_tdate_month = "0".$max_tdate_month;
+			}
+			$nextVNumber = $curVNumber_yr.$max_tdate_month."01";
+		}
+	}
+	
+	
+	//Insert a new voucher header
+	$voucher_header = array();
+	$voucher_header['icpNo'] = $icpNo;
+	$voucher_header['TDate'] = $max_tdate;
+	$voucher_header['Fy']=$curVNumber_yr;
+	$voucher_header['VNumber'] = $nextVNumber;
+	$voucher_header['Payee']=$icpNo;
+	$voucher_header['Address']=$icpNo;
+	$voucher_header['VType'] = "CR";
+	$voucher_header['ChqNo'] = 0;
+	$voucher_header['ChqState'] = 0;
+	$voucher_header['clrMonth'] = "0000-00-00";
+	$voucher_header['TDescription'] = $approval_qry[0]->description." (Funds transfer approval from R".$approval_qry[0]->acfrom." to R".$approval_qry[0]->acto." ID: ".$reqID.")";
+	$voucher_header['totals'] = 0;
+	$voucher_header['editable'] = 0;
+	$voucher_header['reqID'] = $reqID;
+	$voucher_header['unixStmp']=strtotime(date("Y-m-d H:m:s"));
+	
+	$this->_model->insertRecord($voucher_header,"voucher_header");
+	
+	//Get hID
+	$hid_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+	$hid_qry = $this->_model->getAllRecords($hid_cond,"voucher_header");
+	$hID = $hid_qry[0]->hID;
+	
+	//Insert a new voucher body
+	$voucher_body = array();
+	$voucher_body['hID'] = array($hID,$hID);
+	$voucher_body['icpNo']=array($icpNo,$icpNo);
+	$voucher_body['VNumber']=array($nextVNumber,$nextVNumber);
+	$voucher_body['TDate'] = array($max_tdate,$max_tdate);
+	$voucher_body['Qty'] = array(1,1);
+	$voucher_body['Details'] = array("Funds transfer from R".$approval_qry[0]->acfrom,"Funds Transfer to R".$approval_qry[0]->acto);
+	$voucher_body['UnitCost'] = array(-$approval_qry[0]->amttotransfer,$approval_qry[0]->amttotransfer);
+	$voucher_body['Cost'] = array(-$approval_qry[0]->amttotransfer,$approval_qry[0]->amttotransfer);
+	$voucher_body['AccNo'] = array($approval_qry[0]->acfrom,$approval_qry[0]->acto);
+	$voucher_body['civaCode'] = array(0,$approval_qry[0]->civaID);
+	$voucher_body['VType'] = array("CR","CR");
+	$voucher_body['ChqNo'] = array(0,0);
+	$voucher_body['unixStmp']=array(strtotime(date("Y-m-d H:m:s")),strtotime(date("Y-m-d H:m:s")));
+	
+	$this->_model->insertArray($voucher_body,"voucher_body");
+	
+	//Flag the record to Approved
+	$this->_model->updateQuery(array("accepted"=>2,"VNumber"=>$nextVNumber),$approval_cond,"fundstransfersrequests");
+}
+public function deltransfer(){
+	$reqID = $_POST['reqID'];
+	
+	$del_transfer_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+	$this->_model->deleteQuery($del_transfer_cond,"fundstransfersrequests");
+	
+	echo "Request deleted successfully";
+}
+public function edittransferrequest($render=1,$path='',$tags=array("All")){
+	$reqID = $_POST['reqID'];
+	//Get Accounts
+       $AccGrp = 1;
+    
+        $cond = $this->_model->where(array(array("where","accounts.AccGrp",$AccGrp,"=")));
+        $rst_rw=$this->_model->civaAccountsMerge($cond,"CR");
+        $rst=array();
+        foreach($rst_rw as $civaAcc):
+            if(is_numeric($civaAcc->civaID)&&substr_count($civaAcc->allocate,$_SESSION['fname'])>0){
+                $rst[]=$civaAcc;
+            }elseif(!is_numeric($civaAcc->civaID)){
+                $rst[]=$civaAcc;
+            }
+        endforeach;
+		
+		//Get Full Request Record
+		$req_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+		$req_qry = $this->_model->getAllRecords($req_cond,"fundstransfersrequests");
+        
+		$data =array();
+		
+		$data['ac']=$rst;
+		$data['req'] = $req_qry[0];
+		
+		return $data;
+}
+public function fundstransferrequestedit(){
+  $reqID = $_POST['reqID'];
+  
+  $update_request_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+  
+  //Check if accepted
+  $accept_qry = $this->_model->getAllRecords($update_request_cond,"fundstransfersrequests");
+  $accepted = $accept_qry[0]->accepted;
+
+  
+  $rst =array();
+  
+	$rst['icpNo'] = $_POST['icpNo'];
+	$rst['monthfrom'] = $_POST['monthfrom'];
+	$rst['acfrom'] = $_POST['acfrom'];
+	$rst['acto'] = $_POST['acto'];
+	$rst['civaID'] = $_POST['civaID'];
+	$rst['amttotransfer'] = $_POST['amttotransfer'];
+	if($accepted==='1'){
+		$rst['accepted']=3;
+	}
+	$rst['description'] = $_POST['description'];
+  
+  
+  $update_request_qry = $this->_model->updateQuery($rst,$update_request_cond,"fundstransfersrequests");
+  
+  echo "Update successful";
+  	
+}
+public function rejecttransfer(){
+	$reqID = $_POST['reqID'];
+	$update_request_cond = $this->_model->where(array(array("where","reqID",$reqID,"=")));
+	$sets = array("accepted"=>1);
+	
+	$this->_model->updateQuery($sets,$update_request_cond,"fundstransfersrequests");
+	
+	echo "Request declined successfully";
 }
 }

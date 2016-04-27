@@ -313,6 +313,12 @@ function editfield(fld_val,db_key,newVal,elem){
 
 function excelexport(){
 				//getting values of current time for generating the file name
+				var img = document.getElementById('tblAllSchedules').getElementsByTagName('img');
+				var l = img.length;
+				for (var i = 0; i < l; i++) {
+				    img[0].parentNode.removeChild(img[0]);
+				}
+				
 		        var dt = new Date();
 		        var day = dt.getDate();
 		        var month = dt.getMonth() + 1;

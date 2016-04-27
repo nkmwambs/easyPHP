@@ -193,3 +193,29 @@ legend{
 	 border:1px red solid;
 	 /*background-color:red;*/
 }
+.stylish_table{
+	min-width: 100%;
+	padding: 3px;
+    white-space: nowrap;
+    border: none;
+    font-size: 10pt;
+    font-weight: bold;
+    background-image: url("../../images/top_border.PNG");
+   	background-repeat: no-repeat;
+   	background-size: 100%;
+}
+.stylish_table caption{
+	font-weight:bold;
+}
+.stylish_table td,th{
+	 border:none;
+	 border-bottom:1px solid black;
+}
+.stylish_table tr:last-child td{
+	border-bottom:none;
+}
+
+.stylish_table, td,th {
+     padding: 8px;
+ }
+  

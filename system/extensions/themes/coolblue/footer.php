@@ -32,5 +32,13 @@
             </div><br>
              
         <!--<div id="footer" class="cntr"><h8>Compassion Kenya Toolkit 2.0 &copy; 2015</h8></div>-->
+        <?php
+        	if(Resources::session()->userlevel!=='0'){
+        ?>
+        	<div id='chat_main_div' onclick="expandchatbox()"><div id='chat_header'>Toolkit ChatBox &#9679;</div></div>
+        <?php
+        }
+        ?>
+
     </body>
 </html>

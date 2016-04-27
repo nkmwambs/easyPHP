@@ -1380,3 +1380,210 @@ function delRowPlan(tableID) {
 		document.getElementById('acTotal').value=delTotals;	
 		document.getElementById('btnDelRow').style.display='none';
 }
+
+
+
+function getfundsamount(){
+//alert("Hello");	
+var hide = document.getElementsByClassName('hide');
+	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                var obj = JSON.parse(xmlhttp.responseText);
+                if(obj.length!==0){
+                	for (var i=0; i < hide.length; i++) {
+	                  hide.item(i).style.display='block';
+	                };
+	                document.getElementById('amtavailable').value=obj[0].amount;
+	                document.getElementById('amttotransfer').value=obj[0].amount;
+                }else{
+                	alert("You don't funds from account 300 to transfer from in the specified date");
+                }
+	                
+                 //alert(xmlhttp.responseText);
+          }
+        };
+	var mth = document.getElementById('monthfrom').value;
+	var frmData = new FormData();
+	frmData.append("monthfrom",mth);
+	
+    xmlhttp.open("POST",path+"mvc/Finance/getfundsamount",true);      
+    xmlhttp.send(frmData);
+}
+function getcivcode(elem){
+	var indx = elem.selectedIndex-1;
+	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                var obj = JSON.parse(xmlhttp.responseText);
+                 document.getElementById('civaID').value=obj[indx].civaID;
+          }
+        };
+	
+    xmlhttp.open("GET",path+"mvc/Finance/accounts/vouchertype/CR",true);      
+    xmlhttp.send();
+}
+function fundstransferrequest(){
+	      xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                alert(xmlhttp.responseText);
+                successload();
+  
+          }
+        };
+	var frm = document.getElementById('frmbaltranferreq');
+	var frmData = new FormData(frm);
+	
+    xmlhttp.open("POST",path+"mvc/Finance/fundstransferrequest",true);      
+    xmlhttp.send(frmData);
+}
+function approvetransfer(reqID){
+	//alert("Hello");
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                alert(xmlhttp.responseText);
+  
+          }
+        };
+	var frmData = new FormData();
+	frmData.append("reqID",reqID);
+	
+    xmlhttp.open("POST",path+"mvc/Finance/approvetransfer",true);      
+    xmlhttp.send(frmData);
+}
+function rejecttransfer(reqID){
+	//alert("Function Under Construction");
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                alert(xmlhttp.responseText);
+                successload();
+                
+  
+          }
+        };
+	var frmData = new FormData();
+	frmData.append("reqID",reqID);
+	
+	var cnf = confirm("Are you sure you want to decline this request?");
+	
+	if(!cnf){
+		alert("Action aborted!");
+		exit;
+	}
+	
+    xmlhttp.open("POST",path+"mvc/Finance/rejecttransfer",true);      
+    xmlhttp.send(frmData);
+}
+function addfundstransferreqcomment(){
+	alert("Function Under Construction");
+}
+function deltransfer(reqID){
+	//alert(reqID);
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                alert(xmlhttp.responseText);
+                successload();
+                
+  
+          }
+        };
+	var frmData = new FormData();
+	frmData.append("reqID",reqID);
+	
+	var cnf = confirm("Are you sure you want to permanently delete this request?");
+	
+	if(!cnf){
+		alert("Action aborted!");
+		exit;
+	}
+	
+    xmlhttp.open("POST",path+"mvc/Finance/deltransfer",true);      
+    xmlhttp.send(frmData);
+}
+function readrejectioncomments(){
+	alert("Function Under Construction");
+}
+function edittransferrequest(reqID){
+	//alert("Function Under Construction");
+	xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                document.write(xmlhttp.responseText);
+          }
+        };
+	var frmData = new FormData();
+	frmData.append("reqID",reqID);
+	
+	var cnf = confirm("Are you sure you want to edit this request?");
+	
+	if(!cnf){
+		alert("Action aborted!");
+		exit;
+	}
+	
+    xmlhttp.open("POST",path+"mvc/Finance/edittransferrequest",true);      
+    xmlhttp.send(frmData);
+}
+function updateacto(elem){
+	document.getElementById('acto').value=elem.value;
+	getcivcode(elem);
+}
+function fundstransferrequestedit(){
+	 xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState!==4) {
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loading.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                
+                alert(xmlhttp.responseText);
+                successload();
+  
+          }
+        };
+	var frm = document.getElementById('frmbaltranferreq');
+	var frmData = new FormData(frm);
+	
+    xmlhttp.open("POST",path+"mvc/Finance/fundstransferrequestedit",true);      
+    xmlhttp.send(frmData);	
+}

@@ -1,3 +1,6 @@
 .switchElem{
     float: left;
 }
+.items{
+	cursor: pointer;
+}

@@ -164,3 +164,19 @@ table{
     width: 100%;
 }
 
+#chat_main_div{
+	background-color:orange;
+	min-width: 220px;
+	min-height:0px; 
+	border-radius: 5px;
+	position:fixed;
+	bottom: 5px;
+	right: 25px;
+	padding: 15px 5px 10px 30px;
+	cursor: pointer;
+}
+#chat_header{
+	color: white;
+	font-size:13pt;
+	font-weight:bold;
+}

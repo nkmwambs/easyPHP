@@ -452,14 +452,6 @@ function addClaim(tableID) {
                  } 
 			element15.name = "facClass[]";
             element15.onchange = function(){
-  							//Make refNo field mandatory
-  							var refNo = document.getElementById("refNo"+rowCount);
-  							if(this.value!=='Public'){
-  								refNo.setAttribute("class","rData");
-  								alert("Please attach an approval document before you submit this claim!");
-  							}else{
-  								refNo.removeAttribute("class");
-  							}
   							
                         	//Trigger Claim counter
                                          this.style.backgroundColor='white';
@@ -475,6 +467,7 @@ function addClaim(tableID) {
                                         xmlhttp.send(frmData);
                                 };                      
             element15.className="rData";
+            element15.id = "facClass"+rowCount;
 			cell15.appendChild(element15);  
        
        
@@ -484,18 +477,54 @@ function addClaim(tableID) {
 			element16.name = "rct[]";
             element16.id = "rct"+rowCount;
             element16.style.width = '130px';
-            element16.value = '0';
             element16.className="rData";
+            element16.onchange=function(){
+            				var refNo = document.getElementById("refNo"+rowCount);
+  							var facClass = document.getElementById("facClass"+rowCount);
+            				//Check if facClass is set
+            				if(facClass.value===""){
+            					facClass.style.border="1px red solid";
+            					alert("Choose facility type before uploading a receipt");
+            					exit;
+            				}
+            				//Make refNo field mandatory
+  							
+  							if(facClass.value!=='Public'){
+  								refNo.setAttribute("class","rData");
+  								//Check if a Request is available
+  							     xmlhttp.onreadystatechange=function() {
+						          if(xmlhttp.readyState!==4){
+						                document.getElementById('overlay').style.display='block';
+						                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+						            }
+						            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+						                document.getElementById('overlay').style.display='none';
+						               //alert(xmlhttp.responseText);
+										refNo.value="KEICP/req/"+xmlhttp.responseText;
+						            }
+						        };         
+						        
+						        var childNo = document.getElementById('childNo'+rowCount).value;                
+						        var frmData = new FormData();
+						        frmData.append("childNo",childNo);
+								
+						        xmlhttp.open("POST",path+"mvc/Claims/checkmedicalrequest",true);      
+						        xmlhttp.send(frmData);	
+		
+  							}else{
+  								refNo.removeAttribute("class");
+  							}
+            };
 			cell16.appendChild(element16);
 
             
             var cell17 = row.insertCell(17+parseInt(cnt_csp));
             var element17=document.createElement("input");
-            element17.type = "file";
+            element17.type = "text";
 			element17.name = "refNo[]";
+			setAttributes(element17,{"readonly":"readonly"});
             element17.id = "refNo"+rowCount;
             element17.style.width = '130px';
-            //element17.className="rData";
             cell17.appendChild(element17);
     
             var cell18 = row.insertCell(18+parseInt(cnt_csp));
@@ -1013,9 +1042,8 @@ function selectClaims(){
 
 	      xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
-               document.write(xmlhttp.responseText);
-               //location.reload();
-             	//window.location.reload( true );
+               //document.write(xmlhttp.responseText);
+               document.getElementById('content').innerHTML=xmlhttp.responseText;
              	
             }
         };
@@ -1024,7 +1052,7 @@ function selectClaims(){
         frmData.append("rmk",rmk);
         frmData.append("frmDate",frmDate);
         frmData.append("toDate",toDate);
-        xmlhttp.open("POST",path+"mvc/Claims/viewMedicalClaims",true);      
+        xmlhttp.open("POST",path+"mvc/Claims/selectClaims",true);      
         xmlhttp.send(frmData);
 }
 function viewReceipt(rct,cst,icp){
@@ -1046,4 +1074,118 @@ function viewReceipt(rct,cst,icp){
         frmData.append("icp",icp);
         xmlhttp.open("POST",path+"mvc/Claims/viewReceipt",true);      
         xmlhttp.send(frmData);		
+}
+function medicalrequest(){
+	//alert("Hello");
+		      xmlhttp.onreadystatechange=function() {
+          if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               alert(xmlhttp.responseText);
+
+            }
+        };
+        
+        var frm = document.getElementById('frmmedicalrequest');                                 
+        var frmData = new FormData(frm);
+
+        xmlhttp.open("POST",path+"mvc/Claims/medicalrequest",true);      
+        xmlhttp.send(frmData);
+}
+function getchilddetails(elem){
+	//getCname
+	var icpNo = document.getElementById('icpNo').value;
+	var childNo =elem.value;
+
+    if(childNo.length===1&&!isNaN(parseInt(childNo))){
+         document.getElementById('childNo').value = icpNo+"-000"+childNo;
+    }
+    if(childNo.length===2 && !isNaN(parseInt(childNo))){
+    	document.getElementById('childNo').value = icpNo+"-00"+childNo;
+     }
+    if(childNo.length===3&&!isNaN(parseInt(childNo))){
+         document.getElementById('childNo').value = icpNo+"-0"+childNo;
+    }
+    if(childNo.length===4&&!isNaN(parseInt(childNo))){
+         document.getElementById('childNo').value = icpNo+"-"+childNo;
+    }
+    if(childNo.length>4||isNaN(parseInt(childNo))){
+       	alert("Please enter only the mumber part of the child number e.g. for KE980-0675, only enter 675");
+        document.getElementById('childNo').value="";
+        exit;
+    }
+    
+     xmlhttp.onreadystatechange=function() {
+          if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               //alert(xmlhttp.responseText);
+               var rst = xmlhttp.responseText;
+               document.getElementById('childName').value= rst.split(",")[0];
+
+            }
+        };                        
+        var frmData = new FormData();
+        frmData.append("cNo",document.getElementById('childNo').value);
+
+        xmlhttp.open("POST",path+"mvc/Claims/getCname",true);      
+        xmlhttp.send(frmData);
+  
+}
+function approvemedicalrequest(reqID){
+	//alert(reqID);
+     xmlhttp.onreadystatechange=function() {
+          if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               alert(xmlhttp.responseText);
+
+            }
+        };                        
+        var frmData = new FormData();
+        frmData.append("reqID",reqID);
+
+		var cnf = confirm("Are you sure you want to approve this request?");
+		
+		if(!cnf){
+			alert("Action aborted");
+			exit;
+		}
+		
+        xmlhttp.open("POST",path+"mvc/Claims/approvemedicalrequest",true);      
+        xmlhttp.send(frmData);
+}
+function closemedicalrequest(reqID){
+     xmlhttp.onreadystatechange=function() {
+          if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loadimg" src= "'+path+'/system/images/loadingmin.gif"/>';
+            }
+            if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+               alert(xmlhttp.responseText);
+
+            }
+        };                        
+        var frmData = new FormData();
+        frmData.append("reqID",reqID);
+
+		var cnf = confirm("Are you sure you want to close this request?");
+		
+		if(!cnf){
+			alert("Action aborted");
+			exit;
+		}
+		
+        xmlhttp.open("POST",path+"mvc/Claims/closemedicalrequest",true);      
+        xmlhttp.send(frmData);	
 }

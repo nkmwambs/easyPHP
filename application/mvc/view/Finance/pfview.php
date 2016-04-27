@@ -1,5 +1,7 @@
 <?php
-//print_r($data['rec']);
+echo Resources::a_href("Finance/fundstransferapproval","[Funds Transfer Approval]");
+echo "<br><hr><br>";
+
 echo "<table id='info_tbl' style='margin-top:15px;'>";
 echo "<caption>".$data['cst']." Submitted MFRs</caption>";
 echo "<tr><th>ICP ID</th><th>Month</th></tr>";

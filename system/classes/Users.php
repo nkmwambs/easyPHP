@@ -14,15 +14,7 @@ class Users{
 	}
 	
 	public static function userRights($getid){
-		//if(is_array(self::setUser($getid))&&!empty(self::setUser($getid))){
-
-			//$user_arr = self::setUser($getid);
-			//$_SESSION['rights']=$user_arr[0]->admin;
-
-			//$_SESSION['rights']=$user_arr[0]->admin;
-		//}else{
-			$_SESSION['rights']=0;
-		//}
+		$_SESSION['rights']=0;
 		
 		return $_SESSION['rights'];
 	}

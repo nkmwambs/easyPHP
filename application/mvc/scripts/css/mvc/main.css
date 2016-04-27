@@ -262,3 +262,7 @@ label{
   padding:15px 15px 40px 15px;
   background-color:teal; 
 } 
+.hide{
+	display: none;
+	font-weight: bold;	
+}

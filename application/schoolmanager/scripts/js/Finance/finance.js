@@ -7,11 +7,11 @@ function addstructureitem(){
             }
             if (xmlhttp.readyState===4 && xmlhttp.status===200) {
                 document.getElementById('overlay').style.display='none';
-                
+
                 var parse = JSON.parse(xmlhttp.responseText);
                 //alert(parse['cat'][0].categoryname);
                 //exit;
-                	
+
 				var tbl = document.getElementById('tbl_dividers');
 				var row = tbl.rows.length;	
 				var rw = document.createElement("TR");
@@ -225,4 +225,65 @@ function removefeesrow(){
 	  		tbl.removeChild(row);
 	  	}
 	};
+}
+function addcategory(){
+	var categoryname = document.getElementById('categoryname').value;
+	//alert(categoryname);
+	xmlhttp.onreadystatechange=function() {
+ 	if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+
+            }
+  		 if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                //alert(xmlhttp.responseText);
+                document.getElementById('smart_rst').style.display='block';
+                document.getElementById('smart_rst').innerHTML=xmlhttp.responseText;
+            }
+        };
+
+    
+    var frmData = new FormData();
+    frmData.append("categoryname",categoryname);
+    var desc = tinyMCE.get('desc').getContent();
+    frmData.append("desc",desc);
+    
+     
+	xmlhttp.open("POST",path+"/"+app+"/Finance/addcategory",true);
+    xmlhttp.send(frmData);
+}
+function editcategory(catid,elem){
+
+}
+function getfeesstructure(){
+	var lvlID = document.getElementById('gradelevels').value;
+	var academicyear = document.getElementById('academicyear').value;
+	var grade = document.getElementById('gradelevels').options[document.getElementById('gradelevels').selectedIndex ].text;
+	//alert(grade);
+	xmlhttp.onreadystatechange=function() {
+ 	if(xmlhttp.readyState!==4){
+                document.getElementById('overlay').style.display='block';
+                document.getElementById('overlay').innerHTML='<img id="loading" src= "'+path+'/system/images/loading.gif"/>';
+
+            }
+  		 if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+                document.getElementById('overlay').style.display='none';
+                //alert(xmlhttp.responseText);
+                document.getElementById('smart_rst').style.display='block';
+                document.getElementById('smart_rst').innerHTML=xmlhttp.responseText;
+            }
+        };
+
+    
+    var frmData = new FormData();
+    frmData.append("lvlID",lvlID);
+    frmData.append("academicyear",academicyear);
+    frmData.append("grade",grade);
+     
+	xmlhttp.open("POST",path+"/"+app+"/Finance/getfeesstructure",true);
+    xmlhttp.send(frmData);
+}
+function selectfeesstructureforedit(){
+	alert("Hello");
 }

@@ -21,7 +21,8 @@
 				$("#othertfienroldate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//requestDate
 				$("#requestDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//exitDate
 				$("#exitDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//exitDate
-				$("#TDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//exitDate
+				$("#TDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//closureDate
+				$("#closureDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});//closureDate
 		});
 		
 	  //  if (document.addEventListener) {
