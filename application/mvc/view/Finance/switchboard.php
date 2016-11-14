@@ -3,7 +3,7 @@
 echo "<INPUT TYPE='hidden' id='tym' value='".strtotime(date('Y-m-d'))."'/>";
 
 echo "<table id='tblFinanceView'>";
-
+echo "<caption style='color:red;font-weight:bold;'>".Resources::img("inform.png")." Click on one of the content buttons followed by an ICP Tab</caption>";
 echo "<tr><td colspan='2'>"; 
     echo "<fieldset style='margin:5px 5px 5px 5px;'>";
         echo "<legend>Content</legend>";
@@ -14,7 +14,7 @@ echo "<tr><td colspan='2'>";
         echo "<input type='radio' name='chkContent' value='5' onclick='optionsSelect(this);'   id='rdfunds' class='rds'/> Funds Disbursement";
     echo "</fieldset>";
 	
-	echo "<fieldset style='margin:5px 5px 5px 5px;display:none;'>";
+	echo "<fieldset style='margin:5px 5px 5px 5px;display:none;'>"; 
 	echo "<legend>Period</legend>";
 	
 	echo "<SELECT id='fy' style='display:none;float:left;'>";

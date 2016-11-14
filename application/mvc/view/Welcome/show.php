@@ -2,7 +2,6 @@
 if(!is_array($data)){
 print($data);
 }
-echo Resources::a_href("Welcome/test", "Test");
 ?>
 				
                 <h5>Compassion Kenya Toolkit</h5>
@@ -14,5 +13,6 @@ echo Resources::a_href("Welcome/test", "Test");
                     <li>Funds Disbursement System</li>
                     <li>HVC Management System</li>
                 </ul>
-                
-                
+              
+
+            

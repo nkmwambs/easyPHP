@@ -1,4 +1,5 @@
 <?php
+//print_r($data);
 echo Resources::a_href('Settings/lists',"<button>Back</button>")."<br><br>";
 ?>
 

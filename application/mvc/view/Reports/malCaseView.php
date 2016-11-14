@@ -4,13 +4,11 @@ if(is_array($data['test'])){
 }else{
 	print($data['test']);
 }
-
-if(Resources::session()->userlevel==='1'){
-	echo Resources::a_href("Reports/registerMalCase","[New Case]");
-	echo Resources::a_href("Reports/updateMalCase","[Update Case]");
-	echo "<hr>";
-}
-
+//print_r($data['exitParamaters']);
+//echo Resources::a_href("Reports/malnutrition","[Malnutrition Report]");
+echo Resources::a_href("Reports/registerMalCase","[New Case]");
+echo Resources::a_href("Reports/updateMalCase","[Update Case]");
+echo "<hr>";
 
 echo "<table>";
 echo "<caption style='font-weight:bold;'>COMPASSION KENYA BENEFICIARY MALNUTRITION MONITORING REPORT</caption>";

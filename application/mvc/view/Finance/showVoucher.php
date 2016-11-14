@@ -1,5 +1,11 @@
 <?php
-//print_r($data['footnotes']);
+if(isset($_SESSION['admin'])){
+	//print_r($data['details']);
+}
+if(empty($data['details'])){
+	echo "<div id='error_div'>Voucher Not Available</div>";
+	exit;
+}
 echo Resources::img("print.png",array("title"=>"Print","onclick"=>'printData("tblVoucher");'))."<button onclick='selectCJ(\"".strtotime($data['details'][0]->TDate)."\");'> Back to ".date('F-Y',  strtotime($data['details'][0]->TDate))." Cash Journal</button>".Resources::a_href("finance/downloadVoucher/VNum/".$data['details'][0]->VNumber,Resources::img("download.png",array("title"=>"Download")),array("target"=>"__blank"));
 echo "<INPUT TYPE='hidden' value='".$data['details'][0]->icpNo."' id='icpNo'/>";
     echo "<table id='tblVoucher' border='1'>";
@@ -17,13 +23,26 @@ echo "<INPUT TYPE='hidden' value='".$data['details'][0]->icpNo."' id='icpNo'/>";
     echo "<tr>";
         if(($getRow['AccNo']>=100) AND ($getRow['AccNo']<1000)){
             
-        echo "<td align='right'>".$getRow['Qty']."</td><td>".$getRow['Details']."</td><td align='right'>".$getRow['UnitCost']."</td><td align='right'>".$getRow['Cost']."</td><td>R".$getRow['AccNo']."</td>";
+        echo "<td align='right'>".$getRow['Qty']."</td><td>".$getRow['Details']."</td><td align='right'>".$getRow['UnitCost']."</td><td align='right'>".$getRow['Cost']."</td><td>";//R".$getRow['AccNo']."</td>";
+       		if($getRow['civaCode']!=='0'){
+            	echo $getRow['AccNoCIVA']." (R".$getRow['AccNo'].")";
+            }else{           	
+				echo "R".$getRow['AccNo'];
+            }
+       echo "</td>";
+        
         }elseif($getRow['AccNo']<100){
             echo "<td align='right'>".$getRow['Qty']."</td><td>".$getRow['Details']."</td><td align='right'>".$getRow['UnitCost']."</td><td align='right'>".$getRow['Cost']."</td><td>E".$getRow['AccNo']."</td>";
         }
         elseif(($getRow['AccNo']>100)AND($getRow['AccNo']<2000)){
             $str = substr($getRow['AccNo'], 1);
-            echo "<td align='right'>".$getRow['Qty']."</td><td>".$getRow['Details']."</td><td align='right'>".$getRow['UnitCost']."</td><td align='right'>".$getRow['Cost']."</td><td>E".$str."</td>";
+            echo "<td align='right'>".$getRow['Qty']."</td><td>".$getRow['Details']."</td><td align='right'>".$getRow['UnitCost']."</td><td align='right'>".$getRow['Cost']."</td><td>";
+            if($getRow['civaCode']!=='0'){
+            	echo Resources::a_href("Finance/showcivimpbreakdown/icp/".$data['details'][0]->icpNo."/id/".$getRow['civaCode']."/civ/".$getRow['AccNoCIVA'],$getRow['AccNoCIVA'])."(E".$str.")";
+            }else{           	
+				echo "E".$str;
+            }
+            echo "</td>";
         }elseif($getRow['AccNo']>='2000'){
             echo "<td align='right'>".$getRow['Qty']."</td><td>".$getRow['Details']."</td><td align='right'>".$getRow['UnitCost']."</td><td align='right'>".$getRow['Cost']."</td>";
                 if($getRow['AccNo']==='2000'){echo "<td>CDSP-PC Deposit</td>";}

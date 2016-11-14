@@ -33,9 +33,23 @@ if(Resources::session()->userlevel==='5'||Resources::session()->userlevel==='8'|
 		
 		echo "</table>";
 		
-		echo "<button onclick='checkregister();'>Mark Attended</button>";
-}else{
+		echo "<button onclick='checkregister();'>Mark Attended</button> ".Resources::a_href("Training/register","<button>Reset</button>");
+}elseif(Resources::session()->userlevel==='2'){
 	
+	
+	//print_r($data['staff']);
+			
+
+		echo "Choose a Training: ";
+			echo "<SELECT id='pftraining'>";
+				echo "<OPTION VALUE=''>Select a Training ...</OPTION>";
+				foreach ($data['rec'] as $value) {
+					echo "<OPTION VALUE='".$value->tID."'>".$value->tdesc."</OPTION>";
+				}
+			echo "</SELECT><br> <button onclick='load_register()'>Load Register</button>";// <button>View Training Details</button>";
+		
+		echo "<div id='staffs'></div>";
+
 }
 
 ?>

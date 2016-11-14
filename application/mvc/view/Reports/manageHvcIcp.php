@@ -26,7 +26,7 @@ if(is_array($data['test'])){
 		
 		echo "<table id='info_tbl' style='margin-top:25px;'>";
 		echo "<caption style='text-align:left;font-weight:bold;'>HVC Index List for ".$keno."</caption>";
-		echo "<tr><th>Action</th><th>Index Key</th><th>Cluster</th><th>ICP No</th><th>Program</th><th>Child Number</th><th>Child Name</th><th>Date Of Birth</th><th>Age</th><th>Gender</th><th>Vulnerability</th><th>No. Of Months</th><th>Type of Intervention required through HVC support</th><th></th><th>Other Non-HVC Interventions Required</th><th>Intervention suitable for the child</th><th>Future sustainability strategy</th><th>Active Case</th><th>Repeats</th></tr>";
+		echo "<tr><th>Action</th><th>Index Key</th><th>Cluster</th><th>ICP No</th><th>Program</th><th>Child Number</th><th>Child Name</th><th>Date Of Birth</th><th>Age</th><th>Gender</th><th>Vulnerability</th><th>No. Of Months</th><th>Type of Intervention required through HVC support</th><th></th><th>Other Non-HVC Interventions Required</th><th>Intervention suitable for the child</th><th>Financial Year</th><th>Last Modified Date</th><th>Active Case</th><th>Repeats</th></tr>";
 		foreach ($data['rec'] as $value) {
 			echo "<tr><td>";
 			if($value->active==='1'){

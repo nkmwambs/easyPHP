@@ -8,7 +8,7 @@
 		"CognitiveAge"=>array("","0-2","3-5","6-8","9-11","12-14","15-18","19+"),
 		"InfoType"=>array("","Initial Registration","Information Update"),
 		"BeneficiaryProg"=>array("","CSP","CDSP"),
-		"BeneficiaryProgtype"=>array("","Home-Based","Center-Based"),
+		"BeneficiaryProgtype"=>array("","Home-Based","Center-Based"), 
 		//"Favoritesubject"=>array("","Social Studies","Science","Health","Physical Education","Music","Reading","Math","Language","History","Art"),
 		"Favoritesubject"=>array("","Art","Health","Science","History","Music","Social Studies","Language","Physical Education","Math","Reading"),
 		"Formaleducation"=>array("","Primary","Secondary","Graduate","University","Preschool","Not enrolled"),

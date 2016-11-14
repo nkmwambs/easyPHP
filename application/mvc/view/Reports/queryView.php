@@ -20,14 +20,19 @@ if(is_array($data['rst'])&&isset($data['rst'])&&!empty($data['rst'])){
 	foreach($data['rst'] as $value){
 		echo "<tr>";
 			foreach ($value as $val) {
-				echo "<td>".$val."</td>";
+				if(is_numeric($val)){
+					echo "<td>".number_format($val,2)."</td>";
+				}else{
+					echo "<td>".$val."</td>";
+				}
+				//echo "<td>".$val."</td>";
 			}
 		echo "</tr>";
 	}
 	echo "</table>";
 }else{
 	//print($data['rst']);
-	echo "<b>No data found for the query:</b> <br><br><kbd>".$data['sql']."</kbd>";
+	echo "<div style='min-width:100%;margin-top:50px;'><b>No data found for the query:</b> <br><br><div id='error_div'><kbd>".$data['sql']."</kbd></div></div>";
 }
  
 ?>

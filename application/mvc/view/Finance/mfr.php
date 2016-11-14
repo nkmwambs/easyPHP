@@ -1,9 +1,10 @@
-<?php
-if(is_array($data)){
-	print_r($data['test']);
-}else{
-	print($data['test']);
-}
+<?php 
+//echo Resources::func("get_financial_year",array(date("Y-m-d")));
+//if(is_array($data)){
+	//print_r($data['test']);
+//}else{
+	//print($data['test']);
+//}
 $curSelect="";
 $cur = strtotime("now");
 if(isset($data['time'])){
@@ -13,13 +14,30 @@ if(isset($data['time'])){
 	$curSelect=date('F-Y',strtotime("now"));
 	//$cur = strtotime("now");
 }
-    
-	echo "<button onclick='selectMFR(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectMFR(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectMFR(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
-
+ 
+ if(Resources::session()->userlevel_backup='9'){
+ 	//echo $data['test'];
+ }   
+	//echo "<button onclick='selectMFR(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectMFR(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectMFR(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
+echo "Select Month:<SELECT id='monthselect'>";
+echo "<OPTION VALUE=''>Select Month...</OPTION>";
+echo "<OPTION VALUE='".strtotime('-5 month',$cur)."'>".date('F-Y',  strtotime('-5 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-4 month',$cur)."'>".date('F-Y',  strtotime('-4 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-3 month',$cur)."'>".date('F-Y',  strtotime('-3 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-2 month',$cur)."'>".date('F-Y',  strtotime('-2 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-1 month',$cur)."'>".date('F-Y',  strtotime('-1 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime($curSelect)."'>".$curSelect."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+1 month',$cur)."'>".date('F-Y',  strtotime('+1 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+2 month',$cur)."'>".date('F-Y',  strtotime('+2 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+3 month',$cur)."'>".date('F-Y',  strtotime('+3 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+4 month',$cur)."'>".date('F-Y',  strtotime('+4 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+5 month',$cur)."'>".date('F-Y',  strtotime('+5 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+6 month',$cur)."'>".date('F-Y',  strtotime('+6 month',$cur))."</OPTION>";
+echo "</SELECT>".Resources::img('go.png',array("onclick"=>'selectMfrFromDropDown()'))."<br><br>";
 echo "<INPUT TYPE='hidden' value='".$data['icp']."' id='icpNo'/>";
 
 echo "<form id='frmMfr'>";
-echo "<table id='tblMfr' style='text-align:right;'>";
+echo "<table id='tblMfr' style='text-align:right;float:left;'>";
 echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>MONTHLY FINANCIAL REPORT";
 	echo "<br><br><div id='error_div'>Report Status: ";
 	    if($data['state']===0){
@@ -30,7 +48,7 @@ echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>M
 	    	echo "Report submitted and validated by PF";
 	    }
     echo "</div><br></caption>";
-echo "<tr><th colspan='6'>1. PROJECT NAME: {$data['icp']}</th><th>Date</th><th colspan='2'>".date("d-m-Y")."<input type='hidden' id='curDate' name='curDate' value='".date("Y-m-d")."'/></th></tr>";
+echo "<tr><th colspan='6'>1. PROJECT NAME: {$data['icp']}</th><th>Date</th><th colspan='2'>".date("d-m-Y")."<input type='hidden' id='curDate' name='curDate' value='".date("Y-m-t")."'/></th></tr>";
 echo "<tr><th colspan='6'>CDC FINANCE REPORT FOR THE MONTH OF: </th><th>".date("F")."</th><th>YEAR</th><th>".date("Y")."</th></tr>";
 
 //Funds Balance Report
@@ -126,7 +144,7 @@ echo "</td></tr>";
 echo "<tr><th colspan='9'>1.3.3. BANK RECONCILIATION</th></tr>";
 echo "<tr><td colspan='2'>&nbsp;</td><td colspan='1'>&nbsp;</td><td colspan='3'>BANK ACCOUNT 1</td><td colspan='3'>BANK ACCOUNT 2</td></tr>";
 if($data['state']===0){
-	echo "<tr><td style='width:10px;'>A.</td><td colspan='2'>Date On the Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' name='statementDate' id='statementDate' value='".$data['statementDate']."' readonly/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+	echo "<tr><td style='width:10px;'>A.</td><td colspan='2'>Date On the Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' name='actualDate' id='actualDate' value='".date('Y-m-t',strtotime("now"))."' readonly/><input class='statementFlds' type='hidden' name='statementDate' id='statementDate' value='".date('Y-m-t',strtotime("now"))."' readonly/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>B.</td><td colspan='2'>Balance Per Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' id='statementAmount'  value='".$data['statementAmount']."'  name='statementAmount' onkeyup='updateBankBal();'/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>C.</td><td colspan='2'><b>Plus:</b> Deposit In Transit</td><td colspan='3' id='depTrans'>".$sum_dep_in_transit."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>D.</td><td colspan='2'><b>Less: </b>Oustanding Cheques</td><td colspan='3' id='oc'>".$sum_oc."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
@@ -220,8 +238,9 @@ echo "</table>";
 echo "</tr>";
 
 //Bank Statement Upload
+
 if($data['state']===0){
-	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file' id='fileBs' name='fileBs'/></td></tr>";
+	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file'  id='fileBs' name='fileBs' onchange='checkstatement(\"frmMfr\")'/></td></tr>";
 }else{
 	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";	
 	echo "<tr><td colspan='9' style='text-align:left;'>".Resources::a_href("",$data['getBs'][0]->bsKeys)."</td></tr>";	
@@ -244,9 +263,16 @@ echo "<div id='viewMfrNotes'>";
 echo "</div>";
 
 if($data['state']===0){
+	if(isset($_SESSION['admin'])){
+		//echo "<button onclick=saveMfr(\"frmMfr\");>Save</button>";
+	}
 	echo "<button onclick='submitMfr(\"frmMfr\");'>Submit</button>";
-}elseif($data['state']===1&&Resources::session()->userlevel_backup==='2'){
+		echo "<button onclick='saveMfr(\"frmMfr\",\"".$data['time']."\");'>Save</button>";
+
+}elseif($data['state']===1&&Resources::session()->userlevel==='2'){
 	echo "<button onclick='validateMFR(\"".$data['stateID']."\");'>Validate</button>";
+}elseif(($data['state']===2||$data['state']===1)&&Resources::session()->userlevel==='9'){
+	echo "<button onclick='declineMfr(\"".$data['time']."\",\"".$data['icp']."\")'>Delete Report</button>";	
 }
 
 echo "</div>";

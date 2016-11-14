@@ -1,7 +1,6 @@
 <?php
-
 if(Resources::session()->userlevel==='1'){
-	echo Resources::a_href("Reports/cdpr","[New Assessment]")." ".Resources::a_href("Reports/viewcdprgrid","[View Assessments]");
+	//echo Resources::a_href("Reports/cdpr","[New Assessment]")." ".Resources::a_href("Reports/viewcdprgrid","[View Assessments]");
 	echo "<hr><br>";
 }
 //print_r($data['rec']);

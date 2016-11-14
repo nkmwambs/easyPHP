@@ -50,7 +50,6 @@ echo "<div id='icpsdrop'>";
    echo "<input type='hidden' id='infotype' name='infotype' value='".$data['info']."'/>";
    	echo "Select a Project: <SELECT name='icpNo' id='icpNo'>";
 	echo "<option value=''>Select Project ...</option>";
-	echo "<option value='0' SELECTED>All</option>";
    foreach ($data['icpNos'] as $row) {
        echo "<option value='".$row->ID2."'>KE".number_format($row->ID2)."</option>";
    }

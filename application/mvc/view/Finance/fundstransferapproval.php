@@ -15,10 +15,11 @@ echo "<caption style='font-weight:bold;'>Funds Tranfer Requests</caption>";
 
 echo "<tr><th>KE Number</th><th>Month to Transfer From</th><th>Account From</th><th>Account To</th><th>CIV ID</th><th>Amount</th><th>Description</th><th>Action</th><th>Status</th><th>Voucher Number</th><th>Time Stamp</th></tr>";
 
-$rmk="";
-$status = "";
+
 foreach($data['req'] as $value){
 	//Remark Icon
+	$rmk="";
+	$status = "";
 	if(Resources::session()->userlevel==='2'){
 		if($value->accepted==='0'){
 			$rmk .= Resources::img("approved.png",array("Title"=>"Approve","onclick"=>"approvetransfer(\"".$value->reqID."\")","style"=>"cursor:pointer;"));
@@ -29,11 +30,10 @@ foreach($data['req'] as $value){
 			$rmk .=" <span onclick='addfundstransferreqcomment()' style='cursor:pointer;'> [Add Comments] </span>";
 			$status = "<span style='color:red;'>Rejected Request</span>";
 		}elseif($value->accepted==='2'){
-			$rmk .= Resources::img("view.png",array("Title"=>"Approved"));
+			$rmk = Resources::img("view.png",array("Title"=>"Approved"));
 			$status = "<span style='color:green;'>Approved Request</span>";		
 		}elseif($value->accepted==='3'){
 			$rmk .= Resources::img("approved.png",array("Title"=>"Approve","onclick"=>"approvetransfer(\"".$value->reqID."\")","style"=>"cursor:pointer;"));
-			$rmk .= " ".Resources::img("reject.png",array("Title"=>"Reject","onclick"=>"rejecttransfer(\"".$value->reqID."\")","style"=>"cursor:pointer;"));
 			$rmk .=" <span onclick='addfundstransferreqcomment()' style='cursor:pointer;'> [Add Comments] </span>";
 			$status = "<span style='color:purple;'>Edited Request</span>";		
 		}

@@ -12,7 +12,8 @@
         </p>
         
       </form>
-      <p class="submit"><button onclick="login();">Login</button></p>
+    <p class="submit"><button onclick="login();">Login</button></p>
+
     </div>
 
     <div class="login-help">

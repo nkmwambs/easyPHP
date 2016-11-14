@@ -1,11 +1,16 @@
-<?php
+<?php 
+//print_r($data['csp']);
+echo Resources::a_href("Finance/view","[MFR Dashboard]");
+echo "<hr><br><br>";
 if(is_array($data)){
 	print_r($data['test']);
 }else{
 	print($data['test']);
 }
 
-//print_r($data['chk']);
+echo $data['test'];
+
+//print_r($data['expenses']);
 //echo date('Y-m-t',$data['time']);
 $curSelect="";
 $cur="";
@@ -19,17 +24,42 @@ if(isset($data['time'])){
 }
 
 $str ="";
-    
-echo "<button onclick='selectMFR(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectMFR(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectMFR(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
-//echo Resources::img("print.png",array("onclick"=>'downloadMfr();'));
-echo "<button onclick='downloadMfr();'>Download</button>";
 
-//echo "<form id='frmMfr'>";
+    
+//echo "<button onclick='selectMFR(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectMFR(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectMFR(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
+echo "Select Month:<SELECT id='monthselect'>";
+echo "<OPTION VALUE=''>Select Month...</OPTION>";
+echo "<OPTION VALUE='".strtotime('-5 month',$cur)."'>".date('F-Y',  strtotime('-5 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-4 month',$cur)."'>".date('F-Y',  strtotime('-4 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-3 month',$cur)."'>".date('F-Y',  strtotime('-3 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-2 month',$cur)."'>".date('F-Y',  strtotime('-2 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('-1 month',$cur)."'>".date('F-Y',  strtotime('last day of previous month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime($curSelect)."'>".$curSelect."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+1 month',$cur)."'>".date('F-Y',  strtotime('last day of next month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+2 month',$cur)."'>".date('F-Y',  strtotime('+2 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+3 month',$cur)."'>".date('F-Y',  strtotime('+3 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+4 month',$cur)."'>".date('F-Y',  strtotime('+4 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+5 month',$cur)."'>".date('F-Y',  strtotime('+5 month',$cur))."</OPTION>";
+echo "<OPTION VALUE='".strtotime('+6 month',$cur)."'>".date('F-Y',  strtotime('+6 month',$cur))."</OPTION>";
+echo "</SELECT>".Resources::img('go.png',array("onclick"=>'selectMfrFromDropDown()'))."<br><br>";
+//echo "<button onclick='selectMfrFromDropDown()'>Go</button>";
+echo "<button onclick='printData(\"tblMfr\");' style='float:left;'>Print</button><button onclick='selectCJ(\"".$data['time']."\");'> Back to ".date('F-Y',  $data['time'])." Cash Journal</button>";
+
+
+echo "<form id='frmMfr' enctype='multipart/form-data'>";
 
 echo "<INPUT TYPE='hidden' value='".$data['icp']."' id='icpNo'/>";
 
-echo "<table id='tblMfr' style='text-align:right;'>";
+echo "<button onclick='excelexport()'  id=''>Export</button><br>";
+
+echo "<div id='rst'>";
+
+echo "<table id='tblMfr' style='text-align:right;float:left;'>";
+
 echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>MONTHLY FINANCIAL REPORT";
+
+//Caption
+
 	echo "<br><br><div id='error_div'>Report Status: ";
 	    if($data['state']===0){
 	    	echo "Report Not Submitted";
@@ -39,13 +69,16 @@ echo "<caption>COMPASSION INTERNATION KENYA<BR>IMPLEMENTING CHURCH PARTNERS<BR>M
 	    	echo "Report submitted and validated by PF";
 	    }
     echo "</div><br></caption>";
+
+//Header
+
 echo "<tr><th colspan='6'>1. PROJECT NAME: {$data['icp']}</th><th>Date</th><th colspan='2'>".date("t-m-Y",$data['time'])."<input type='hidden' id='curDate' name='curDate' value='".date("Y-m-t",$data['time'])."'/></th></tr>";
 echo "<tr><th colspan='6'>CDC FINANCE REPORT FOR THE MONTH OF: </th><th>".date("F",$data['time'])."</th><th>YEAR</th><th>".date("Y",$data['time'])."</th></tr>";
 
 //Funds Balance Report
 
 echo "<tr><th colspan='9'>2. FUNDS BALANCE REPORT</th></tr>";
-
+echo "<col style='width:10%;'/><col style='width:20%;'/><col style='width:10%;'/><col style='width:10%;'/><col style='width:10%;'/><col style='width:10%;'/><col style='width:10%;'/><col style='width:10%;'/><col style='width:10%;'/>";
 echo "<tr><th colspan='2'>Fund</th><th colspan='2'>Beginning Balance</th><th colspan='2'>Month's Income</th><th colspan='2'>Month's Expenses</th><th>Ending Fund Balance</th></tr>";
 $totOpen =0;
 $totInc =0;
@@ -71,9 +104,17 @@ echo "<tr><td colspan='2'><b>Total</b></td><td colspan='2' id='beginTotals' clas
 
 echo "<tr><th colspan='4' rowspan='7'>";
     echo "<table>";
-    echo "<tr><th>1.2. DETAILS OF NON-COMPASSION INCOME ".Resources::img("unreject.png",array("title"=>'Add Details'))."</th><th>AMOUNT</th></tr>";
-    echo "<tr><td>1.2. TOTAL NON COMPASSION FUNDS INCOME: </td><td>&nbsp;</td></tr>";
-    echo "</table>";
+    echo "<tr><th colspan='3'>1.2. DETAILS OF NON-COMPASSION INCOME ".Resources::img("unreject.png",array("title"=>'Add Details'))."</th></tr>";
+   // echo "<tr><td>1.2. TOTAL NON COMPASSION FUNDS INCOME: </td><td>&nbsp;</td></tr>";
+	echo "<tr><th>Date</th><th>Details</th><th>Amount</th></tr>";
+	$r500Tot=0;
+	foreach ($data['r500_list'] as $value) {
+		echo "<tr><td>".$value->TDate."</td><td>".$value->Details."</td><td style='text-align:right;'>".$value->Cost."</td></tr>";
+		$r500Tot+=$value->Cost;
+	}
+	echo "<tr><td colspan='2'>Total:</td><td>".number_format($r500Tot,2)."</td></tr>";
+  	echo "</table>";
+
 
 //Proof of Cash and validation Cell
 	
@@ -84,7 +125,9 @@ $totCash=$data['bank']+$data['pc'];
 echo "<tr><td colspan='3'>Total</td><td colspan='2' class='Totals' id='cashBal'>".number_format($totCash,2)."</td></tr>";
 echo "<tr><th colspan='5'>Accuracy Validation</th></tr>";
 $validation = $totEnd-$totCash;
-if($validation!==0.00){
+
+
+if(number_format($validation,2)!=='0.00'||number_format($validation,2)!=='-0.00'){
 	$style="background-color:red;color:white;font-weight:bold;";
 }else{
 	$style="background-color:green;color:white;font-weight:bold;";
@@ -97,7 +140,7 @@ echo "<tr><td colspan='3'>&nbsp;</td><td colspan='2'>&nbsp;</td></tr>";
 
 echo "<tr><td colspan='4'>";
     echo "<table id='transTbl' class='subTbl' style='white-space:nowrap;'>";
-        echo "<tr><th colspan='4'>C: DEPOSIT IN TRANSIT ".Resources::a_href("Finance/mfr",Resources::img("plus.png",array('title'=>'validate')))."</th></tr>";
+        echo "<tr><th colspan='4'>C: DEPOSIT IN TRANSIT ".Resources::img("plus.png",array('title'=>'validate','style'=>'cursor:pointer;',"onclick"=>'selectMfrFromOc("'.$data['time'].'")'))."</th></tr>";
         echo "<tr><th>Action</th><th>DATE</th><th>DETAILS</th><th>AMOUNT</th></tr>";
         $sum_dep_in_transit=0;
         foreach($data['transit'] as $value){
@@ -110,12 +153,12 @@ echo "<tr><td colspan='4'>";
 		}
         echo "<tr><td colspan='3'><b>TOTAL DEPOSIT IN TRANSIT</b></td><td class='Totals' style='text-align:right;'>".number_format($sum_dep_in_transit,2)."</td></tr>";
     echo "</table></td>";
-
+	
 //Outstanding Cheques Table Cell
     
 echo "<td colspan='5'>";
     echo "<table  class='subTbl' style='white-space:nowrap;' id='ocTbl'>";
-        echo "<tr><th colspan='5'>D: OUSTANDING (UNPRESENTED) CHEQUES ".Resources::a_href("Finance/mfr",Resources::img("plus.png",array('title'=>'validate')))."</th></tr>";
+        echo "<tr><th colspan='5'>D: OUSTANDING (UNPRESENTED) CHEQUES ".Resources::img("plus.png",array('title'=>'validate','style'=>'cursor:pointer;',"onclick"=>'selectMfrFromOc("'.$data['time'].'")'))."</th></tr>";
         echo "<tr><th>Action</th><th>DATE</th><th>CHEQUE No.</th><th>DETAILS</th><th>AMOUNT</th></tr>";
         $sum_oc=0;
         foreach ($data['oc'] as $value) {
@@ -126,7 +169,7 @@ echo "<td colspan='5'>";
             }
         	$sum_oc+=$value['Amount'];
 		}
-        echo "<tr><td colspan='4'><b>TOTAL OUTSTANDING CHEQUES</b></td><td class='Totals' style='text-align:right;'>".number_format($sum_oc,2)."</td></tr>";
+        echo "<tr><td colspan='4'><b>TOTAL OUTSTANDING CHEQUES</b></td><td id='ocTotals' class='Totals' style='text-align:right;'>".number_format($sum_oc,2)."</td></tr>";
     echo "</table>";
 echo "</td></tr>";
 
@@ -135,20 +178,27 @@ echo "</td></tr>";
 echo "<tr><th colspan='9'>1.3.3. BANK RECONCILIATION</th></tr>";
 echo "<tr><td colspan='2'>&nbsp;</td><td colspan='1'>&nbsp;</td><td colspan='3'>BANK ACCOUNT 1</td><td colspan='3'>BANK ACCOUNT 2</td></tr>";
 if($data['state']===0){
-	echo "<tr><td style='width:10px;'>A.</td><td colspan='2'>Date On the Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' name='statementDate' id='statementDate' value='".date("Y-m-t",$data['time'])."' readonly='readonly'/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
-	echo "<tr><td style='width:10px;'>B.</td><td colspan='2'>Balance Per Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' id='statementAmount'  value=''  name='statementAmount' onkeyup='updateBankBal();'/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+	echo "<tr><td style='width:10px;'>A.</td><td colspan='2'>Date On the Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' name='actualDate' id='actualDate' value='".date("Y-m-t",$data['time'])."' readonly='readonly'/><input class='statementFlds' type='hidden' name='statementDate' id='statementDate' value='".date("Y-m-t",$data['time'])."'/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+	echo "<tr><td style='width:10px;'>B.</td><td colspan='2'>Balance Per Bank Statement</td><td colspan='3'><input class='statementFlds' type='text' id='statementAmount'  value='".$data['statementAmount']."'  name='statementAmount' onkeyup='updateBankBal();'/></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>C.</td><td colspan='2'><b>Plus:</b> Deposit In Transit</td><td colspan='3' id='depTrans'>".$sum_dep_in_transit."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>D.</td><td colspan='2'><b>Less: </b>Oustanding Cheques</td><td colspan='3' id='oc'>".$sum_oc."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
-	echo "<tr><td style='width:10px;'>B+C-D.</td><td colspan='2'><b>ADJUSTED BANK BALANCE TOTAL</b></td><td colspan='3' id='adjBank' class='Totals'></td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
-	echo "<tr><td colspan='3'><b>VALIDATION</b></td><td colspan='2' id='bankReconValidation'></td><td colspan='2'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+		$adjBank = $data['statementAmount']+$sum_dep_in_transit-$sum_oc;
+		$validate=$data['bank']-$adjBank;
+		if(number_format($validate,2)!=='0.00'||number_format($validate,2)!=='-0.00'){
+			$style="background-color:red;color:white;font-weight:bold;";
+		}else{
+			$style="background-color:green;color:white;font-weight:bold;";
+		}
+	echo "<tr><td style='width:10px;'>B+C-D.</td><td colspan='2'><b>ADJUSTED BANK BALANCE TOTAL</b></td><td colspan='3' id='adjBank' class='Totals'>".number_format($adjBank,2)."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+	echo "<tr><td colspan='3'><b>VALIDATION</b></td><td colspan='2' id='bankReconValidation' style='".$style."'>".number_format($validate,2)."</td><td colspan='2'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 }else{
 	echo "<tr><td style='width:10px;'>A.</td><td colspan='2'>Date On the Bank Statement</td><td colspan='3'>".$data['statementDate']."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
-	echo "<tr><td style='width:10px;'>B.</td><td colspan='2'>Balance Per Bank Statement</td><td colspan='3'>".number_format($data['statementAmount'],2)."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
+	echo "<tr><td style='width:10px;'>B.</td><td colspan='2'>Balance Per Bank Statement</td><td colspan='3' id='statementAmount'>".number_format($data['statementAmount'],2)."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>C.</td><td colspan='2'><b>Plus:</b> Deposit In Transit</td><td colspan='3' id='depTrans'>".number_format($sum_dep_in_transit,2)."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	echo "<tr><td style='width:10px;'>D.</td><td colspan='2'><b>Less: </b>Oustanding Cheques</td><td colspan='3' id='oc'>".number_format($sum_oc,2)."</td><td colspan='1'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 	$adjBank = $data['statementAmount']+$sum_dep_in_transit-$sum_oc;
 	$validate=$data['bank']-$adjBank;
-	if(number_format($validate,2)!=='0.00'){
+	if(number_format($validate,2)!=='0.00'||number_format($validate,2)!=='-0.00'){
 		$style="background-color:red;color:white;font-weight:bold;";
 	}else{
 		$style="background-color:green;color:white;font-weight:bold;";
@@ -157,6 +207,8 @@ if($data['state']===0){
 	echo "<tr><td colspan='3'><b>VALIDATION</b></td><td colspan='2' id='bankReconValidation' style='".$style."'>".number_format($validate,2)."</td><td colspan='2'>&nbsp;</td><td colspan='2'>&nbsp;</td><tr>";
 }
 
+
+	
 //Monthly Expense Report
 
 echo "<tr><td colspan='9'>";
@@ -204,17 +256,19 @@ echo "</td></tr>";
 
 //Variance Explanation
 
-echo "<tr><td colspan='9'>";
+echo "<tr id='varExplain'><td colspan='9'>";
 	echo "<table  class='subTbl' style='white-space:nowrap;'>";
 	echo "<tr><th colspan='3'>VARIANCE EXPLANATION</th></tr>";
 	echo "<tr><th style='width:70px;'>Account</th><th style='width:70px;'>% Variance</th><th>Explanation</th></tr>";
 	foreach($data['varExplain'] as $key=>$value){
-		if($data['state']===0){
-			echo "<tr><td>E".$key."</td><td>".number_format($value['varPer'])."%</td><td><textarea class='varExplain' cols='90' rows='3' style='overflow:auto;' id='explain[".$key."]' name='explain[".$key."]'></textarea></td></tr>";
-		}else{
-			echo "<tr><td>E".$key."</td><td>".number_format($value['varPer'])."%</td><td>".$value['notes']."</td></tr>";
-		}	
-
+		if($key<1000){
+			if($data['state']===0){
+				echo "<tr><td>E".$key."</td><td>".number_format($value['varPer'])."%</td><td><textarea class='varExplain' cols='90' rows='3' style='overflow:auto;' id='explain[".$key."]' name='explain[".$key."]'>".$value['notes']."</textarea></td></tr>";
+			}else{
+				//echo "<tr><td>E".$key.' '.Resources::a_href("","[Add/ Edit Notes]",array("onclick"=>'javascript:void window.open("https://www.compassionkenya.com/easyPHP/mvc/Finance/varianceNotes/'.$key.'/'.$data['time'].'","Variance Notes","width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0");return FALSE'))." </td><td>".number_format($value['varPer'])."%</td><td>".$value['notes']."</td></tr>";
+				echo "<tr><td><span>E".$key."</td><td>".number_format($value['varPer'])."% </span><div id='div_".$key."' style='display:none;border:1px white solid;background-color:grey;cursor:pointer;width:40px;' onclick='saveNewExplain(\"".$key."\",\"".$data['icp']."\",\"".$data['time']."\")'>Save</div> </td><td style='background-color:gray;' ondblclick='editVarExplain(this,\"".$key."\")'>".$value['notes']."</td></tr>";
+			}	
+		}
 	}
 	echo "</table>";
 echo "</td></tr>";
@@ -232,34 +286,57 @@ echo "</table>";
 echo "</tr>";
 
 //Bank Statement Upload
+/**
 if($data['state']===0){
-	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file'  id='fileBs' name='fileBs'/></td></tr>";
-}else{
-	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";
-	$cst=Resources::session()->cname;//str_replace(" ","__",Resources::session()->cname);
-	
-	//$cst="";
-	
-	if(strpos(Resources::session()->cname," ")){
-		$cst = str_replace(" ","___", Resources::session()->cname);
-	}
+	echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file'  id='fileBs' name='fileBs' onchange='checkstatement(\"frmMfr\")'/></td></tr>";
+}
+**/
 
-	//echo "<tr><td colspan='9' style='text-align:left;'>".Resources::a_href("Finance/viewBs/bsKey/".$data['getBs'][0]->bsKeys."/clst/".$cst."/icp/".Resources::session()->fname,$data['getBs'][0]->bsKeys,array("target"=>'__blank'))."</td></tr>";	
-//echo "<tr><td colspan='9' style='text-align:left;'><span onclick='viewBs(\"".$data['getBs'][0]->bsKeys."\",\"".Resources::session()->cname."\",\"".Resources::session()->fname."\");' style='color:blue;cursor:pointer;'>".$data['getBs'][0]->bsKeys."</span></td></tr>";
+echo "</table>";
+
+echo "</form>";
+
+
+echo "</div>";
+
+
+
+//Uploaded Bank Statements
+
+echo "<table>";
+
+echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Uploaded Bank Statements</td></tr>";
+
+if($data['state']!==0&&count($data['getBs'])>0){
 echo "<tr><td colspan='9' style='text-align:left;'>";
-	echo "<form method='post' action='".HOST_NAME."/easyPHP/application/mvc/docs/pdfdownloads/bsdownload.php'>";
+	echo "<form method='POST' action='".HOST_NAME."/easyPHP/application/mvc/docs/pdfdownloads/bsdownload.php'>";
 		echo "<INPUT TYPE='hidden' name='bsKey' value='".$data['getBs'][0]->bsKeys."'/>";
 		echo "<INPUT TYPE='hidden' name='cst' value='".Resources::session()->cname."'/>";
 		echo "<INPUT TYPE='hidden' name='icpNo' value='".Resources::session()->fname."'/>";
-		echo "<INPUT TYPE='submit' value='Download ".$curSelect." Bank Statement'/>";
+		echo "<INPUT TYPE='submit' style='float:left;' value='Download ".$curSelect." Bank Statement'/>";
 	echo "</form>";
+	if(Resources::session()->userlevel==='2'){
+		echo Resources::img("diskdel.png",array("Title"=>"Remove Bank Statement","style='cursor:pointer;float:left;'"));
+	}
 echo "</td></tr>";
+}elseif(Resources::session()->userlevel==='1'){
+	//echo "<form id='frmBsUpdate'  enctype='multipart/form-data'>";
+	//echo "<tr><td colspan='9' style='text-align:left;font-weight:bold;'>Upload Bank Statement: <input type='file'  id='fileBsUpdate' name='fileBsUpdate' onchange='checkstatementupdate(\"frmBsUpdate\")'/>".Resources::img('go.png',array('onclick'=>'updateBs("frmBsUpdate")'))."</td></tr>";
+	//echo "<INPUT TYPE='hidden' name='curDate' VALUE='".$data['time']."'/>";
+	//echo "</form>";
+	
+}else{
+	echo "<tr><td colspan='9' style='text-align:left;color:red;'>No Bank Statement Uploaded</td></tr>";
 }
 
 echo "<tr><td colspan='9'>&nbsp;</td></tr>";
-echo "</table>";
-//echo "</form>";
-//echo $data['state'];
+
+echo "</table>"; 
+
+//For Debugging
+
+//echo "<div id='result'></div>";//Just for a Test {Debugging!!}
+
 
 //Notes area
 	echo "<br><TEXTAREA id='mfrNotes' name='mfrNotes' cols=90 rows=10 placeholder='Put notes for this Report here'></TEXTAREA><br><br>";
@@ -270,13 +347,25 @@ echo "<div id='viewMfrNotes'>";
 			echo "<div class='footnotes_header'>Note From: {$value->userfirstname} : {$value->stmp}</div>";
 			echo "<div style='background-color: #FBD850;border-bottom-left-radius: 5px;	border-bottom-right-radius: 5px;padding-left:10px;'>{$value->notes}</div><br>";
 		}
+		
 echo "</div>";
+
+
+//Form Buttons
 
 if($data['state']===0){
+	echo "<button onclick='saveMfr(\"frmMfr\",\"".$data['time']."\");'>Save</button>";
 	echo "<button onclick='submitMfr(\"frmMfr\");'>Submit</button>";
-}elseif($data['state']===1&&Resources::session()->userlevel==='2'){
-	echo "<button onclick='validateMFR(\"".$data['stateID']."\");'>Validate</button>";
-}
 
-echo "</div>";
-//}
+}elseif($data['state']===1&&Resources::session()->userlevel==='2'){
+	echo "<button onclick='validateMFR(\"".$data['stateID']."\");'>Validate</button>"; 
+} 
+?>
+
+<script>
+	$(document).ready(function(){
+		//if($('#statementAmount').val()>=0){
+			//$('#varExplain').hide();
+		//}
+	});
+</script>

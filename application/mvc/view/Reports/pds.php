@@ -7,6 +7,8 @@ $monthNames = Array("January", "February", "March", "April", "May", "June", "Jul
 
 $cMonth=$data['month'];
 $cYear=$data['year'];
+$dt = 18;
+
 
 $prev_year = $cYear;
 $next_year = $cYear;
@@ -85,7 +87,7 @@ echo "<tr><td colspan='2'>";
 <td align="center">
 <table width="100%" border="0" cellpadding="2" cellspacing="2">
 <tr align="center">
-<td colspan="7" bgcolor="#999999" style="color:#FFFFFF"><strong><?php echo $monthNames[$cMonth-2].' '.$cYear; ?></strong></td>
+<td colspan="7" bgcolor="#999999" style="color:#FFFFFF"><strong><?php echo $monthNames[$cMonth-1].' '.$cYear; ?></strong></td>
 </tr>
 <tr>
 <td align="center" bgcolor="#999999" style="color:#FFFFFF"><strong>S</strong></td>
@@ -263,7 +265,7 @@ echo "</form>";
 
 
 if(Resources::session()->userlevel==='1'&&($data['nonattflds']['status']==='0'||$data['nonattflds']['status']==='2')){
-	echo "<button onclick='savePdsReport(\"frmPdsReport\");'>Save</button><button onclick='submitpdsreport(".mktime(0,0,0,date('m',strtotime($data['nonattflds']['rptMonth'])),21,date('Y',strtotime($data['nonattflds']['rptMonth']))).",".strtotime(date('Y-m-d')).",". strtotime('+1 month 4 days',strtotime($data['nonattflds']['rptMonth'])).",\"frmPdsReport\");'>Submit</button>";
+	echo "<button onclick='savePdsReport(\"frmPdsReport\");'>Save</button><button onclick='submitpdsreport(".mktime(0,0,0,date('m',strtotime($data['nonattflds']['rptMonth'])),$dt,date('Y',strtotime($data['nonattflds']['rptMonth']))).",".strtotime(date('Y-m-d')).",". strtotime('+1 month 4 days',strtotime($data['nonattflds']['rptMonth'])).",\"frmPdsReport\");'>Submit</button>";
 }elseif(Resources::session()->userlevel==='2'){
 	echo "<div id='declineDiv' style=''>";
 		echo "<textarea style='float:left;' id='declineReason' name='declineReason' cols='80' rows='5' placeholder='Decline Reason'>".$data['nonattflds']['declineReason']."</textarea>";

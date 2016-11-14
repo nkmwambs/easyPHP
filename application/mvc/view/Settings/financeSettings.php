@@ -10,13 +10,10 @@ if($data['date_flag']==='1'){
 }
 if(Resources::session()->userlevel==='9'){
 ?>
-<!--Date Control Settings-->
 <fieldset style="border-color: blue;">
 	<legend><b>Voucher Settings</b></legend>
 Date Control <input type='checkbox' name='dateControl' onclick='dateControl(this);'  id='dateControl' <?php echo $chkd;?>/><br>
 </fieldset>
-
-<!-- PPBF (Exchange and Dollar Rates) Settings -->
 
 <fieldset style="border-color: blue;">
 	<legend><b>PPBF Settings</b></legend>
@@ -24,6 +21,36 @@ Dollar Rate:<input type="text" id='dollar_rate' name="dollar_rate" value='<?php 
 Exchange Rate:<input type="text" id='exchange_rate' name="exchange_rate" value='<?php echo $data['rates']['exchange_rate'];?>'/> FY:<input type='text' id='exchange_rate_fy' name='dollar_rate_val' value='<?php echo $data['rates']['fy'];?>'/> <div style="color:blue;cursor: pointer;width:50px;" onclick="changeExchangeRate();">Change</div>
 </fieldset>
 
+<fieldset style="border-color: blue;">
+	<legend><b>Balances Upload</b></legend>
+<?php
+echo "<b>Mass Balances Upload</b><br>";
+echo "<form id='frmFundsUpload'>";
+echo "Closure Date: <INPUT TYPE='text' id='closureDate' name='closureDate' readonly='readonly'/>";
+echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
+echo "</form>";
+echo "<BUTTON onclick='massFundsUpload(\"frmFundsUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
+?>
+<br><br><hr><br>
+<b>Single ICP Balances Upload</b>
+	<div style="margin-left:250px;margin-bottom: 50px;"><button  onclick='addFundBalRow("tblFundsBalBf");'>Add Row</button><button id='btnFundRowDel' style="display: none;">Delete Row</button><button onclick='addFundBal("frmFundsBalBf");'>Post</button><?php echo Resources::a_href("Settings/financeSettings","<button>Refresh</button>");?><button onclick="viewBal()">View</button></button></div>
+	<form id='frmFundsBalBf'>
+	ICP Number:<!--<input type="text" id="fname" name="icpNo"/>-->
+	<SELECT id="fname" name="icpNo">
+		<option value=''>Select ICP</option>
+		<?php 
+			foreach ($data['geticps'] as $value) {
+				echo "<option value='".$value->fname."'>".$value->fname."</option>";
+			}
+		?>
+	</SELECT>
+	<table id="tblFundsBalBf" style="max-width: 60%;border:1px wheat solid;margin-left: auto;margin-right: auto;">
+    <tr><th colspan="3">Closure Date:<input type="text" name="closureDate" id="closeDate" readonly value=""/> Total:<input type="text" name="totalBal" id="totalFunds" readonly/></th></tr>
+    <tr><th><input type="checkbox" id="" onclick="chkAll(this);showDel();"/></th><th>Funds</th><th>Balance B/F Amount</th></tr>
+	</table>
+	</form>
+	<div id="balView"></div>
+</fieldset>
 
 
 <!-- PPBF Uploads-->
@@ -57,41 +84,9 @@ echo "</fieldset>";
 
 ?>
 
-
-<!-- Funds Balance Upload -->
-
 <fieldset style="border-color: blue;">
 	<legend><b>Balances B/F Upload</b></legend>
-	
-	<?php
-echo "<b>Mass Balances Upload</b><br>";
-echo "<form id='frmFundsUpload'>";
-echo "Closure Date: <INPUT TYPE='text' id='closureDate' name='closureDate' readonly='readonly'/>";
-echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
-echo "</form>";
-echo "<BUTTON onclick='massFundsUpload(\"frmFundsUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
-?>
-<br><br><hr><br>
-<b>Single ICP Balances Upload</b>
-	<div style="margin-left:250px;margin-bottom: 50px;"><button  onclick='addFundBalRow("tblFundsBalBf");'>Add Row</button><button id='btnFundRowDel' style="display: none;">Delete Row</button><button onclick='addFundBal("frmFundsBalBf");'>Post</button><?php echo Resources::a_href("Settings/financeSettings","<button>Refresh</button>");?><button onclick="viewBal()">View</button></button></div>
-	<form id='frmFundsBalBf'>
-	ICP Number:<input type="text" id="fname" name="icpNo"/>
-	<!--<SELECT id="fname" name="icpNo">
-		<option value=''>Select ICP</option>
-		<?php 
-			foreach ($data['geticps'] as $value) {
-				echo "<option value='".$value->fname."'>".$value->fname."</option>";
-			}
-		?>
-	</SELECT>-->
-	<table id="tblFundsBalBf" style="max-width: 60%;border:1px wheat solid;margin-left: auto;margin-right: auto;">
-    <tr><th colspan="3">Closure Date:<input type="text" name="closureDate" id="closeDate" readonly value=""/> Total:<input type="text" name="totalBal" id="totalFunds" readonly/></th></tr>
-    <tr><th><input type="checkbox" id="" onclick="chkAll(this);showDel();"/></th><th>Funds</th><th>Balance B/F Amount</th></tr>
-	</table>
-	</form>
-	<div id="balView"></div>
 </fieldset>
-
 <!-- Cash Balances-->
 
 <fieldset style="border:2px blue solid;">
@@ -104,10 +99,18 @@ echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
 echo "</form>";
 echo "<BUTTON onclick='massCashBalUpload(\"frmCashBalUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
 ?>    
-<br><br><b>Single Cash Balances Upload</b>   
+<br><br><b>Single Cash Balances Upload</b>    
 <div style="margin-left:250px;margin-bottom: 50px;"><button id='btnCashBalDel' style="display: none;">Delete Row</button><button onclick='addCash("frmCashBf");'>Post</button><?php echo Resources::a_href("Settings/financeSettings","<button>Refresh</button>");?><button onclick="viewCashBal();">View</button></div>
 <form id="frmCashBf">
-ICP Number:<input type="text" id="icpNo" name="icpNo"/>
+	ICP Number:<!--<input type="text" id="fname" name="icpNo"/>-->
+	<SELECT id="fname" name="icpNo">
+		<option value=''>Select ICP</option>
+		<?php 
+			foreach ($data['geticps'] as $value) {
+				echo "<option value='".$value->fname."'>".$value->fname."</option>";
+			}
+		?>
+	</SELECT>
 <table id="tblCashBf" style="max-width: 60%;border:1px wheat solid;margin-left: auto;margin-right: auto;">
     <tr><th colspan="2">Date: <input type="text" id="cjCashOpBal" name="cjCashOpBal" readonly/></th></tr>
     <tr><th>Details</th><th>Amount</th></tr>
@@ -131,13 +134,13 @@ ICP Number:<input type="text" id="icpNo" name="icpNo"/>
 <div id='viewCashStmtBal'></div>
 </fieldset>
 
+
 <!-- OC BF-->
 <fieldset style="border:2px blue solid;">
     <legend><b>Oustanding Cheques B/F</b></legend>
     <?php
 echo "<b>Mass Closing Oustanding Cheque Upload</b><br>";
 echo "<form id='frmOcUpload'>";
-//echo "Closure Date: <INPUT TYPE='text' id='closureDateOc' name='closureDate' readonly='readonly'/>";
 echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
 echo "</form>";
 echo "<BUTTON onclick='massOcBalUpload(\"frmOcUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
@@ -154,18 +157,15 @@ ICP Number:<input type="text" id="icpNo" name="icpNo"/>
 <div id="balView"></div>
 </fieldset>
 
-<!--Statement Balances-->
 <fieldset>
-	<legend>Statement Balances</legend>
-	<?php
-		echo "<b>Mass Closing Bank Stamement Upload</b><br>";
-		echo "<form id='frmOcUpload'>";
-		//echo "Closure Date: <INPUT TYPE='text' id='closureDateOc' name='closureDate' readonly='readonly'/>";
-		echo "File: <INPUT TYPE='file' name='fundsCsv' id='fundsCsv'/>";
-		echo "</form>";
-		echo "<BUTTON onclick='massOcBalUpload(\"frmOcUpload\");'>Upload</BUTTON><BUTTON>Reset</BUTTON>";
-	?>  
+<legend>Transfer Funds Balances Between Revenue Accounts</legend>
+<form id='fundsTransfer'>
+<table>
+<tr><td><b>KE Number</b></td><td><INPUT TYPE='text' id='icpNo' name='icpNo'/></td></tr>
+</table>
+</form>
 </fieldset>
+
 
 <?php
 }elseif(Resources::session()->userlevel==='1'){
@@ -174,7 +174,7 @@ ICP Number:<input type="text" id="icpNo" name="icpNo"/>
 	<legend><b>PPBF Settings</b></legend>
 	Beneficiaries Population:<input type="text" id="icpNoPop" name="icpNoPop"  value='<?php echo $data['icpPopulation']['noOfBen'];?>'/> # Of Months: <input type="text" id="noOfMonths" name="noOfMonths"  value='<?php echo $data['icpPopulation']['noOfMonths'];?>'/> FY: <input type="text" id="icpFy" name="icpFy"   value='<?php echo $data['icpPopulation']['fy'];?>'/><div style="color:blue;cursor: pointer;width:50px;" onclick="changeIcpPopulation();">Change</div>
 </fieldset>
+
 <?php	
 }
 ?>
-

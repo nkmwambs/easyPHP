@@ -12,6 +12,8 @@
 	echo "<tr><th style='text-align:left;'>Target Group:</th><td colspan='3' style='text-align:left;'>".$data['rec']['header']['targetgroup']."</td></tr>";
 	echo "<tr><th style='text-align:left;'>Training Level:</th><td>".$data['rec']['header']['level']."</td><th style='text-align:left;'>Facilitor(s):</th><td style='text-align:left;'>".$data['rec']['header']['facilitatorsource']."</td></tr>";
 	
+	echo "<tr><th colspan='4'>".Resources::img("inform.png")."<b> Use the scale 1 = Very Poor and 5 = Excellent</b></th></tr>";
+	
 	$x=0;
 	$z=0;
 	foreach ($data['rec']['sess'] as $value) {
@@ -41,5 +43,5 @@
 	echo "</form>";
 	echo "</table>";
 	
-	echo "<button onclick='savelemone(\"frmlemone\");'>Save</button><button>Submit</button>";
+	echo "<button onclick='savelemone(\"frmlemone\");'>Save/ Submit</button>";//<button>Submit</button>";
 ?>

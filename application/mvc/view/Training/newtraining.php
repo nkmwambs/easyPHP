@@ -1,5 +1,5 @@
 <?php
-echo Resources::a_href("Training/newtraining", "[Register New Training]")." ".Resources::a_href("Training/calender", "[View Trainings]");
+echo Resources::a_href("Training/newtraining", "[Register New Training]")." ".Resources::a_href("Training/calender", "[View/ Manage Trainings]");
 echo "<br><hr><br>";
 
 echo "<button onclick='addtrainingsession();'>Add Session</button><button onclick='posttraining(\"frmtraining\");'>Post Training</button><button onclick='delRow(\"tbltrainingsessions\");' id='btnDelRow' style='display:none;'>Delete Row</button>";
@@ -8,7 +8,8 @@ echo "<table id='tbltraining'>";
 echo "<caption>New Training</caption>";
 echo "<tr><th colspan='4'>Training Profile</th></tr>";
 echo "<tr><th>Training Title:</th><td colspan='3'><INPUT TYPE='text' id='tdesc' name='tdesc' style='width:650px;'/></td></tr>";
-echo "<tr><th>Start Date</th><td><INPUT TYPE='text' id='startdate' name='startdate'/></td><th>End Date</th><td><INPUT TYPE='text' id='enddate' name='enddate'/></td></tr>";
+echo "<tr><th>Start Date</th><td><INPUT TYPE='text' id='frmDate' name='startdate' readonly/></td><th>End Date</th><td><INPUT TYPE='text' id='toDate' name='enddate' readonly/></td></tr>";
+echo "<tr><th>Assessment Deadline</th><td colspan='3'><INPUT TYPE='text' id='assessmentdate' name='assessmentdate' readonly/></td></tr>";
 echo "<tr><th>Goal/ Objective(s)</th><td colspan='3'><TEXTAREA cols='80' rows='8' id='goal' name='goal'></TEXTAREA></td></tr>";
 echo "<tr><th>Location</th><td><INPUT TYPE='text' id='location' name='location'/></td><th>Level</th><td><SELECT id='level' name='level'><OPTION VALUE=''>Select Level ...</OPTION><OPTION VALUE='1'>Cluster</OPTION><OPTION VALUE='2'>Regional**</OPTION><OPTION VALUE='3'>Country</OPTION></SELECT></td></tr>";
 echo "<tr><th>Target Group</th><td><INPUT TYPE='text' id='targetgroup' name='targetgroup'/></td><th>Facilitator Source if External</th><td><INPUT TYPE='text' id='facilitatorsource' name='facilitatorsource'/></td></tr>";

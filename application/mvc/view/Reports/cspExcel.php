@@ -1,9 +1,4 @@
 <?php
- Resources::import("PHPExcel.Classes.PHPExcel");
- //require_once ("Classes/PHPExcel/IOFactory.php");
- Resources::import('PHPExcel.Classes.PHPExcel.Writer.Excel2007');
- 
- $objPHPExcel = new PHPExcel();
  
   //Set workbook properties
 $objPHPExcel->getProperties()->setCreator("Compassion Kenya Toolkit");

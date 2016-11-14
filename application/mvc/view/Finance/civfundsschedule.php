@@ -6,7 +6,7 @@ echo "<br>";
 
 //print_r($data['civaAc']);
 
-echo "Change Month</td><td><INPUT TYPE='text' id='newMonth'/>".Resources::img("go.png",array("title"=>"Go","onclick"=>"changeMonthforciv()"));
+echo "Change Month</td><td><INPUT TYPE='text' id='newMonth' readonly/>".Resources::img("go.png",array("title"=>"Go","onclick"=>"changeMonthforciv()"));
 
 echo "<table>";
 echo "<caption>Add New CIV Code to ".$data['curDate']." Fund Schedule</caption>";

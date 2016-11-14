@@ -1,9 +1,9 @@
 <?php
-//print_r($data['qstns']);
+//print_r($data['trainings']);
 if(Resources::session()->userlevel==='1'){
 			
 		echo "<fieldset>";
-		echo "<legend style='font-weight:bold;'>Learning Evaluation Level One</legend>";
+		echo "<legend style='font-weight:bold;'>Choose a Training</legend>";
 		echo "<INPUT TYPE='hidden' id='userdepartment' VALUE='".Resources::session()->department."'/>";
 		echo "<INPUT TYPE='hidden' id='usertoken' VALUE='".md5(Resources::session()->userfirstname)."'/>";
 		echo "Select a Training: <SELECT id='tID'>";

@@ -434,6 +434,14 @@ if(!is_array($data['rec'])){
 	exit;
 }
 
+?>
+
+<br><button onclick='excelexport()'  id=''>Export</button><br>
+
+<div id='rst'>
+
+<?php
+
 echo "<form id='frmcdpr'>";
 echo "<table>";
 echo "<caption>Individual Child Assessment: Assessment Form</caption>";
@@ -445,7 +453,7 @@ echo "<tr><th style='text-align:left;'>Beneficiary Name</th><td colspan='2'><INP
 echo "<tr><th style='text-align:left;'>Beneficiary Date Of Birth</th><td colspan='2'><INPUT TYPE='text' id='dob' name='dob' VALUE='".$data['rec'][0]->dob."' readonly/></td></tr>";
 //cognitiveagegroup
 echo "<tr><th style='text-align:left;'>Cognitive Age Group Assessed</th><td colspan='2'><INPUT TYPE='text' id='cognitiveagegroup' name='cognitiveagegroup' VALUE='".$data['cognitiveagegroup']."' readonly/></td></tr>";
-echo "<tr><th style='text-align:left;'>Assessment Completion Date</th><td colspan='2'><INPUT readonly TYPE='text' id='assessDate' name='assessDate' VALUE='".$data['rec'][0]->assessDate."'/></td></tr>";
+echo "<tr><th style='text-align:left;'>Assessment Completion Date</th><td colspan='2'><INPUT readonly TYPE='text' id='TDate' name='assessDate' VALUE='".$data['rec'][0]->assessDate."'/></td></tr>";
 
 echo "<tr><th colspan='3' style='background-color:cyan;'>Cognitive Outcome</th></tr>";
 echo "<tr><th colspan='3'>Global Indicator #1:  Completes at least primary education</th></tr>";
@@ -509,7 +517,7 @@ echo "<tr><th colspan='3'>Global Indicator #1:  Knows and understands the Bible<
 echo "<tr><th style='text-align:left;'>Progress Measure</th><th style='text-align:left;'>Score</th><th style='text-align:left;'>Comment</th></tr>";
 echo "<tr><td style='text-align:left;'>".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm1']."<INPUT TYPE='hidden' name='SpiritualIndicator1Pm1' VALUE='".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm1']."'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm1Score' name='SpiritualIndicator1Pm1Score' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm1Score."' onchange='validatecdprscore(this);'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm1Comment' name='SpiritualIndicator1Pm1Comment' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm1Comment."'/></td></tr>";
 echo "<tr><td style='text-align:left;'>".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm2']."<INPUT TYPE='hidden' name='SpiritualIndicator1Pm2' VALUE='".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm2']."'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm2Score' name='SpiritualIndicator1Pm2Score' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm2Score."' onchange='validatecdprscore(this);'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm2Comment' name='SpiritualIndicator1Pm2Comment' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm2Comment."'/></td></tr>";
-echo "<tr><td style='text-align:left;'>".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm3']."<INPUT TYPE='hidden' name='SpiritualIndicator1Pm3' VALUE='".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm3']."'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm3Score' name='SpiritualIndicator1Pm2Score' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm2Score."' onchange='validatecdprscore(this);'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm3Comment' name='SpiritualIndicator1Pm3Comment' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm3Comment."'/></td></tr>";
+echo "<tr><td style='text-align:left;'>".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm3']."<INPUT TYPE='hidden' name='SpiritualIndicator1Pm3' VALUE='".$progressmeasures[$data['cognitiveagegroup']]['spiritual']['indicator1']['pm3']."'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm3Score' name='SpiritualIndicator1Pm3Score' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm3Score."' onchange='validatecdprscore(this);'/></td><td><INPUT TYPE='text' id='SpiritualIndicator1Pm3Comment' name='SpiritualIndicator1Pm3Comment' VALUE='".$data['rec'][0]->SpiritualIndicator1Pm3Comment."'/></td></tr>";
 
 echo "<tr><th colspan='3'>Global Indicator #2:  Confesses Jesus as Savior</th></tr>";
 echo "<tr><th style='text-align:left;'>Progress Measure</th><th style='text-align:left;'>Score</th><th style='text-align:left;'>Comment</th></tr>";
@@ -525,8 +533,21 @@ echo "<tr><td style='text-align:left;'>".$progressmeasures[$data['cognitiveagegr
 
 echo "</table>";
 echo "</form>";
-if($data['rec'][0]->status==='0'&&Resources::session()->userlevel==='1'){
-	echo "<button onclick='savecdpr(\"frmcdpr\");'>Save</button><button onclick='submitcdpr(\"frmcdpr\");'>Submit</button>";	
-}
 
 ?>
+
+</div>
+
+<?php
+
+if($data['rec'][0]->status==='0'&&Resources::session()->userlevel==='1'){
+	echo "<button onclick='savecdpr(\"frmcdpr\");'>Save as Draft</button><button onclick='submitcdpr(\"frmcdpr\");'>Submit</button><button onclick='deletecdpr(\"".$data['rec'][0]->childNo."\",\"".$data['cognitiveagegroup']."\")'>Delete</button>";	
+}elseif($data['rec'][0]->status!=='0'&&Resources::session()->userlevel==='1'){
+	//echo "<button onclick='savecdpr(\"frmcdpr\");'>Update</button><button onclick='deletecdpr(\"".$data['rec'][0]->childNo."\",\"".$data['cognitiveagegroup']."\")'>Delete</button>";
+}
+ 
+?>
+
+<script>
+	$("#TDate").datepicker({dateFormat: 'yy-mm-dd',changeMonth:true,changeYear:true});
+</script>

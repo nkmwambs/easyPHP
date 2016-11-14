@@ -17,7 +17,7 @@ if(is_array($data)){
 	
 	echo "<fieldset style='width:270px;float:left;'>";
 	echo "<legend>Download</legend>";
-	echo Resources::a_href("Reports/cspExcel",Resources::img("excel.png",array('title'=>'Excel Download')),array("target"=>"__blank"))."  ".Resources::img("pdf.png",array('title'=>'PDF Download'));
+	echo "<a href='".HOST_NAME."/easyPHP/application/mvc/docs/exceldownloads/cspdownload.php?qtr=FY2016Q2'>".Resources::img("excel.png")."</a>";
 	echo "</fieldset>";
 	
 	$header=array_keys((array)$data[0][0]);

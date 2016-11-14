@@ -45,8 +45,9 @@ if(isset($data['error'])){
                        <select name="VTypeMain" id="VTypeMain" style="width:95%;"  onchange="chqfld();" title="<?php echo $data['VType'];?>">
                             <option value="">Select Voucher Type</option>
                             <?php 
-                            $chkd = "";
-                            	foreach ($vtype as $key=>$value) {	                    		
+                            
+                            	foreach ($vtype as $key=>$value) {
+                            		$chkd = "";	                    		
                     				if($data['VType']===$key){
                     					$chkd="SELECTED";
                     				}

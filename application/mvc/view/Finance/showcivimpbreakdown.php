@@ -1,8 +1,15 @@
 <?php
-//Revenue Table
+//if(Resources::session()->userlevel==='3'){
+	echo Resources::a_href("Finance/civ","[CIV]");
+//}
+if(Resources::session()->userlevel==='3'||Resources::session()->userlevel==='18'){
+	echo Resources::a_href("Finance/extendcivdates/icp/".$data['icp']."/civaID/".$data['civaID'],"[CIV Date Extension]");
+}
+echo "<br>";
+echo "<hr>";
 
 echo "<table id='info_tbl' style='margin-top:20px;'>";
-echo "<caption>{$data['cap']} Revenue Breakdown<caption>";
+echo "<caption>{$data['cap']} Revenue Breakdown for ".$data['icp']."<caption>";
 echo "<tr><th>Month</th><th>Amount</th></tr>";
 foreach ($data['imp']['rev'] as $value) {
 	echo "<tr>";

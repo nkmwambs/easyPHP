@@ -1,6 +1,10 @@
 <?php 
-//print_r($data[0]);
-//print($data[6]);
+//echo "<button onclick='adjust_financial_year(\"p\");' style='float:left;'><< FY</button><input style='float:left;height:30px;width:50px;margin-right:10px;' type='text' id='curFy' value='".$data['fy']."' readonly/><button onclick='adjust_financial_year(\"n\");' style='float:left;'>FY >></button>";
+//echo "<br><br><hr>";
+//if(Resources::session()->userlevel_backup===9){
+	
+//}
+
 echo "<br>";
 if(isset($data[4])){
 	$curSelect=date('F-Y',$data[4]);
@@ -10,9 +14,36 @@ if(isset($data[4])){
 	$cur = strtotime("now");
 }
     
-	echo "<button onclick='selectCJ(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectCJ(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectCJ(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
+	//echo "<button onclick='selectCJ(\"".strtotime('-1 month',$cur)."\");'>".date('F-Y',  strtotime('-1 month',$cur))."</button><button style='background-color:lightgreen;'  onclick='selectCJ(\"".strtotime($curSelect)."\");'>".$curSelect."</button><button onclick='selectCJ(\"".strtotime('+1 month',$cur)."\");'>".  date('F-Y',  strtotime('+1 month',$cur))."</button>";
     echo "<input type='hidden' id='icpNo' name='icpNo' value='".$data[5]."'/>";
-     //An array of the used accounts  
+    
+	if(Resources::session()->userlevel==='2'){
+		echo "<fieldset style='margin-bottom:10px;border:2px teal solid;'>";
+		echo "<legend style='font-weight:bold;border:2px teal solid;'>Manage Vouchers</legend>";
+		
+		echo "</fieldset>";
+		
+		//print_r($data[1]);
+	}
+	
+	echo "Select Month:<SELECT id='monthselect'>";
+	echo "<OPTION VALUE=''>Select Month...</OPTION>";
+	echo "<OPTION VALUE='".strtotime('-5 month',$cur)."'>".date('F-Y',  strtotime('-5 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('-4 month',$cur)."'>".date('F-Y',  strtotime('-4 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('-3 month',$cur)."'>".date('F-Y',  strtotime('-3 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('-2 month',$cur)."'>".date('F-Y',  strtotime('-2 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('-1 month',$cur)."'>".date('F-Y',  strtotime('-1 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime($curSelect)."'>".$curSelect."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('+1 month',$cur)."'>".date('F-Y',  strtotime('+1 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('+2 month',$cur)."'>".date('F-Y',  strtotime('+2 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('+3 month',$cur)."'>".date('F-Y',  strtotime('+3 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('+4 month',$cur)."'>".date('F-Y',  strtotime('+4 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('+5 month',$cur)."'>".date('F-Y',  strtotime('+5 month',$cur))."</OPTION>";
+	echo "<OPTION VALUE='".strtotime('+6 month',$cur)."'>".date('F-Y',  strtotime('+6 month',$cur))."</OPTION>";
+echo "</SELECT>".Resources::img('go.png',array("style='cursor:pointer;'","onclick"=>'selectCJFromDropDown();'))."<br><br>";
+	
+//echo "..... ".$data['yr'];
+	 //An array of the used accounts  
     $count=0;
     $dis_arr=array();
       foreach($data[1] as $cnt){
@@ -48,9 +79,10 @@ if(isset($data[4])){
     
     //print_r($get_num);
 
-    echo Resources::img("print.png",array("onclick"=>'printData("ecj");',"title"=>"Print","id"=>"printecj"));
+    //echo Resources::img("print.png",array("onclick"=>'printData("ecj");',"title"=>"Print","id"=>"printecj"));
 ?>
-<button id='' onclick="excelexport()">Export</button>
+
+<br><button onclick='excelexport()'  id=''>Export</button><br>
 
 <div id='rst'>
 
@@ -120,55 +152,40 @@ if(isset($data[4])){
     <tbody>
         <?php
             foreach($data[1] as $arr):
-				$rwChq=explode("-",$arr->ChqNo);
+				$rwChq=explode("-",$arr->ChqNo); 
+				
+				$date1=date_create($arr->TDate);
+				$date2 = date_create(date('Y-m-d',$arr->unixStmp));
+				$diff=date_diff($date1,$date2);
+				$dif = $diff->format("%d");
+				
+				//Color overdue vouchers
+				$overdue="";
+				if((int)$dif>3||(int)$dif<-3){
+					$overdue = "style='background-color:#ff8080;'"; 
+				}
+				
                 if(Resources::session()->userlevel==='1'&&$arr->editable==='1'){
-                	echo "<tr><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Edit Voucher","onclick"=>"voucheredit(\"".Resources::session()->userlevel."\",\"".Resources::session()->fname."\",\"".$arr->VNumber."\",\"".$arr->TDate."\",\"".$arr->Payee."\",\"".$arr->Address."\",\"".$arr->VType."\",\"".$arr->TDescription."\",\"".$arr->ChqNo."\")"))."</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td onmouseover='winpopon()'  onmouseout='winpopoff()'>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                	echo "<tr $overdue onclick='selectrow(this)'><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Edit Voucher","onclick"=>"voucheredit(\"".Resources::session()->userlevel."\",\"".Resources::session()->fname."\",\"".$arr->VNumber."\",\"".$arr->TDate."\",\"".$arr->Payee."\",\"".$arr->Address."\",\"".$arr->VType."\",\"".$arr->TDescription."\",\"".$arr->ChqNo."\")"))."</td><td>".$arr->TDate." (Raised on:".date('Y-m-d',$arr->unixStmp).")</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
                 }elseif(Resources::session()->userlevel==='2'&&$arr->editable==='0'){
-                	echo "<tr><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Allow Edit Voucher","onclick"=>"allowvoucheredit(this,\"".$data[5]."\",\"".$arr->VNumber."\")"))."</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td onmouseover='winpopon()'  onmouseout='winpopoff()'>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                	echo "<tr $overdue onclick='selectrow(this)'><td>{$arr->VType} ".Resources::img('editplain.png',array("title"=>"Allow Edit Voucher","onclick"=>"allowvoucheredit(this,\"".$data[5]."\",\"".$arr->VNumber."\")"))." ".Resources::img('diskdel.png',array("title"=>'Delete Vouchers',"onclick"=>"deleteVoucherChk(\"".$arr->hID."\",\"".$data[5]."\",\"".$cur."\",\"".$arr->VNumber."\")"))."</td><td>".$arr->TDate." (Raised on:".date('Y-m-d',$arr->unixStmp).")</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                }elseif(Resources::session()->userlevel==='2'){
+                	echo "<tr $overdue onclick='selectrow(this)'><td>{$arr->VType}.".Resources::img('diskdel.png',array("title"=>'Delete Vouchers',"onclick"=>"deleteVoucherChk(\"".$arr->hID."\",\"".$data[5]."\",\"".$cur."\",\"".$arr->VNumber."\")"))."</td><td>".$arr->TDate." (Raised on:".date('Y-m-d',$arr->unixStmp).")</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
                 }else{
-                	echo "<tr><td>{$arr->VType}</td><td>{$arr->TDate}</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td onmouseover='winpopon()'  onmouseout='winpopoff()'>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
+                	echo "<tr $overdue onclick='selectrow(this)'><td>{$arr->VType}</td><td>".$arr->TDate." (Raised on:".date('Y-m-d',$arr->unixStmp).")</td><td title='".$arr->Payee."'>".substr($arr->Payee,0,20)."</td><td>".Resources::a_href("Finance/showVoucher/VNumber/".$arr->VNumber."/public/0",$arr->VNumber)."</td><td title='".$arr->TDescription."'>". substr($arr->TDescription,0,20)."</td><td>".$rwChq[0]."</td>";
                 }	
                 
-                //Bank Income
-                if($arr->VType==="CR"||$arr->VType==="PCR")
-                	{
-                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
-					}
-				//Bank Expense
-                if($arr->VType==="CHQ")
-                	{
-                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
-					}
-				//Bank Balances		
+                //Bank Deposit
+                if($arr->VType==="CR"||$arr->VType==="PCR"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
+                if($arr->VType==="CHQ"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
                 echo "<td>&nbsp;</td>";
-				
-				//PC Income
-                if($arr->VType==="CHQ"&&(isset($arr->Ac2000)||isset($arr->Ac2001)))
-                	{
-                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
-					}
-				
-				//PC Expense
-                if($arr->VType==="PC"||$arr->VType==="PCR")
-                	{
-                		echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";
-                	}
-				
-				//PC Balance
-                echo "<td>&nbsp;</td>";//1st 12 columns
+                if($arr->VType==="CHQ"&&(isset($arr->Ac2000)||isset($arr->Ac2001))){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
+                if($arr->VType==="PC"||$arr->VType==="PCR"){echo "<td>".$arr->totals."</td>";}else{echo "<td>&nbsp;</td>";}
+                echo "<td>&nbsp;</td>";//1st 12 cells
                 
-                
-                //Spread                
                 foreach($data[0] as $vals):
                     $acc = "Ac".$vals->AccNo;
-                   if(isset($arr->$acc))
-                   	{
-                   		echo "<td class='".$acc."'>{$arr->$acc}</td>";
-                   	}
-                   	elseif(array_key_exists($acc, $dis_arr)) 
-                   	{
-                   		echo "<td class='".$acc."'>&nbsp;</td>";
-					} 
+                   if(isset($arr->$acc)){echo "<td class='".$acc."'>{$arr->$acc}</td>";}elseif(array_key_exists($acc, $dis_arr)) {echo "<td class='".$acc."'>&nbsp;</td>";} 
                 endforeach;                
                 echo "</tr>";
             endforeach;

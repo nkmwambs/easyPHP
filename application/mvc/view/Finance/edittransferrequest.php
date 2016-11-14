@@ -9,7 +9,7 @@ echo "<table>";
 echo "<caption style='font-weight:bold;'>Funds Balance Transfer Request: Edit</caption>";
 echo "<form id='frmbaltranferreq'>";
 echo "<tr><td style='font-weight:bold;'>Request ID</td><td><INPUT TYPE='text' id='reqID' name='reqID' VALUE='".$data['req']->reqID."' readonly/></td></tr>";
-echo "<tr><td style='font-weight:bold;'>Month From (End Month Date):</td><td><INPUT TYPE='text'  VALUE='".$data['req']->monthfrom."'  id='monthfrom' name='monthfrom'/>".Resources::img("go.png",array("Title"=>"Go","onclick"=>'getfundsamount()'))."</td></tr>";
+echo "<tr><td style='font-weight:bold;'>Month From (End Month Date):</td><td><INPUT TYPE='text'  VALUE='".$data['req']->monthfrom."'  id='monthfrom' name='monthfrom' readonly/>".Resources::img("go.png",array("Title"=>"Go","onclick"=>'getfundsamount()'))."</td></tr>";
 echo "<tr><td style='font-weight:bold;'>KE No</td><td><INPUT TYPE='text' name='icpNo' id='icpNo'  VALUE='".$data['req']->icpNo."'  readonly/></td></tr>";
 
 echo "<tr><td style='font-weight:bold;'>From Account:</td><td><INPUT TYPE='text'  VALUE='".$data['req']->acfrom."'  name='acfrom' id='acfrom' readonly/></td></tr>";

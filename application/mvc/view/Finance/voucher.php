@@ -17,7 +17,8 @@ echo "<br><hr><br>";
 
 ?>
 
-<button id="btnAddRow" onclick="addRow('bodyTable')">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
+
+<button id="btnAddRow" onclick="addRow('bodyTable');">Add Row</button><button onclick="postVoucher();"  id='btnPostVch'>Post</button><button id="btnDelRow" style="display:none;" onclick="delRow('bodyTable');">Delete Row</button><?php echo Resources::a_href("Finance/voucher","<button id='resetBtn'>Reset</button>");?>
 <br><br><div id='info_div'></div>
 <form id="myform" method='POST'>
             <input type="hidden" value="<?php echo $_SESSION['fname']; ?>" id="KENo" name="KENo"/>
@@ -34,11 +35,11 @@ echo "<br><hr><br>";
 		                  if ($data['months']<=9){
 		                    ?>
 		               
-		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class="validate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."0".($data['months'])+1; ?>' readonly="readOnly"/></td>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class="validate" name="TDate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."0".($data['months'])+1; ?>' readonly="readOnly"/></td>
 		                    <?php
 		                   }else{
 		                        ?>
-		                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" class="validate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."".($data['months'])+1; ?>' readonly="readOnly"/></td>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" name="TDate" class="validate" style="width:95%;" value="<?php echo date('Y-m-d'); ?>" readonly="readOnly"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" class="validate" name="VNumber" style="width:95%;" value='<?php echo date('y')."".date('m')."".($data['months'])+1; ?>' readonly="readOnly"/></td>
 		 
 		                    <?php
 		                   }
@@ -46,9 +47,14 @@ echo "<br><hr><br>";
 		              		
 							?>
 		               
-		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class='dateSelector validate' onchange="calcVNumber();" name="TDate" style="width:95%;" value=""/><input type='hidden' id="previousDate" value="<?php echo $data['cDate'];?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='' readonly="readOnly"/><input type="hidden" id="prevVNumber" value="<?php echo $data['maxRec']['VNumber'];?>"/></td>
+		                    <td><b>Date:</b></td><td><input type="text" id="TDate" class='dateSelector validate' onchange="calcVNumber();" name="TDate" style="width:95%;" value="" readonly="readOnly"/><input type='hidden' readonly="readonly" id="previousDate" value="<?php echo $data['cDate'];?>"/></td><td><b>Voucher Number</b></td><td><input type="text" id="VNumber" name="VNumber" style="width:95%;" value='' readonly="readOnly"/><input type="hidden" readonly="readonly" id="prevVNumber" value="<?php echo $data['maxRec']['VNumber'];?>"/><INPUT TYPE='hidden' id='rptDate' VALUE="<?php echo $data['RptDate'];?>"/></td>
 		                    <?php
-  	
+  							if(isset($data['pc'])){
+  								echo "<b>Last Voucher Date:</b>".$data['cDate']."<br>";
+								echo "<b>Last Voucher Number: </b>".Resources::a_href("Finance/showVoucherFromExternalSource/VNum/".$data['maxRec']['VNumber']."/icpNo/".Resources::session()->fname,$data['maxRec']['VNumber'])."<br>";
+								echo "<b>Last MFR Month: </b>".date("F-Y",strtotime("-16 days",strtotime($data['RptDate'])))."<br>";
+								echo "<b>PC Balance: </b>".number_format($data['pc'],2);
+  							}
 		              } 
                     ?>
                 </tr>
@@ -66,7 +72,7 @@ echo "<br><hr><br>";
                             <option value="PC">Payment By Cash</option>
                             <option value="CHQ">Payment By Cheque</option>
                             <option value="CR">Cash Received</option>
-                            <option value="PCR">Petty Cash Re-Banking</option>
+                             <option value="PCR">Petty Cash Re-Banking</option>
                         </select>
                     </td>
                     <td id='ChqNoText' style="display:none;"><b>Cheque Number:</b></td><td><input type="text" id="CHQ" name="ChqNo" onblur="chqIntel(this.value);" style="width:95%;display:none;"/></td>
@@ -86,4 +92,18 @@ echo "<br><hr><br>";
             <tr><td colspan="5" style="width:80%"><b>Totals:</b></td><td style="width:20%" colspan="2"><input type="text" id="totals" name="totals" style='height:2em;' readonly="readonly"/></td></tr>
         </table>
         </form>
+               
+<script>
+	$(document).ready(function(){
+		$('#btnPostVch').click(function(e){
+			var VNumber  = $('#VNumber').val();
+			var TDate = $('#TDate').val();
+			
+			if(VNumber===""||TDate===""){
+				alert('Please click on the reset button to refresh the voucher');
+				e.preventDefault();
+			}
+		});
+	});
+</script>        
     
